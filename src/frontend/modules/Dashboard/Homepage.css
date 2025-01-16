@@ -1,0 +1,50 @@
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  background-color: #f3f2f1; /* Fluent's light theme */
+}
+
+.recent-files-pane {
+  flex: 1;
+  padding: 16px;
+  background-color: #ffffff;
+  border-right: 1px solid #e1dfdd;
+  overflow-y: auto;
+}
+
+.recent-files-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recent-file-item {
+  margin: 8px 0;
+}
+
+.options-pane {
+  flex: 2;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  overflow-y: auto;
+}
+
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.option-card {
+  width: 200px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.option-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
