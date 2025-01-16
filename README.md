@@ -4,7 +4,10 @@
 ## **Overview**  
 **ModelForge** is a no-code desktop application that empowers users to design, train, and export machine learning (ML) and deep learning (DL) models using a drag-and-drop interface. Build powerful models with ease and generate ready-to-use Python (and Rust) code.  
 
-Whether you are a student, a professional, or a company leveraging large language models (LLMs), ModelForge simplifies the machine learning workflow, making it accessible for everyone.  
+Whether you are a student, a professional, or a company leveraging large language models (LLMs), ModelForge simplifies the machine learning workflow, making it accessible for everyone.
+---
+<img width="1440" alt="image" src="https://github.com/user-attachments/assets/1457fe98-0954-4194-9fe7-6aa3e6743084" />
+
 
 ---
 
