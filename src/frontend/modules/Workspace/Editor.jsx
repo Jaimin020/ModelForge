@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Network, DataSet } from "vis-network/standalone/umd/vis-network.min.js";
 import { Toolbar } from "../../components/Toolbar.jsx";
+import { DiagnosticViewer } from "../../components/DiagnosticViewer.jsx";
 import "./style.css";
 
 const DesignApp = () => {
@@ -162,11 +163,12 @@ const DesignApp = () => {
           onMouseDown={handleMouseDown}
         ></div>
 
+        {/* Right side container */}
+        <div className="right-side" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* Right Panel */}
         <div
           className="right-panel"
           ref={rightPanelRef}
-          style={{ flex: 1 }}
         >
           <div
             id="mynetwork"
@@ -175,7 +177,11 @@ const DesignApp = () => {
             onDrop={handleDrop}
           ></div>
         </div>
+        
+        {/* Diagnostic Viewer below */}
+        <DiagnosticViewer scriptPath="../../../../__test__/my_script.py" />
       </div>
+    </div>
     </div>
   );
 };
