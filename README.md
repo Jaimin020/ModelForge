@@ -38,7 +38,7 @@ Whether you are a student, a professional, or a company leveraging large languag
 
 ## **Technology Stack**  
 - **Frontend**: Electron + React  
-- **Backend**: Python (Django or FastAPI)  
+- **Backend**: JS
 - **ML Frameworks**: TensorFlow/Keras, PyTorch  
 - **Visualization**: `vis-network`, `plotly`, `matplotlib`  
 - **Packaging**: `electron-builder`  
