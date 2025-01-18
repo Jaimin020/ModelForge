@@ -14,6 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { spawn } from 'child_process';
 
 class AppUpdater {
   constructor() {
@@ -158,3 +159,26 @@ function disableBrowserShortcuts() {
     });
   });
 }
+
+ipcMain.handle('run-python', async (_event: Electron.IpcMainInvokeEvent, scriptPath: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const pythonProcess = spawn('python3', ['-u',scriptPath]);
+    let output = '';
+
+    pythonProcess.stdout.on('data', (data: Buffer) => {
+      mainWindow?.webContents.send('update-dialog', data.toString());
+    });
+
+    pythonProcess.stderr.on('data', (data: Buffer) => {
+      mainWindow?.webContents.send('update-dialog', `Error: ${data.toString()}`);
+    });
+
+    pythonProcess.on('close', (code: number) => {
+      if (code === 0) {
+        resolve(output);
+      } else {
+        reject(`Process exited with code ${code}\n${output}`);
+      }
+    });
+  });
+});

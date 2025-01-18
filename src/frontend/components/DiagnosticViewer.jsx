@@ -1,28 +1,20 @@
 import React, { useState } from "react";
+import { useEffect, useRef } from 'react';
 
-export const DiagnosticViewer = ({ scriptPath }) => {
-  const [output, setOutput] = useState("");
-  const [isRunning, setIsRunning] = useState(false);
+export const DiagnosticViewer = ({ output }) => {
+  const viewerRef = useRef(null);
 
-  const executePythonScript = async () => {
-    setOutput(""); 
-    setIsRunning(true);
-
-    try {
-      const result = await window.api.runPython(scriptPath);
-      setOutput(result);
-    } catch (error) {
-      setOutput(`Error: ${error}`);
-    } finally {
-      setIsRunning(false);
+  useEffect(() => {
+    if (viewerRef.current) {
+      viewerRef.current.scrollTop = viewerRef.current.scrollHeight;
     }
-  };
+  }, [output]);
 
   return (
-    <div className="diagnostic-viewer" style={{ border: '1px solid #ccc', borderRadius: '5px', padding: '5px', margin: '5px' }}>
+    <div className="diagnostic-viewer" style={{ border: '1px solid #ccc', borderRadius: '0px', padding: '5px', margin: '5px' }}>
       <div style={{ 
         fontSize: '12px', 
-        backgroundColor: '#f5f5f5',
+        backgroundColor: 'white',
         padding: '3px',
         borderBottom: '1px solid #ddd',
         marginBottom: '3px'
@@ -30,12 +22,12 @@ export const DiagnosticViewer = ({ scriptPath }) => {
         Diagnostic Viewer
       </div>
       <pre
-        style={{
+        ref={viewerRef} style={{
           backgroundColor: '#f5f5f5',
           padding: '8px',
           border: '1px solid #ddd',
-          borderRadius: '5px',
-          height: '150px',
+          borderRadius: '0px',
+          height: '170px',
           overflowY: 'scroll',
           fontSize: '12px'
         }}

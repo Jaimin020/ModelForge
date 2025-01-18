@@ -6,8 +6,8 @@ export const Toolbar = ({ onRun, onStop }) => {
     justifyContent: "flex-start",
     alignItems: "center",
     padding: "8px",
-    backgroundColor: "#f0f8ff",
-    borderBottom: "1px solid #cce9ff",
+    backgroundColor: "#f5f5f5",
+    borderBottom: "1px solid lightgray",
   };
 
   const buttonStyle = {

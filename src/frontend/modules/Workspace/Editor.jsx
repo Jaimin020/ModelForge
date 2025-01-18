@@ -19,6 +19,9 @@ const DesignApp = () => {
   const networkInstance = useRef(null);
   const resizeObserver = useRef(null);
 
+  const [output, setOutput] = useState("");
+  const [isRunning, setIsRunning] = useState(false);
+
   // 🛠️ Initialize the vis-network once (like componentDidMount)
   useEffect(() => {
     const container = networkRef.current;
@@ -109,9 +112,29 @@ const DesignApp = () => {
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
   };
-  const handleRun = () => {
-    console.log("Run button clicked!");
+
+  const executePythonScript = async () => {
+    setOutput(""); 
+    setIsRunning(true);
+  
+    try {
+      window.dialog.onDialogUpdate((message) => {
+        setOutput((prevOutput) => prevOutput + message);
+      });
+      
+      await window.api.runPython("src/__tests__/my_script.py");
+    } catch (error) {
+      setOutput((prevOutput) => prevOutput + `\nError: ${error}`);
+    } finally {
+      setIsRunning(false);
+    }
   };
+  
+  // Update handleRun
+  const handleRun = () => {
+    executePythonScript();
+  };
+  
 
   const handleStop = () => {
     console.log("Stop button clicked!");
@@ -179,7 +202,7 @@ const DesignApp = () => {
         </div>
         
         {/* Diagnostic Viewer below */}
-        <DiagnosticViewer scriptPath="../../../../__test__/my_script.py" />
+        <DiagnosticViewer output={output} />
       </div>
     </div>
     </div>

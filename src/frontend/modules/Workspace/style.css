@@ -86,7 +86,7 @@ html {
 
 /* Resizable divider */
 .divider {
-    width: 5px;
+    width: 2px;
     background-color: #ddd;
     cursor: ew-resize;
     position: relative;
@@ -96,7 +96,7 @@ html {
 .right-panel {
     background-color: #ffffff;
     flex-grow: 1;
-    padding: 20px;
+    padding: 5px;
     position: relative;
     flex: 1;
     min-height: 0;
@@ -106,7 +106,7 @@ html {
 canvas {
     width: 100%;
     height: 100%;
-    border: 2px solid #ccc;
+    border: 1px solid #ccc;
     display: block;
 }
 
