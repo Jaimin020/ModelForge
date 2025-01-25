@@ -1,29 +1,21 @@
-// Disable no-unused-vars, broken for spread args
-/* eslint no-unused-vars: off */
-import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
 
-export type Channels = 'ipc-example';
-
-const electronHandler = {
-  ipcRenderer: {
-    sendMessage(channel: Channels, ...args: unknown[]) {
-      ipcRenderer.send(channel, ...args);
-    },
-    on(channel: Channels, func: (...args: unknown[]) => void) {
-      const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>
-        func(...args);
-      ipcRenderer.on(channel, subscription);
-
-      return () => {
-        ipcRenderer.removeListener(channel, subscription);
-      };
-    },
-    once(channel: Channels, func: (...args: unknown[]) => void) {
-      ipcRenderer.once(channel, (_event, ...args) => func(...args));
-    },
-  },
+const pythonHandler = {
+  runPython: (scriptPath: string) => ipcRenderer.invoke('run-python', scriptPath),
+  stopPython: () => ipcRenderer.invoke('stop-python')
 };
 
-contextBridge.exposeInMainWorld('electron', electronHandler);
+const dialogHandler = {
+  onDialogUpdate: (callback: (message: string) => void) => {
+    // Remove any existing listeners before adding new one
+    ipcRenderer.removeAllListeners('update-dialog');
+    ipcRenderer.on('update-dialog', (_event, message) => {callback(message)});
+  }
+};
 
-export type ElectronHandler = typeof electronHandler;
+
+contextBridge.exposeInMainWorld('api', pythonHandler);
+contextBridge.exposeInMainWorld('dialog', dialogHandler);
+
+export type PythonHandler = typeof pythonHandler;
+export type DialogHandler = typeof dialogHandler;

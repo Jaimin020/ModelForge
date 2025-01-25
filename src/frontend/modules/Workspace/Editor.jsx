@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Network, DataSet } from "vis-network/standalone/umd/vis-network.min.js";
 import { Toolbar } from "../../components/Toolbar.jsx";
+import { DiagnosticViewer } from "../../components/DiagnosticViewer.jsx";
 import "./style.css";
 
 const DesignApp = () => {
@@ -18,6 +19,9 @@ const DesignApp = () => {
   const networkInstance = useRef(null);
   const resizeObserver = useRef(null);
 
+  const [output, setOutput] = useState("");
+  const [isRunning, setIsRunning] = useState(false);
+
   // 🛠️ Initialize the vis-network once (like componentDidMount)
   useEffect(() => {
     const container = networkRef.current;
@@ -26,7 +30,15 @@ const DesignApp = () => {
     const options = {
       edges: { smooth: false },
       physics: { enabled: false, minVelocity: 0.75 },
-      interaction: { hover: true },
+      interaction: { 
+        hover: true,
+        zoomView: true,
+        navigationButtons: false,
+        keyboard: true,
+        minZoom: 0.5,    // Minimum zoom level (50%)
+        maxZoom: 2,      // Maximum zoom level (200%)
+        zoomSpeed: 1,    // Zoom speed multiplier
+      },
       manipulation: {
         enabled: true,
         initiallyActive: true,
@@ -108,17 +120,46 @@ const DesignApp = () => {
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
   };
-  const handleRun = () => {
-    console.log("Run button clicked!");
-  };
 
-  const handleStop = () => {
-    console.log("Stop button clicked!");
+  const executePythonScript = async () => {
+    if (isRunning) {
+      setOutput((prev) => prev + "\nProcess already running. Please wait.");
+      return;
+    }
+    
+    setOutput("Analysing...\n");
+    setIsRunning(true);
+  
+    try {
+      window.dialog.onDialogUpdate((message) => {
+        setOutput((prevOutput) => prevOutput + message);
+      });
+      
+      await window.api.runPython("src/__tests__/my_script.py");
+    } catch (error) {
+      setOutput((prevOutput) => prevOutput + `\n${error}`);
+    } finally {
+      setIsRunning(false);
+    }
+  };
+  
+  // Update handleRun
+  const handleRun = () => {
+    executePythonScript();
+  };
+  
+
+  const handleStop = async () => {
+    if (isRunning) {
+      await window.api.stopPython();
+      setIsRunning(false);
+      setOutput(prev => prev + '\nProcess stopped by user.');
+    }
   };
 
   return (
     <div className="container" ref={containerRef}>
-      <Toolbar onRun={handleRun} onStop={handleStop} />
+      <Toolbar onRun={handleRun} onStop={handleStop} isRunning={isRunning} />
       <div className="main-content">
         {/* Left Panel */}
         <div
@@ -162,11 +203,12 @@ const DesignApp = () => {
           onMouseDown={handleMouseDown}
         ></div>
 
+        {/* Right side container */}
+        <div className="right-side" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* Right Panel */}
         <div
           className="right-panel"
           ref={rightPanelRef}
-          style={{ flex: 1 }}
         >
           <div
             id="mynetwork"
@@ -175,7 +217,11 @@ const DesignApp = () => {
             onDrop={handleDrop}
           ></div>
         </div>
+        
+        {/* Diagnostic Viewer below */}
+        <DiagnosticViewer output={output} />
       </div>
+    </div>
     </div>
   );
 };
