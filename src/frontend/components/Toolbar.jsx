@@ -1,6 +1,6 @@
 import React from "react";
 
-export const Toolbar = ({ onRun, onStop }) => {
+export const Toolbar = ({ onRun, onStop ,isRunning }) => {
   const toolbarStyle = {
     display: "flex",
     justifyContent: "flex-start",
@@ -60,6 +60,7 @@ export const Toolbar = ({ onRun, onStop }) => {
       <button 
         style={runButtonStyle} 
         onClick={onRun}
+        disabled={isRunning}
         title="Run"
         onMouseOver={(e) => {
           e.currentTarget.style.backgroundColor = "#004080";
@@ -75,7 +76,7 @@ export const Toolbar = ({ onRun, onStop }) => {
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
           <path d="M4 2v12l10-6L4 2z"/>
         </svg>
-        Run
+        {isRunning ? 'Running...' : 'Run'}
       </button>
       <button 
         style={stopButtonStyle} 

@@ -14,7 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { spawn } from 'child_process';
+import { ChildProcess,spawn } from 'child_process';
 
 class AppUpdater {
   constructor() {
@@ -159,18 +159,19 @@ function disableBrowserShortcuts() {
     });
   });
 }
+let pythonProcess: ChildProcess | null = null;
 
 ipcMain.handle('run-python', async (_event: Electron.IpcMainInvokeEvent, scriptPath: string): Promise<string> => {
   return new Promise((resolve, reject) => {
-    const pythonProcess = spawn('python3', ['-u',scriptPath]);
+    pythonProcess = spawn('python3', ['-u',scriptPath]);
     let output = '';
 
-    pythonProcess.stdout.on('data', (data: Buffer) => {
+    pythonProcess.stdout?.on('data', (data: Buffer) => {
       mainWindow?.webContents.send('update-dialog', data.toString());
     });
 
-    pythonProcess.stderr.on('data', (data: Buffer) => {
-      mainWindow?.webContents.send('update-dialog', `Error: ${data.toString()}`);
+    pythonProcess.stderr?.on('data', (data: Buffer) => {
+      mainWindow?.webContents.send('update-dialog', data.toString());
     });
 
     pythonProcess.on('close', (code: number) => {
@@ -179,6 +180,15 @@ ipcMain.handle('run-python', async (_event: Electron.IpcMainInvokeEvent, scriptP
       } else {
         reject(`Process exited with code ${code}\n${output}`);
       }
+      // Ensure the process is terminated
+      pythonProcess?.kill();
     });
   });
+});
+
+ipcMain.handle('stop-python', async () => {
+  if (pythonProcess) {
+    pythonProcess.kill();
+    pythonProcess = null;
+  }
 });

@@ -30,7 +30,15 @@ const DesignApp = () => {
     const options = {
       edges: { smooth: false },
       physics: { enabled: false, minVelocity: 0.75 },
-      interaction: { hover: true },
+      interaction: { 
+        hover: true,
+        zoomView: true,
+        navigationButtons: false,
+        keyboard: true,
+        minZoom: 0.5,    // Minimum zoom level (50%)
+        maxZoom: 2,      // Maximum zoom level (200%)
+        zoomSpeed: 1,    // Zoom speed multiplier
+      },
       manipulation: {
         enabled: true,
         initiallyActive: true,
@@ -114,7 +122,12 @@ const DesignApp = () => {
   };
 
   const executePythonScript = async () => {
-    setOutput(""); 
+    if (isRunning) {
+      setOutput((prev) => prev + "\nProcess already running. Please wait.");
+      return;
+    }
+    
+    setOutput("Analysing...\n");
     setIsRunning(true);
   
     try {
@@ -124,7 +137,7 @@ const DesignApp = () => {
       
       await window.api.runPython("src/__tests__/my_script.py");
     } catch (error) {
-      setOutput((prevOutput) => prevOutput + `\nError: ${error}`);
+      setOutput((prevOutput) => prevOutput + `\n${error}`);
     } finally {
       setIsRunning(false);
     }
@@ -136,13 +149,17 @@ const DesignApp = () => {
   };
   
 
-  const handleStop = () => {
-    console.log("Stop button clicked!");
+  const handleStop = async () => {
+    if (isRunning) {
+      await window.api.stopPython();
+      setIsRunning(false);
+      setOutput(prev => prev + '\nProcess stopped by user.');
+    }
   };
 
   return (
     <div className="container" ref={containerRef}>
-      <Toolbar onRun={handleRun} onStop={handleStop} />
+      <Toolbar onRun={handleRun} onStop={handleStop} isRunning={isRunning} />
       <div className="main-content">
         {/* Left Panel */}
         <div
