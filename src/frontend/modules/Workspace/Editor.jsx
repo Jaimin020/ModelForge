@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Network, DataSet } from "vis-network/standalone/umd/vis-network.min.js";
 import { Toolbar } from "../../components/Toolbar.jsx";
 import { DiagnosticViewer } from "../../components/DiagnosticViewer.jsx";
+import { ParameterViewer } from "../../components/ParameterViewer.jsx";
 import "./style.css";
 
 const DesignApp = () => {
@@ -21,6 +22,9 @@ const DesignApp = () => {
 
   const [output, setOutput] = useState("");
   const [isRunning, setIsRunning] = useState(false);
+
+  // Add state for selected node
+  const [selectedNode, setSelectedNode] = useState(null);
 
   // 🛠️ Initialize the vis-network once (like componentDidMount)
   useEffect(() => {
@@ -59,6 +63,16 @@ const DesignApp = () => {
           networkInstance.current.redraw();
         }
       });
+    });
+
+    networkInstance.current.on('select', (params) => {
+      if (params.nodes.length > 0) {
+        const nodeId = params.nodes[0];
+        const node = nodes.current.get(nodeId);
+        setSelectedNode(node);
+      } else {
+        setSelectedNode(null);
+      }
     });
 
     resizeObserver.current.observe(container);
@@ -194,6 +208,7 @@ const DesignApp = () => {
               Loss Function
             </div>
           </div>
+          <ParameterViewer selectedNode={selectedNode} />
         </div>
 
         {/* Divider for resizing columns */}
