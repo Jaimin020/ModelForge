@@ -28,15 +28,15 @@ const DesignApp = () => {
     const data = { nodes: nodes.current, edges: edges.current };
 
     const options = {
-      edges: { smooth: false },
+      edges: { smooth: false,
+          arrows: 'to',
+       },
       physics: { enabled: false, minVelocity: 0.75 },
       interaction: { 
         hover: true,
         zoomView: true,
         navigationButtons: false,
         keyboard: true,
-        minZoom: 0.5,    // Minimum zoom level (50%)
-        maxZoom: 2,      // Maximum zoom level (200%)
         zoomSpeed: 1,    // Zoom speed multiplier
       },
       manipulation: {
