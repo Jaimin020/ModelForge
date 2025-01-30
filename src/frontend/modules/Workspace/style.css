@@ -50,9 +50,9 @@ html {
 
 /* Left Panel (30% initially) */
 .left-panel {
-    background-color: #f5f5f5;
+    background-color: white;
     width: 30%;
-    padding: 20px;
+    padding: 1px;
     display: flex;
     flex-direction: column;
     overflow-y: auto;

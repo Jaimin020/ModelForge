@@ -17,7 +17,7 @@ export const ParameterViewer = ({ selectedNode }) => {
         padding: '8px',
         border: '1px solid #ddd',
         borderRadius: '0px',
-        height: '170px',
+        height: '190px',
         overflowY: 'scroll',
         fontSize: '12px'
       }}>

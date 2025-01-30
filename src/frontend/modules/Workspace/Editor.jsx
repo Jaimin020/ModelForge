@@ -3,6 +3,7 @@ import { Network, DataSet } from "vis-network/standalone/umd/vis-network.min.js"
 import { Toolbar } from "../../components/Toolbar.jsx";
 import { DiagnosticViewer } from "../../components/DiagnosticViewer.jsx";
 import { ParameterViewer } from "../../components/ParameterViewer.jsx";
+import { LayerSelectionPanel} from "../LayerSelectionPanel/LayerSelectionPanel.jsx"
 import "./style.css";
 
 const DesignApp = () => {
@@ -181,33 +182,7 @@ const DesignApp = () => {
           ref={leftPanelRef}
           style={{ width: `${leftPanelWidth}px` }}
         >
-          <h2>Layer Selection Panel</h2>
-          <div className="shapes-grid">
-            <div
-              className="shape"
-              draggable="true"
-              data-shape="Input Layer"
-              onDragStart={handleDragStart}
-            >
-              Input Layer
-            </div>
-            <div
-              className="shape"
-              draggable="true"
-              data-shape="Fully Connected"
-              onDragStart={handleDragStart}
-            >
-              FC
-            </div>
-            <div
-              className="shape"
-              draggable="true"
-              data-shape="Loss Function"
-              onDragStart={handleDragStart}
-            >
-              Loss Function
-            </div>
-          </div>
+          <LayerSelectionPanel onDragStart={handleDragStart} />
           <ParameterViewer selectedNode={selectedNode} />
         </div>
 
