@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <nodes>
     <node>
+        <name>Input Layer</name>
+        <feature>Input layer</feature>
+        <library>torch.nn</library>
+        <codeId>input_layer</codeId>
+        <parameters>
+            <param name="in_features" type="int" required="true"/>
+            <param name="out_features" type="int" required="true"/>
+            <param name="bias" type="bool" default="true"/>
+        </parameters>
+        <code>torch.nn.Linear(in_features={in_features}, out_features={out_features}, bias={bias})</code>
+    </node>
+    <node>
         <name>Linear</name>
         <feature>Fully connected layer</feature>
         <library>torch.nn</library>

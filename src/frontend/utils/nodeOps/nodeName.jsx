@@ -16,7 +16,6 @@ export const getNodeNames = async (xmlFileName) => {
       nodeNames.push(node.name);
     });
   }
-  console.log(nodeNames);
-
+  
   return nodeNames;
 };
