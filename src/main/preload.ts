@@ -13,9 +13,16 @@ const dialogHandler = {
   }
 };
 
+const fileHandler = {
+  readFile: (filePath: string) => ipcRenderer.invoke('readFile', filePath),
+  writeFile: (filePath: string, data: string) => ipcRenderer.invoke('writeFile', filePath, data)
+};
+
 
 contextBridge.exposeInMainWorld('api', pythonHandler);
 contextBridge.exposeInMainWorld('dialog', dialogHandler);
+contextBridge.exposeInMainWorld('file', fileHandler);
 
 export type PythonHandler = typeof pythonHandler;
 export type DialogHandler = typeof dialogHandler;
+export type FileHandler = typeof fileHandler;

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nodes>
+    <node>
+        <name>Linear</name>
+        <feature>Fully connected layer</feature>
+        <library>torch.nn</library>
+        <codeId>linear_layer</codeId>
+        <parameters>
+            <param name="in_features" type="int" required="true"/>
+            <param name="out_features" type="int" required="true"/>
+            <param name="bias" type="bool" default="true"/>
+        </parameters>
+        <code>torch.nn.Linear(in_features={in_features}, out_features={out_features}, bias={bias})</code>
+    </node>
+
+    <node>
+        <name>Conv2d</name>
+        <feature>2D convolutional layer</feature>
+        <library>torch.nn</library>
+        <codeId>conv2d_layer</codeId>
+        <parameters>
+            <param name="in_channels" type="int" required="true"/>
+            <param name="out_channels" type="int" required="true"/>
+            <param name="kernel_size" type="int" required="true"/>
+            <param name="stride" type="int" default="1"/>
+            <param name="padding" type="int" default="0"/>
+        </parameters>
+        <code>torch.nn.Conv2d(in_channels={in_channels}, out_channels={out_channels}, kernel_size={kernel_size}, stride={stride}, padding={padding})</code>
+    </node>
+
+    <node>
+        <name>ReLU</name>
+        <feature>Rectified Linear Unit activation</feature>
+        <library>torch.nn</library>
+        <codeId>relu_activation</codeId>
+        <parameters>
+            <param name="inplace" type="bool" default="false"/>
+        </parameters>
+        <code>torch.nn.ReLU(inplace={inplace})</code>
+    </node>
+
+    <node>
+        <name>MaxPool2d</name>
+        <feature>2D max pooling</feature>
+        <library>torch.nn</library>
+        <codeId>maxpool2d_layer</codeId>
+        <parameters>
+            <param name="kernel_size" type="int" required="true"/>
+            <param name="stride" type="int" default="null"/>
+            <param name="padding" type="int" default="0"/>
+        </parameters>
+        <code>torch.nn.MaxPool2d(kernel_size={kernel_size}, stride={stride}, padding={padding})</code>
+    </node>
+</nodes>

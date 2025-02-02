@@ -15,6 +15,7 @@ import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { ChildProcess,spawn } from 'child_process';
+import fs from 'fs';
 
 class AppUpdater {
   constructor() {
@@ -191,4 +192,13 @@ ipcMain.handle('stop-python', async () => {
     pythonProcess.kill();
     pythonProcess = null;
   }
+});
+
+ipcMain.handle('readFile', async (event, filePath) => {
+  let data =  await fs.promises.readFile(filePath, 'utf8');
+  return data;
+});
+
+ipcMain.handle('writeFile', async (event, filePath, data) => {
+  return fs.promises.writeFile(filePath, data, 'utf8');
 });
