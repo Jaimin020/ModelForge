@@ -2,7 +2,7 @@
 <nodes>
     <node>
         <name>Input Layer</name>
-        <feature>Input layer</feature>
+        <feature>Input Layer</feature>
         <library>torch.nn</library>
         <codeId>input_layer</codeId>
         <parameters>
