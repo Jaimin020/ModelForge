@@ -9,7 +9,7 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "start"],
       "env": {
-        "MAIN_ARGS": "--inspect=5858 --remote-debugging-port=1212"
+        "MAIN_ARGS": "--inspect=1212 --remote-debugging-port=1212"
       }
     },
     {
@@ -18,7 +18,7 @@
       "request": "attach",
       "port": 1212,
       "webRoot": "${workspaceFolder}",
-      "timeout": 15000
+      "timeout": 15000,
     }
   ],
   "compounds": [

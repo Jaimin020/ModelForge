@@ -6,7 +6,11 @@
 
 Whether you are a student, a professional, or a company leveraging large language models (LLMs), ModelForge simplifies the machine learning workflow, making it accessible for everyone.
 ---
-<img width="1440" alt="image" src="https://github.com/user-attachments/assets/9ddfe221-360d-41d2-af1a-a7d521b8a451" />
+<img width="1440" alt="image" src="https://github.com/user-attachments/assets/7cc7cc99-5d94-4995-826c-63073fc53870" />
+
+
+
+
 
 
 
