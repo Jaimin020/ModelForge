@@ -16,6 +16,7 @@ import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { ChildProcess,spawn } from 'child_process';
 import fs from 'fs';
+import { paths } from './config';
 
 class AppUpdater {
   constructor() {
@@ -64,8 +65,8 @@ const createWindow = async () => {
   }
 
   const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
+  ? path.join(paths.base, 'assets')
+  : paths.assets;
 
   const getAssetPath = (...paths: string[]): string => {
     return path.join(RESOURCES_PATH, ...paths);

@@ -105,6 +105,9 @@ const DesignApp = () => {
     };
 
     nodes.current.add(defaultData);
+
+    //set Node param valeues
+    //setNodeParamValues(defaultData.id, defaultData.label);
   };
 
   // 🛠️ Start dragging the divider

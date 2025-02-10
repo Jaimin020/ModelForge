@@ -20,7 +20,7 @@ export const ParameterViewer = ({ selectedNode }) => {
     return (
       <>
         <div className="parameter-item">
-          <label>Feature:</label>
+          <label>Layer type:</label>
           <span>{nodeConfig.feature}</span>
         </div>
         <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
@@ -103,7 +103,7 @@ export const ParameterViewer = ({ selectedNode }) => {
         {selectedNode ? (
           <div className="parameter-content">
             <div className="parameter-item">
-              <label>Layer Type:</label>
+              <label>Layer Name:</label>
               <span>{selectedNode.label}</span>
             </div>
             <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
