@@ -48,10 +48,26 @@ Whether you are a student, a professional, or a company leveraging large languag
 - **Packaging**: `electron-builder`  
 
 ---
-
 ## **Installation**  
 
 ### **Prerequisites**  
 1. Install [Node.js](https://nodejs.org/) (for Electron and React).  
 2. Install [Python 3.9+](https://www.python.org/) (for ML frameworks).  
-3. Install pip dependencies: TensorFlow, PyTorch, and related libraries.  
+3. Install pip dependencies: TensorFlow, PyTorch, and related libraries.
+___
+
+### **Installation Steps**
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/Jaimin020/ModelForge.git
+   ```
+2. Navigate to the project directory:
+   ```sh
+   cd ModelForge
+   ```
+3. Install the dependencies:
+   ```sh
+   npm install
+   ```
+4. Make a copy of the .env.example file as .env and set the BASE_PATH accordingly.
+---  
