@@ -4,6 +4,8 @@ import { Toolbar } from "../../components/Toolbar.jsx";
 import { DiagnosticViewer } from "../../components/DiagnosticViewer.jsx";
 import { ParameterViewer } from "../../components/ParameterViewer.jsx";
 import { LayerSelectionPanel} from "../LayerSelectionPanel/LayerSelectionPanel.jsx"
+import { getNodeByName } from "../../utils/nodeOps/getNodeByName.jsx";
+import { ModelNodeManager } from "../../utils/graphMngr/ModelNodeManager.ts";
 import "./style.css";
 
 const DesignApp = () => {
@@ -26,6 +28,8 @@ const DesignApp = () => {
 
   // Add state for selected node
   const [selectedNode, setSelectedNode] = useState(null);
+
+  const nodeManager = ModelNodeManager.getInstance();
 
   // 🛠️ Initialize the vis-network once (like componentDidMount)
   useEffect(() => {
@@ -90,7 +94,7 @@ const DesignApp = () => {
   };
 
   // 🛠️ Handle drop event on the vis-network container
-  const handleDrop = (e) => {
+  const handleDrop = async (e) => {
     e.preventDefault();
     const rect = networkRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -98,12 +102,23 @@ const DesignApp = () => {
     const canvasPosition = networkInstance.current.DOMtoCanvas({ x, y });
 
     const defaultData = {
-      id: (Math.random() * 1e7).toString(32),
+      id: (Math.random() * 1e7),
       x: canvasPosition.x,
       y: canvasPosition.y,
       label: draggedShape || "New Node",
     };
-
+    const data = await getNodeByName(defaultData.label);
+    nodeManager.createNode(defaultData.id,{
+      name: data.name,
+      feature: data.feature,
+      library: data.library,
+      framework: data.framework,
+      codeId: data.codeId,
+      inport: data.inport,
+      outport: data.outport,
+      parameters: data.parameters,
+      code: data.code,
+    })
     nodes.current.add(defaultData);
 
     //set Node param valeues
@@ -163,6 +178,7 @@ const DesignApp = () => {
   
   // Update handleRun
   const handleRun = () => {
+    //check for graph.
     executePythonScript();
   };
   
