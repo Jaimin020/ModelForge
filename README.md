@@ -42,9 +42,9 @@ Whether you are a student, a professional, or a company leveraging large languag
 
 ## **Technology Stack**  
 - **Frontend**: Electron + React  
-- **Backend**: JS
+- **Backend**: Node.js
 - **ML Frameworks**: TensorFlow/Keras, PyTorch  
-- **Visualization**: `vis-network`, `plotly`, `matplotlib`  
+- **Visualization**: `vis-network`
 - **Packaging**: `electron-builder`  
 
 ---
