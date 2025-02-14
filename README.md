@@ -71,3 +71,11 @@ ___
    ```
 4. Make a copy of the .env.example file as .env and set the BASE_PATH accordingly.
 ---  
+
+### **Running the Electron Application**
+1. To launch the Electron app, use the following command:
+   ```sh: 
+   npm start
+   ```
+
+---  
