@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { getNodeFeatureMap } from '../utils/nodeOps/nodeFetMap';
+import { ModelNodeManager } from '../utils/graphMngr/ModelNodeManager.ts';
 
 export const ParameterViewer = ({ selectedNode }) => {
   const [nodeParams, setNodeParams] = useState({});
+  const nodeManager = ModelNodeManager.getInstance();
+
+  const handleParameterChange = (paramName, value) => {
+    if (selectedNode) {
+      nodeManager.updateNodeParameter(selectedNode.id, paramName, value);
+    }
+  };
 
   useEffect(() => {
     const loadNodes = async () => {
-        const fetMap = await getNodeFeatureMap('/Users/jaiminchauhan/Projects/Git/ModelForge/src/frontend/utils/pyTorchNodes.xml');
-        setNodeParams(fetMap);
+      const fetMap = await getNodeFeatureMap('/Users/jaiminchauhan/Projects/Git/ModelForge/src/frontend/utils/pyTorchNodes.xml');
+      setNodeParams(fetMap);
     }
     loadNodes();
   }, []);
@@ -15,7 +23,14 @@ export const ParameterViewer = ({ selectedNode }) => {
   const renderParameters = () => {
     if (!selectedNode || !nodeParams.get(selectedNode.label)) return null;
 
-    const nodeConfig = nodeParams.get(selectedNode.label);
+    var nodeConfig;
+    if(selectedNode.id) {
+      nodeConfig = nodeManager.getNode(selectedNode.id);
+    }
+    else
+    {
+      nodeConfig = nodeParams.get(selectedNode.label);
+    }
 
     return (
       <>
@@ -51,8 +66,9 @@ export const ParameterViewer = ({ selectedNode }) => {
                 <label>{param.name}:</label>
                 {param.type === 'bool' ? (
                   <select 
-                    defaultValue={param.default || 'false'} 
+                    value={param.value} 
                     style={{width: '100px'}}
+                    onChange={(e) => handleParameterChange(param.name, e.target.value === 'true')}
                   >
                     <option value="true">True</option>
                     <option value="false">False</option>
@@ -60,10 +76,11 @@ export const ParameterViewer = ({ selectedNode }) => {
                 ) : (
                   <input 
                     type={param.type === 'int' ? 'number' : 'text'}
-                    defaultValue={param.default || ''}
+                    value={param.value}
                     required={param.required === 'true'}
                     placeholder={param.required === 'true' ? 'Required' : 'Optional'}
                     style={{width: '100px'}}
+                    onChange={(e) => handleParameterChange(param.name, param.type === 'int' ? parseInt(e.target.value) : e.target.value)}
                   />
                 )}
                 {param.required === 'true' && 

@@ -49,10 +49,14 @@ const DesignApp = () => {
         zoomSpeed: 1,    // Zoom speed multiplier
       },
       manipulation: {
+        addEdge: (data,callback) => {
+          console.log("Adding edge", data);
+          callback(data);
+        },
         enabled: true,
         initiallyActive: true,
         addNode: false,
-        addEdge: true,
+        //addEdge: true,
         editEdge: true,
         deleteNode: true,
         deleteEdge: true,

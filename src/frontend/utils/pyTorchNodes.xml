@@ -10,7 +10,6 @@
         <parameters>
             <param name="X" type="int" required="true"/>
             <param name="Y" type="int" required="true"/>
-            <param name="bias" type="bool" default="true"/>
         </parameters>
         <code>torch.nn.Linear(in_features={in_features}, out_features={out_features}, bias={bias})</code>
     </node>
