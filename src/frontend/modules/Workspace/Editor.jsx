@@ -6,6 +6,7 @@ import { ParameterViewer } from "../../components/ParameterViewer.jsx";
 import { LayerSelectionPanel} from "../LayerSelectionPanel/LayerSelectionPanel.jsx"
 import { getNodeByName } from "../../utils/nodeOps/getNodeByName.jsx";
 import { ModelNodeManager } from "../../utils/graphMngr/ModelNodeManager.ts";
+import { CycleDetector } from "../../utils/graphUtils/CycleDetector.ts";
 import "./style.css";
 
 const DesignApp = () => {
@@ -50,7 +51,6 @@ const DesignApp = () => {
       },
       manipulation: {
         addEdge: (data,callback) => {
-          console.log("Adding edge", data);
           callback(data);
         },
         enabled: true,
@@ -163,8 +163,6 @@ const DesignApp = () => {
       setOutput((prev) => prev + "\nProcess already running. Please wait.");
       return;
     }
-    
-    setOutput("Analysing...\n");
     setIsRunning(true);
   
     try {
@@ -183,7 +181,17 @@ const DesignApp = () => {
   // Update handleRun
   const handleRun = () => {
     //check for graph.
-    executePythonScript();
+    const currentEdges = edges.current.get();
+    const cycleDetector = new CycleDetector([...currentEdges]);
+    const isExcutable = true;
+    const isCyclic = cycleDetector.hasCycle();
+    setOutput("Analysing Model\n");
+    const cycleDia = isCyclic?"Yes":"No"
+    setOutput(prev => prev + "Cycle Detected: " + cycleDia + "\n");
+    if(isExcutable && !isCyclic)
+    {
+      executePythonScript();
+    }
   };
   
 
