@@ -61,7 +61,7 @@ export const Toolbar = ({ onRun, onStop ,isRunning }) => {
         style={runButtonStyle} 
         onClick={onRun}
         disabled={isRunning}
-        title="Run"
+        title="Train"
         onMouseOver={(e) => {
           e.currentTarget.style.backgroundColor = "#004080";
           e.currentTarget.style.transform = "translateY(-1px)";
@@ -76,7 +76,7 @@ export const Toolbar = ({ onRun, onStop ,isRunning }) => {
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
           <path d="M4 2v12l10-6L4 2z"/>
         </svg>
-        {isRunning ? 'Running...' : 'Run'}
+        {isRunning ? 'Training...' : 'Train'}
       </button>
       <button 
         style={stopButtonStyle} 

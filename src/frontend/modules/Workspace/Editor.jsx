@@ -6,7 +6,7 @@ import { ParameterViewer } from "../../components/ParameterViewer.jsx";
 import { LayerSelectionPanel} from "../LayerSelectionPanel/LayerSelectionPanel.jsx"
 import { getNodeByName } from "../../utils/nodeOps/getNodeByName.jsx";
 import { ModelNodeManager } from "../../utils/graphMngr/ModelNodeManager.ts";
-import { CycleDetector } from "../../utils/graphUtils/CycleDetector.ts";
+import { GraphAnalyzer } from "../../utils/graphMngr/GraphAnalyzer.ts";
 import "./style.css";
 
 const DesignApp = () => {
@@ -58,7 +58,11 @@ const DesignApp = () => {
         addNode: false,
         //addEdge: true,
         editEdge: true,
-        deleteNode: true,
+        deleteNode: (data,callback) => {
+          setSelectedNode(null);
+          nodeManager.deleteNode(data.nodes[0]);
+          callback(data);
+        },
         deleteEdge: true,
       },
       nodes: { shape: "box" },
@@ -180,17 +184,18 @@ const DesignApp = () => {
   
   // Update handleRun
   const handleRun = () => {
+    setOutput("");
     //check for graph.
     const currentEdges = edges.current.get();
-    const cycleDetector = new CycleDetector([...currentEdges]);
-    const isExcutable = true;
-    const isCyclic = cycleDetector.hasCycle();
-    setOutput("Analysing Model\n");
-    const cycleDia = isCyclic?"Yes":"No"
-    setOutput(prev => prev + "Cycle Detected: " + cycleDia + "\n");
-    if(isExcutable && !isCyclic)
+    const graphAnalyzer = new GraphAnalyzer();
+    const result = graphAnalyzer.validateGraph(currentEdges);
+    setOutput((prevOutput) => prevOutput + "Compiling Model\n--> ");
+    if(result.isValid)
     {
       executePythonScript();
+    }
+    else{
+      setOutput((prevOutput) => prevOutput + result.errors.join("\n--> "));
     }
   };
   

@@ -58,4 +58,19 @@
         </parameters>
         <code>torch.nn.ReLU(inplace={inplace})</code>
     </node>
+    <node>
+    <name>Cross Entropy Loss</name>
+    <feature>Cross Entropy Loss Function</feature>
+    <library>torch.nn</library>
+    <codeId>cross_entropy_loss</codeId>
+    <inport>1</inport>
+    <outport>0</outport>
+    <parameters>
+        <param name="weight" type="Tensor" default="None"/>
+        <param name="reduction" type="string" default="mean"/>
+        <param name="ignore_index" type="int" default="-100"/>
+    </parameters>
+    <code>torch.nn.CrossEntropyLoss(weight={weight}, reduction='{reduction}', ignore_index={ignore_index})</code>
+</node>
+
 </nodes>

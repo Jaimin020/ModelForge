@@ -34,32 +34,9 @@ export const ParameterViewer = ({ selectedNode }) => {
 
     return (
       <>
-        <div className="parameter-item">
-          <label>Layer type:</label>
-          <span>{nodeConfig.feature}</span>
-        </div>
-        <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
-        
-        <div className="parameter-item">
-          <label>Library:</label>
-          <span>{nodeConfig.library}</span>
-        </div>
-        <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
-        
-        <div className="parameter-item">
-          <label>Code ID:</label>
-          <span>{nodeConfig.codeId}</span>
-        </div>
-        <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
-        
-        <div className="parameter-item">
-          <label>Generated Code:</label>
-          <span style={{fontSize: '11px', color: '#666'}}>{nodeConfig.code}</span>
-        </div>
-        <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
-        
-        <div style={{marginTop: '10px'}}>
+         <div style={{marginTop: '10px'}}>
           <label style={{fontWeight: 'bold'}}>Parameters:</label>
+          <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
           {nodeConfig.parameters.map((param, index) => (
             <div key={index}>
               <div className="parameter-item">
@@ -93,6 +70,29 @@ export const ParameterViewer = ({ selectedNode }) => {
             </div>
           ))}
         </div>
+        <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
+        <div className="parameter-item">
+          <label>Layer type:</label>
+          <span>{nodeConfig.feature}</span>
+        </div>
+        <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
+        
+        <div className="parameter-item">
+          <label>Library:</label>
+          <span>{nodeConfig.library}</span>
+        </div>
+        <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
+        
+        <div className="parameter-item">
+          <label>Code ID:</label>
+          <span>{nodeConfig.codeId}</span>
+        </div>
+        <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
+        
+        <div className="parameter-item">
+          <label>Generated Code:</label>
+          <span style={{fontSize: '11px', color: '#666'}}>{nodeConfig.code}</span>
+        </div> 
       </>
     );
   };

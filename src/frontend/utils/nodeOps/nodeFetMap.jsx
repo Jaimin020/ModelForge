@@ -25,6 +25,8 @@ export const getNodeFeatureMap = async (xmlFileName) => {
         feature: node.feature,
         library: node.library,
         codeId: node.codeId,
+        inport: node.inport,
+        outport: node.outport,
         parameters: node.parameters.param,
         code: node.code
       };
