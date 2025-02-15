@@ -16,7 +16,6 @@ export const getNodeFeatureMap = async (xmlFileName) => {
     trimValues: true
   });
   const result = parser.parse(xmlData);
-  console.log(result);
 
   // Extract node names and features
   if (result.nodes && result.nodes.node) {
@@ -26,6 +25,8 @@ export const getNodeFeatureMap = async (xmlFileName) => {
         feature: node.feature,
         library: node.library,
         codeId: node.codeId,
+        inport: node.inport,
+        outport: node.outport,
         parameters: node.parameters.param,
         code: node.code
       };
