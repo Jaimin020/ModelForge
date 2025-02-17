@@ -113,6 +113,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.16.0",
+    "sudo-prompt": "^9.2.1",
     "vis-network": "^9.1.9"
   },
   "devDependencies": {
@@ -160,7 +161,7 @@
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "mini-css-extract-plugin": "^2.7.6",
-    "prettier": "^3.0.3",
+    "prettier": "3.5.1",
     "react-refresh": "^0.14.0",
     "react-test-renderer": "^18.2.0",
     "rimraf": "^5.0.1",

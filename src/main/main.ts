@@ -14,9 +14,11 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { ChildProcess,spawn } from 'child_process';
+import { ChildProcess, spawn } from 'child_process';
 import fs from 'fs';
 import { paths } from './config';
+import { installPython } from './python_setup';
+import { setupIpcHandlers } from '../backend/ipc/ipcHandler';
 
 class AppUpdater {
   constructor() {
@@ -25,6 +27,12 @@ class AppUpdater {
     autoUpdater.checkForUpdatesAndNotify();
   }
 }
+
+const pythonExec = {
+  win32: path.join(__dirname, 'installed-python', 'python.exe'),
+  darwin: path.join(__dirname, 'installed-python', 'bin/python3'),
+  linux: path.join(__dirname, 'installed-python', 'bin/python3'),
+};
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -60,13 +68,14 @@ const installExtensions = async () => {
 };
 
 const createWindow = async () => {
+  setupIpcHandlers();
   if (isDebug) {
     await installExtensions();
   }
 
   const RESOURCES_PATH = app.isPackaged
-  ? path.join(paths.base, 'assets')
-  : paths.assets;
+    ? path.join(paths.base, 'assets')
+    : paths.assets;
 
   const getAssetPath = (...paths: string[]): string => {
     return path.join(RESOURCES_PATH, ...paths);
@@ -131,11 +140,13 @@ app.on('window-all-closed', () => {
 
 app
   .whenReady()
-  .then(() => {
+  .then(async () => {
+    // Install Python first
+    await installPython();
     createWindow();
     app.on('activate', () => {
-    // Disable browser shortcuts
-    // disableBrowserShortcuts();
+      // Disable browser shortcuts
+      // disableBrowserShortcuts();
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
       if (mainWindow === null) createWindow();
@@ -147,15 +158,15 @@ app
 function disableBrowserShortcuts() {
   const shortcuts = [
     'CommandOrControl+R', // Disable refresh
-    'F5',                 // Disable F5
+    'F5', // Disable F5
     'CommandOrControl+Shift+I', // Disable DevTools
     'CommandOrControl+T', // Disable new tab
     'CommandOrControl+W', // Disable tab close
-    'Alt+Left',           // Disable back navigation
-    'Alt+Right',          // Disable forward navigation
+    'Alt+Left', // Disable back navigation
+    'Alt+Right', // Disable forward navigation
   ];
 
-  shortcuts.forEach(shortcut => {
+  shortcuts.forEach((shortcut) => {
     globalShortcut.register(shortcut, () => {
       console.log(`Shortcut ${shortcut} is disabled`);
     });
@@ -163,30 +174,36 @@ function disableBrowserShortcuts() {
 }
 let pythonProcess: ChildProcess | null = null;
 
-ipcMain.handle('run-python', async (_event: Electron.IpcMainInvokeEvent, scriptPath: string): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    pythonProcess = spawn('python3', ['-u',scriptPath]);
-    let output = '';
+ipcMain.handle(
+  'run-python',
+  async (
+    _event: Electron.IpcMainInvokeEvent,
+    scriptPath: string,
+  ): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      pythonProcess = spawn('python3', ['-u', scriptPath]);
+      let output = '';
 
-    pythonProcess.stdout?.on('data', (data: Buffer) => {
-      mainWindow?.webContents.send('update-dialog', data.toString());
-    });
+      pythonProcess.stdout?.on('data', (data: Buffer) => {
+        mainWindow?.webContents.send('update-dialog', data.toString());
+      });
 
-    pythonProcess.stderr?.on('data', (data: Buffer) => {
-      mainWindow?.webContents.send('update-dialog', data.toString());
-    });
+      pythonProcess.stderr?.on('data', (data: Buffer) => {
+        mainWindow?.webContents.send('update-dialog', data.toString());
+      });
 
-    pythonProcess.on('close', (code: number) => {
-      if (code === 0) {
-        resolve(output);
-      } else {
-        reject(`Process exited with code ${code}\n${output}`);
-      }
-      // Ensure the process is terminated
-      pythonProcess?.kill();
+      pythonProcess.on('close', (code: number) => {
+        if (code === 0) {
+          resolve(output);
+        } else {
+          reject(`Process exited with code ${code}\n${output}`);
+        }
+        // Ensure the process is terminated
+        pythonProcess?.kill();
+      });
     });
-  });
-});
+  },
+);
 
 ipcMain.handle('stop-python', async () => {
   if (pythonProcess) {
@@ -196,7 +213,7 @@ ipcMain.handle('stop-python', async () => {
 });
 
 ipcMain.handle('readFile', async (event, filePath) => {
-  let data =  await fs.promises.readFile(filePath, 'utf8');
+  let data = await fs.promises.readFile(filePath, 'utf8');
   return data;
 });
 

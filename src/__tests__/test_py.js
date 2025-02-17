@@ -1,6 +1,6 @@
 const { spawn } = require('child_process');
 
-const pythonProcess = spawn('python3', ['-u','./my_script.py']);
+const pythonProcess = spawn('python3', ['-u', './my_script.py']);
 
 // Handle real-time output from Python stdout
 pythonProcess.stdout.setEncoding('utf8'); // Ensure the output is a string

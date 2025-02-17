@@ -12,10 +12,10 @@ export const getNodeNames = async (xmlFileName) => {
 
   // Extract node names
   if (result.nodes && result.nodes.node) {
-    result.nodes.node.forEach(node => {
+    result.nodes.node.forEach((node) => {
       nodeNames.push(node.name);
     });
   }
-  
+
   return nodeNames;
 };

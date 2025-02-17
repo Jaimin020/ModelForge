@@ -1,13 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Network, DataSet } from "vis-network/standalone/umd/vis-network.min.js";
-import { Toolbar } from "../../components/Toolbar.jsx";
-import { DiagnosticViewer } from "../../components/DiagnosticViewer.jsx";
-import { ParameterViewer } from "../../components/ParameterViewer.jsx";
-import { LayerSelectionPanel} from "../LayerSelectionPanel/LayerSelectionPanel.jsx"
-import { getNodeByName } from "../../utils/nodeOps/getNodeByName.jsx";
-import { ModelNodeManager } from "../../utils/graphMngr/ModelNodeManager.ts";
-import { GraphAnalyzer } from "../../utils/graphMngr/GraphAnalyzer.ts";
-import "./style.css";
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Network,
+  DataSet,
+} from 'vis-network/standalone/umd/vis-network.min.js';
+import { Toolbar } from '../../components/Toolbar.jsx';
+import { DiagnosticViewer } from '../../components/DiagnosticViewer.jsx';
+import { ParameterViewer } from '../../components/ParameterViewer.jsx';
+import { LayerSelectionPanel } from '../LayerSelectionPanel/LayerSelectionPanel.jsx';
+import { getNodeByName } from '../../utils/nodeOps/getNodeByName.jsx';
+import { ModelNodeManager } from '../../utils/graphMngr/ModelNodeManager.ts';
+import { GraphAnalyzer } from '../../utils/graphMngr/GraphAnalyzer.ts';
+import { getGraphDataAsJson } from '../../utils/graphUtils/getGraphDataAsJson.ts';
+import './style.css';
 
 const DesignApp = () => {
   const leftPanelRef = useRef();
@@ -24,7 +28,7 @@ const DesignApp = () => {
   const networkInstance = useRef(null);
   const resizeObserver = useRef(null);
 
-  const [output, setOutput] = useState("");
+  const [output, setOutput] = useState('');
   const [isRunning, setIsRunning] = useState(false);
 
   // Add state for selected node
@@ -38,19 +42,17 @@ const DesignApp = () => {
     const data = { nodes: nodes.current, edges: edges.current };
 
     const options = {
-      edges: { smooth: false,
-          arrows: 'to',
-       },
+      edges: { smooth: false, arrows: 'to' },
       physics: { enabled: false, minVelocity: 0.75 },
-      interaction: { 
+      interaction: {
         hover: true,
         zoomView: true,
         navigationButtons: false,
         keyboard: true,
-        zoomSpeed: 1,    // Zoom speed multiplier
+        zoomSpeed: 1, // Zoom speed multiplier
       },
       manipulation: {
-        addEdge: (data,callback) => {
+        addEdge: (data, callback) => {
           callback(data);
         },
         enabled: true,
@@ -58,14 +60,14 @@ const DesignApp = () => {
         addNode: false,
         //addEdge: true,
         editEdge: true,
-        deleteNode: (data,callback) => {
+        deleteNode: (data, callback) => {
           setSelectedNode(null);
           nodeManager.deleteNode(data.nodes[0]);
           callback(data);
         },
         deleteEdge: true,
       },
-      nodes: { shape: "box" },
+      nodes: { shape: 'box' },
     };
 
     networkInstance.current = new Network(container, data, options);
@@ -98,7 +100,7 @@ const DesignApp = () => {
 
   // 🛠️ Handle drag start to store the dragged shape
   const handleDragStart = (e) => {
-    setDraggedShape(e.target.getAttribute("data-shape"));
+    setDraggedShape(e.target.getAttribute('data-shape'));
   };
 
   // 🛠️ Handle drop event on the vis-network container
@@ -110,13 +112,13 @@ const DesignApp = () => {
     const canvasPosition = networkInstance.current.DOMtoCanvas({ x, y });
 
     const defaultData = {
-      id: (Math.random() * 1e7),
+      id: Math.random() * 1e7,
       x: canvasPosition.x,
       y: canvasPosition.y,
-      label: draggedShape || "New Node",
+      label: draggedShape || 'New Node',
     };
     const data = await getNodeByName(defaultData.label);
-    nodeManager.createNode(defaultData.id,{
+    nodeManager.createNode(defaultData.id, {
       name: data.name,
       feature: data.feature,
       library: data.library,
@@ -126,7 +128,7 @@ const DesignApp = () => {
       outport: data.outport,
       parameters: data.parameters,
       code: data.code,
-    })
+    });
     nodes.current.add(defaultData);
 
     //set Node param valeues
@@ -136,8 +138,8 @@ const DesignApp = () => {
   // 🛠️ Start dragging the divider
   const handleMouseDown = (e) => {
     isDragging.current = true;
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
   };
 
   // 🛠️ Move the divider and adjust panel sizes
@@ -158,53 +160,52 @@ const DesignApp = () => {
   // 🛠️ End dragging the divider
   const handleMouseUp = () => {
     isDragging.current = false;
-    document.removeEventListener("mousemove", handleMouseMove);
-    document.removeEventListener("mouseup", handleMouseUp);
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
   };
 
   const executePythonScript = async () => {
+    window.backend.trainModel(getGraphDataAsJson(nodes, edges));
     if (isRunning) {
-      setOutput((prev) => prev + "\nProcess already running. Please wait.");
+      setOutput((prev) => prev + '\nProcess already running. Please wait.');
       return;
     }
     setIsRunning(true);
-  
+
     try {
       window.dialog.onDialogUpdate((message) => {
         setOutput((prevOutput) => prevOutput + message);
       });
-      
-      await window.api.runPython("src/__tests__/my_script.py");
+
+      await window.api.runPython('src/__tests__/my_script.py');
     } catch (error) {
       setOutput((prevOutput) => prevOutput + `\n${error}`);
     } finally {
       setIsRunning(false);
     }
   };
-  
+
   // Update handleRun
   const handleRun = () => {
-    setOutput("");
+    setOutput('');
     //check for graph.
     const currentEdges = edges.current.get();
     const graphAnalyzer = new GraphAnalyzer();
     const result = graphAnalyzer.validateGraph(currentEdges);
-    setOutput((prevOutput) => prevOutput + "Compiling Model\n--> ");
-    if(result.isValid)
-    {
+    setOutput((prevOutput) => prevOutput + 'Compiling Model\n--> ');
+    if (result.isValid) {
+      setOutput((prevOutput) => prevOutput + 'All Checks PASS\n');
       executePythonScript();
-    }
-    else{
-      setOutput((prevOutput) => prevOutput + result.errors.join("\n--> "));
+    } else {
+      setOutput((prevOutput) => prevOutput + result.errors.join('\n--> '));
     }
   };
-  
 
   const handleStop = async () => {
     if (isRunning) {
       await window.api.stopPython();
       setIsRunning(false);
-      setOutput(prev => prev + '\nProcess stopped by user.');
+      setOutput((prev) => prev + '\nProcess stopped by user.');
     }
   };
 
@@ -230,24 +231,24 @@ const DesignApp = () => {
         ></div>
 
         {/* Right side container */}
-        <div className="right-side" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {/* Right Panel */}
         <div
-          className="right-panel"
-          ref={rightPanelRef}
+          className="right-side"
+          style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
         >
-          <div
-            id="mynetwork"
-            ref={networkRef}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={handleDrop}
-          ></div>
+          {/* Right Panel */}
+          <div className="right-panel" ref={rightPanelRef}>
+            <div
+              id="mynetwork"
+              ref={networkRef}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={handleDrop}
+            ></div>
+          </div>
+
+          {/* Diagnostic Viewer below */}
+          <DiagnosticViewer output={output} />
         </div>
-        
-        {/* Diagnostic Viewer below */}
-        <DiagnosticViewer output={output} />
       </div>
-    </div>
     </div>
   );
 };

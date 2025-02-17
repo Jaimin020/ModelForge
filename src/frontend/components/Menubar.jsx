@@ -1,9 +1,17 @@
 import React from 'react';
-import { Menu, MenuTrigger, MenuList, MenuItem, MenuPopover } from "@fluentui/react-components";
+import {
+  Menu,
+  MenuTrigger,
+  MenuList,
+  MenuItem,
+  MenuPopover,
+} from '@fluentui/react-components';
 
 const Menubar = () => {
   return (
-    <div style={{ display: 'flex', backgroundColor: '#f0f0f0', padding: '4px' }}>
+    <div
+      style={{ display: 'flex', backgroundColor: '#f0f0f0', padding: '4px' }}
+    >
       <Menu>
         <MenuTrigger>
           <div style={{ padding: '0 12px', cursor: 'pointer' }}>File</div>

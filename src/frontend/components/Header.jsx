@@ -10,23 +10,23 @@ const Header = () => {
       boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
       position: 'fixed',
       top: 0,
-      zIndex: 100
-    }
+      zIndex: 100,
+    },
   };
 
   const titleStyles = {
     root: {
       color: 'skyblue',
       fontSize: '24px',
-      fontWeight: '600'
-    }
+      fontWeight: '600',
+    },
   };
 
   return (
-    <Stack 
-      horizontal 
-      horizontalAlign="center" 
-      verticalAlign="center" 
+    <Stack
+      horizontal
+      horizontalAlign="center"
+      verticalAlign="center"
       styles={headerStyles}
     >
       <Text variant="large" styles={titleStyles}>
