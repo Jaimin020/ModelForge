@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
+import ModelInputModal from './ModelInputModal';
 
-export const Toolbar = ({ onRun, onStop, isRunning }) => {
+export const Toolbar = ({ onRun, onStop, isRunning, showInputConfig, onInputConfig }) => {
+  const [isInputModalOpen, setIsInputModalOpen] = useState(false);
   const toolbarStyle = {
     display: 'flex',
     justifyContent: 'flex-start',
@@ -55,6 +57,17 @@ export const Toolbar = ({ onRun, onStop, isRunning }) => {
     },
   };
 
+  const configButtonStyle = {
+    ...buttonStyle,
+    backgroundColor: '#4CAF50',
+    color: 'white',
+    '&:hover': {
+      backgroundColor: '#45a049',
+      transform: 'translateY(-1px)',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+    },
+  };
+
   return (
     <div style={toolbarStyle}>
       <button
@@ -98,6 +111,29 @@ export const Toolbar = ({ onRun, onStop, isRunning }) => {
         </svg>
         Stop
       </button>
+
+      {showInputConfig && (
+        <button
+          style={configButtonStyle}
+          onClick={onInputConfig}
+          title="Configure Input"
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = '#45a049';
+            e.currentTarget.style.transform = 'translateY(-1px)';
+            e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = '#4CAF50';
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+          </svg>
+          Configure Input
+        </button>
+      )}
     </div>
   );
 };

@@ -41,7 +41,32 @@ export const ParameterViewer = ({ selectedNode }) => {
             <div key={index}>
               <div className="parameter-item">
                 <label>{param.name}:</label>
-                {param.type === 'bool' ? (
+                {param.type === 'file' ? (
+                    <div style={{ display: 'flex', gap: '5px' }}>
+                      <input
+                        type="text"
+                        value={param.value || ''}
+                        readOnly
+                        placeholder="Select file..."
+                        style={{ width: '100px' }}
+                      />
+                      <button
+                        onClick={async () => {
+                          const filePath = await window.dialog.filePicker();
+                          if (filePath) {
+                            handleParameterChange(param.name, filePath);
+                            setNodeParams(new Map(nodeParams));
+                          }
+                        }}
+                        style={{
+                          padding: '2px 8px',
+                          fontSize: '11px'
+                        }}
+                      >
+                        Browse
+                      </button>
+                    </div>
+                  ) :param.type === 'bool' ? (
                   <select
                     value={param.value}
                     style={{ width: '100px' }}

@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, globalShortcut } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, globalShortcut, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -219,4 +219,16 @@ ipcMain.handle('readFile', async (event, filePath) => {
 
 ipcMain.handle('writeFile', async (event, filePath, data) => {
   return fs.promises.writeFile(filePath, data, 'utf8');
+});
+
+ipcMain.handle('select-file', async () => {
+  const result = await dialog.showOpenDialog(mainWindow!, {
+    properties: ['openFile'],
+    filters: [
+      { name: 'CSV Files', extensions: ['csv'] },
+      { name: 'Excel Files', extensions: ['xlsx', 'xls'] }
+    ]
+  });
+  
+  return result.canceled ? null : result.filePaths[0];
 });

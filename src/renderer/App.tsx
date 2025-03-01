@@ -6,9 +6,7 @@ import DesignApp from '../frontend/modules/Workspace/Editor';
 
 function Hello() {
   return (
-    <FluentProvider>
       <DesignApp />
-    </FluentProvider>
   );
 }
 

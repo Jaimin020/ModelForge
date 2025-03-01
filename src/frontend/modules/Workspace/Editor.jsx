@@ -11,6 +11,7 @@ import { getNodeByName } from '../../utils/nodeOps/getNodeByName.jsx';
 import { ModelNodeManager } from '../../utils/graphMngr/ModelNodeManager.ts';
 import { GraphAnalyzer } from '../../utils/graphMngr/GraphAnalyzer.ts';
 import { getGraphDataAsJson } from '../../utils/graphUtils/getGraphDataAsJson.ts';
+import { ModelInputModal } from "../../components/ModelInputModal.jsx"
 import './style.css';
 
 const DesignApp = () => {
@@ -35,6 +36,10 @@ const DesignApp = () => {
   const [selectedNode, setSelectedNode] = useState(null);
 
   const nodeManager = ModelNodeManager.getInstance();
+
+  const [isInputNode, setIsInputNode] = useState(false);
+  const [isInputModalOpen, setIsInputModalOpen] = useState(false);
+
 
   // 🛠️ Initialize the vis-network once (like componentDidMount)
   useEffect(() => {
@@ -85,8 +90,12 @@ const DesignApp = () => {
         const nodeId = params.nodes[0];
         const node = nodes.current.get(nodeId);
         setSelectedNode(node);
+        // Check if selected node is input type
+        const modelNode = nodeManager.getNode(nodeId);
+        setIsInputNode(modelNode?.feature?.toLowerCase().includes('input'));
       } else {
         setSelectedNode(null);
+        setIsInputNode(false);
       }
     });
 
@@ -211,7 +220,18 @@ const DesignApp = () => {
 
   return (
     <div className="container" ref={containerRef}>
-      <Toolbar onRun={handleRun} onStop={handleStop} isRunning={isRunning} />
+      <Toolbar 
+        onRun={handleRun} 
+        onStop={handleStop} 
+        isRunning={isRunning}
+        showInputConfig={isInputNode}
+        onInputConfig={() => setIsInputModalOpen(true)}
+      />
+      <ModelInputModal 
+        isOpen={isInputModalOpen} 
+        onClose={() => setIsInputModalOpen(false)}
+        selectedNode={selectedNode}
+      />
       <div className="main-content">
         {/* Left Panel */}
         <div
