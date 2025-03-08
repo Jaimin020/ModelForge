@@ -5,9 +5,7 @@ import { customDarkTheme } from '../frontend/components/theme';
 import DesignApp from '../frontend/modules/Workspace/Editor';
 
 function Hello() {
-  return (
-      <DesignApp />
-  );
+  return <DesignApp />;
 }
 
 export default function App() {

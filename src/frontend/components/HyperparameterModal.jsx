@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GraphDataManager } from '../utils/graphUtils/GraphDataManager.ts'
+import { GraphDataManager } from '../utils/graphUtils/GraphDataManager.ts';
 
 export const HyperparameterModal = ({ isOpen, onClose }) => {
   const [hyperparameters, setHyperparameters] = useState({
@@ -18,9 +18,9 @@ export const HyperparameterModal = ({ isOpen, onClose }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setHyperparameters(prev => ({
+    setHyperparameters((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -33,26 +33,31 @@ export const HyperparameterModal = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 1000
-    }}>
-      <div style={{
-        backgroundColor: 'white',
-        border: '1px solid #ccc',
-        borderRadius: '0px',
-        width: '800px',
-        maxHeight: '90vh'
-      }}>
-        <div style={{
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: 'white',
+          border: '1px solid #ccc',
+          borderRadius: '0px',
+          width: '800px',
+          maxHeight: '90vh',
+        }}
+      >
+        <div
+          style={{
             fontSize: '14px',
             backgroundColor: '#2c3e50',
             color: 'white',
@@ -62,22 +67,25 @@ export const HyperparameterModal = ({ isOpen, onClose }) => {
             letterSpacing: '0.5px',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px'
-            }}>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                    <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34z"/>
-                </svg>
+            gap: '8px',
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34z" />
+          </svg>
           Hyperparameter Configuration
         </div>
 
-        <div style={{
-          backgroundColor: '#f5f5f5',
-          padding: '8px',
-          border: '1px solid #ddd',
-          borderRadius: '0px',
-          fontSize: '12px',
-          margin: '5px'
-        }}>
+        <div
+          style={{
+            backgroundColor: '#f5f5f5',
+            padding: '8px',
+            border: '1px solid #ddd',
+            borderRadius: '0px',
+            fontSize: '12px',
+            margin: '5px',
+          }}
+        >
           <div style={{ display: 'flex', gap: '20px' }}>
             {/* Left Column */}
             <div style={{ flex: 1 }}>
@@ -129,8 +137,10 @@ export const HyperparameterModal = ({ isOpen, onClose }) => {
                   onChange={handleInputChange}
                   style={{ width: '100px' }}
                 >
-                  {optimizerOptions.map(opt => (
-                    <option key={opt} value={opt}>{opt.toUpperCase()}</option>
+                  {optimizerOptions.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt.toUpperCase()}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -183,7 +193,9 @@ export const HyperparameterModal = ({ isOpen, onClose }) => {
               <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
 
               <div className="parameter-item">
-                <label style={{ fontWeight: 'bold' }}>Early Stopping Patience:</label>
+                <label style={{ fontWeight: 'bold' }}>
+                  Early Stopping Patience:
+                </label>
                 <input
                   type="number"
                   name="early_stopping_patience"
@@ -194,44 +206,45 @@ export const HyperparameterModal = ({ isOpen, onClose }) => {
                 />
               </div>
               <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
-
             </div>
           </div>
-          
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'flex-end',
-            gap: '10px',
-            marginTop: '20px',
-            borderTop: '1px solid #ddd',
-            paddingTop: '10px'
-            }}>
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: '10px',
+              marginTop: '20px',
+              borderTop: '1px solid #ddd',
+              paddingTop: '10px',
+            }}
+          >
             <button
-                onClick={onClose}
-                style={{
+              onClick={onClose}
+              style={{
                 padding: '6px 16px',
                 fontSize: '13px',
                 backgroundColor: '#f5f5f5',
                 border: '1px solid #ddd',
-                cursor: 'pointer'
-                }}
+                cursor: 'pointer',
+              }}
             >
-                Cancel
+              Cancel
             </button>
             <button
               onClick={() => handleHyperParamSave(hyperparameters)}
-                style={{
+              style={{
                 padding: '6px 16px',
                 fontSize: '13px',
                 backgroundColor: '#4CAF50',
                 color: 'white',
                 border: 'none',
-                cursor: 'pointer'
-                }}
+                cursor: 'pointer',
+              }}
             >
-                Save
+              Save
             </button>
-            </div>
+          </div>
         </div>
       </div>
     </div>

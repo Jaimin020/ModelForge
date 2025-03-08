@@ -1,38 +1,25 @@
-import { ModelData } from "./utils/ModelData";
-import {getModelPyCode} from "./CodeGen/getModelPyCode";
+import { ModelData } from './utils/ModelData';
+import { getModelPyCode } from './CodeGen/getModelPyCode';
 
-export class Engine
-{
-    modelDataObj = new ModelData();
-    constructor(rawData: any)
-    {
-        this.modelDataObj.generateModelData("MyModel", rawData);
-    }
+export class Engine {
+  modelDataObj = new ModelData();
+  constructor(rawData: any) {
+    this.modelDataObj.generateModelData('MyModel', rawData);
+  }
 
-    getInputData()
-    {
+  getInputData() {}
 
-    }
+  getLossFunctionData() {}
 
-    getLossFunctionData()
-    {
+  getOptimizerData() {}
 
-    }
+  getLayerData() {
+    return this.modelDataObj.getModelData();
+  }
 
-    getOptimizerData()
-    {
-
-    }
-
-    getLayerData()
-    {
-        return this.modelDataObj.getModelData();
-    }
-
-    getPyCode()
-    {
-        var code = "";
-        code += getModelPyCode(this.getLayerData());
-        return code;
-    }
-};
+  getPyCode() {
+    var code = '';
+    code += getModelPyCode(this.getLayerData());
+    return code;
+  }
+}

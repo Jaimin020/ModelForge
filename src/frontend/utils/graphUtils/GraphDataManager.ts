@@ -54,7 +54,7 @@ export class GraphDataManager {
     return {
       nodes: nodesData,
       edges: edgesData,
-      hyperparameters: this.hyperparameters
+      hyperparameters: this.hyperparameters,
     };
   }
 }

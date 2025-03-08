@@ -6,15 +6,15 @@ import App from '../renderer/App';
 jest.mock('fs', () => ({
   readFileSync: jest.fn(),
   writeFileSync: jest.fn(),
-  existsSync: jest.fn(() => true)
+  existsSync: jest.fn(() => true),
 }));
 
 // Mock electron
-jest.mock('electron', async() => ({
+jest.mock('electron', async () => ({
   ipcRenderer: {
     on: await jest.fn(),
-    send: await jest.fn()
-  }
+    send: await jest.fn(),
+  },
 }));
 
 describe('App', () => {

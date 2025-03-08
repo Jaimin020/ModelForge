@@ -10,8 +10,8 @@ import { LayerSelectionPanel } from '../LayerSelectionPanel/LayerSelectionPanel.
 import { getNodeByName } from '../../utils/nodeOps/getNodeByName.jsx';
 import { ModelNodeManager } from '../../utils/graphMngr/ModelNodeManager.ts';
 import { GraphAnalyzer } from '../../utils/graphMngr/GraphAnalyzer.ts';
-import { ModelInputModal } from "../../components/ModelInputModal.jsx"
-import { HyperparameterModal}  from '../../components/HyperparameterModal'
+import { ModelInputModal } from '../../components/ModelInputModal.jsx';
+import { HyperparameterModal } from '../../components/HyperparameterModal';
 import { GraphDataManager } from '../../utils/graphUtils/GraphDataManager.ts';
 import './style.css';
 
@@ -43,7 +43,6 @@ const DesignApp = () => {
   const [isInputNode, setIsInputNode] = useState(false);
   const [isInputModalOpen, setIsInputModalOpen] = useState(false);
   const [isHyperParamModalOpen, setIsHyperParamModalOpen] = useState(false);
-
 
   // 🛠️ Initialize the vis-network once (like componentDidMount)
   useEffect(() => {
@@ -177,20 +176,23 @@ const DesignApp = () => {
 
     const minHeight = 150; // Minimum height for layer selection
     const maxHeight = window.innerHeight - 350; // Maximum height, leaving space for parameter viewer
-  
+
     const handleMouseMove = (e) => {
       const deltaY = e.clientY - startY;
-      const newHeight = Math.max(100, Math.min(startHeight + deltaY, window.innerHeight - 200));
+      const newHeight = Math.max(
+        100,
+        Math.min(startHeight + deltaY, window.innerHeight - 200),
+      );
       if (newHeight >= minHeight && newHeight <= maxHeight) {
         setLayerSelectionHeight(newHeight);
       }
     };
-  
+
     const handleMouseUp = () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  
+
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
   };
@@ -233,9 +235,9 @@ const DesignApp = () => {
     const graphAnalyzer = new GraphAnalyzer();
     const result = graphAnalyzer.validateGraph(currentEdges);
     const hyperParam = graphManager.getHyperparameters();
-    if(!hyperParam) {
-       setOutput((prev) => prev + 'Please set hyperparameters.\n');
-       return;
+    if (!hyperParam) {
+      setOutput((prev) => prev + 'Please set hyperparameters.\n');
+      return;
     }
     setOutput((prevOutput) => prevOutput + 'Compiling Model\n--> ');
     if (result.isValid) {
@@ -256,61 +258,62 @@ const DesignApp = () => {
 
   return (
     <div className="container" ref={containerRef}>
-      <Toolbar 
-        onRun={handleRun} 
-        onStop={handleStop} 
+      <Toolbar
+        onRun={handleRun}
+        onStop={handleStop}
         isRunning={isRunning}
         showInputConfig={isInputNode}
         onInputConfig={() => setIsInputModalOpen(true)}
         onHyperParam={() => setIsHyperParamModalOpen(true)}
       />
-      <ModelInputModal 
-        isOpen={isInputModalOpen} 
+      <ModelInputModal
+        isOpen={isInputModalOpen}
         onClose={() => setIsInputModalOpen(false)}
         selectedNode={selectedNode}
       />
-      <HyperparameterModal 
-            isOpen={isHyperParamModalOpen}
-            onClose={() => setIsHyperParamModalOpen(false)}
+      <HyperparameterModal
+        isOpen={isHyperParamModalOpen}
+        onClose={() => setIsHyperParamModalOpen(false)}
       />
       <div className="main-content">
         {/* Left Panel */}
         <div
           className="left-panel"
           ref={leftPanelRef}
-          style={{ 
+          style={{
             width: `${leftPanelWidth}px`,
             display: 'flex',
             flexDirection: 'column',
-            height: '100%'
+            height: '100%',
           }}
         >
-          <div style={{ 
-            height: `${layerSelectionHeight}px`, 
-            overflow: 'auto',
-            minHeight: '100px',
-            maxHeight: `calc(100% - 150px)`,
-            display: 'flex', // Add flex display
-            flexDirection: 'column' // Stack children vertically        
-          }}>
+          <div
+            style={{
+              height: `${layerSelectionHeight}px`,
+              overflow: 'auto',
+              minHeight: '100px',
+              maxHeight: `calc(100% - 150px)`,
+              display: 'flex', // Add flex display
+              flexDirection: 'column', // Stack children vertically
+            }}
+          >
             <LayerSelectionPanel onDragStart={handleDragStart} />
           </div>
-          
+
           <div
             className="horizontal-divider"
             onMouseDown={handleVerticalDividerMouseDown}
-            style={{ cursor: 'row-resize'}}
+            style={{ cursor: 'row-resize' }}
           />
-          
-          <div style={{ 
-            flex: 1,
-            minHeight: '150px', // Minimum height for parameter viewer
-            overflow: 'auto'
-          }}>
-            <ParameterViewer 
-              selectedNode={selectedNode} 
-              height="100%" 
-            />
+
+          <div
+            style={{
+              flex: 1,
+              minHeight: '150px', // Minimum height for parameter viewer
+              overflow: 'auto',
+            }}
+          >
+            <ParameterViewer selectedNode={selectedNode} height="100%" />
           </div>
         </div>
 

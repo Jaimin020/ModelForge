@@ -11,15 +11,15 @@ export class GraphController {
     this.graphService.setGraphData({
       nodes: data.nodes,
       edges: data.edges,
-      hyperparameters: data.hyperparameters
+      hyperparameters: data.hyperparameters,
     });
   }
-  
+
   getGraphData() {
     return {
       nodes: this.graphService.getAllNodes(),
       edges: this.graphService.getAllEdges(),
-      hyperparameters: this.graphService.getHyperparameters()
+      hyperparameters: this.graphService.getHyperparameters(),
     };
   }
 }

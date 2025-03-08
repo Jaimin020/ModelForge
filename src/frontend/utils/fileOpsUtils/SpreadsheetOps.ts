@@ -1,4 +1,4 @@
-import { FileStats } from "../../../interface/SpreadsheetInterface";
+import { FileStats } from '../../../interface/SpreadsheetInterface';
 
 export class SpreadsheetOps {
   private static instance: SpreadsheetOps;
@@ -18,7 +18,7 @@ export class SpreadsheetOps {
     if (!this.isValidFile(filePath)) {
       return false;
     }
-    
+
     try {
       this.fileData = await window.file.readCsvOrExelFile(filePath);
       this.currentFilePath = filePath;

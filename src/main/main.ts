@@ -9,7 +9,14 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, globalShortcut, dialog } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  shell,
+  ipcMain,
+  globalShortcut,
+  dialog,
+} from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -227,10 +234,10 @@ ipcMain.handle('select-file', async () => {
     properties: ['openFile'],
     filters: [
       { name: 'CSV Files', extensions: ['csv', 'xlsx'] },
-      { name: 'Excel Files', extensions: ['xlsx', 'xls'] }
-    ]
+      { name: 'Excel Files', extensions: ['xlsx', 'xls'] },
+    ],
   });
-  
+
   return result.canceled ? null : result.filePaths[0];
 });
 
@@ -238,27 +245,27 @@ ipcMain.handle('readCsvOrExelFile', async (event, filePath) => {
   try {
     // Read file as binary buffer
     const fileBuffer = fs.readFileSync(filePath);
-    
+
     // Parse Excel file from buffer
     const workbook = XLSX.read(fileBuffer, {
       type: 'buffer',
       cellDates: true,
       cellNF: false,
-      cellText: false
+      cellText: false,
     });
     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
-    
+
     const rowCount = data.length;
     const columnCount = data[0]?.length || 0;
     let columnNames = [];
     let hasHeaders = false;
-    
+
     if (rowCount > 0) {
-      const firstRow:any = data[0];
-      hasHeaders = firstRow.every((cell:any) => typeof cell === 'string');
-      columnNames = hasHeaders 
-        ? firstRow 
+      const firstRow: any = data[0];
+      hasHeaders = firstRow.every((cell: any) => typeof cell === 'string');
+      columnNames = hasHeaders
+        ? firstRow
         : Array.from({ length: columnCount }, (_, i) => `column_${i + 1}`);
     }
 
@@ -268,10 +275,10 @@ ipcMain.handle('readCsvOrExelFile', async (event, filePath) => {
         rowCount: hasHeaders ? rowCount - 1 : rowCount,
         columnCount,
         columnNames,
-        hasHeaders
-      }
+        hasHeaders,
+      },
     };
-  } catch (error:any) {
+  } catch (error: any) {
     throw new Error(`Failed to read file: ${error.message}`);
   }
 });

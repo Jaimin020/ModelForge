@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getNodeFeatureMap } from '../utils/nodeOps/nodeFetMap';
 import { ModelNodeManager } from '../utils/graphMngr/ModelNodeManager.ts';
 
-export const ParameterViewer = ({ selectedNode,height }) => {
+export const ParameterViewer = ({ selectedNode, height }) => {
   const [nodeParams, setNodeParams] = useState({});
   const nodeManager = ModelNodeManager.getInstance();
 
@@ -32,74 +32,82 @@ export const ParameterViewer = ({ selectedNode,height }) => {
       nodeConfig = nodeParams.get(selectedNode.label);
     }
 
-    let displayableParams = nodeConfig.parameters.filter(param => param.display === true);
+    let displayableParams = nodeConfig.parameters.filter(
+      (param) => param.display === true,
+    );
     return (
       <>
-      {displayableParams.length > 0 && (
-        <div style={{ marginTop: '10px' }}>
-          <label style={{ fontWeight: 'bold' }}>Parameters:</label>
-          <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
-          {displayableParams.map((param, index) => (
-            <div key={index}>
-              <div className="parameter-item">
-                <label>{param.name}:</label>
-                {param.type === 'file' ? (
+        {displayableParams.length > 0 && (
+          <div style={{ marginTop: '10px' }}>
+            <label style={{ fontWeight: 'bold' }}>Parameters:</label>
+            <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
+            {displayableParams.map((param, index) => (
+              <div key={index}>
+                <div className="parameter-item">
+                  <label>{param.name}:</label>
+                  {param.type === 'file' ? (
                     <div style={{ display: 'flex', gap: '5px' }}>
-                      <span style={{ 
-                        fontWeight: 'bold',
-                        fontSize: '13px',
-                        maxWidth: '100px',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap'
-                      }}>
-                        {param.value ? param.value.split('/').pop() : 'No file selected'}
+                      <span
+                        style={{
+                          fontWeight: 'bold',
+                          fontSize: '13px',
+                          maxWidth: '100px',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {param.value
+                          ? param.value.split('/').pop()
+                          : 'No file selected'}
                       </span>
                     </div>
-                  ) :param.type === 'bool' ? (
-                  <select
-                    value={param.value}
-                    style={{ width: '100px' }}
-                    onChange={(e) =>
-                      handleParameterChange(
-                        param.name,
-                        e.target.value === 'true',
-                      )
-                    }
-                  >
-                    <option value="true">True</option>
-                    <option value="false">False</option>
-                  </select>
-                ) : (
-                  <input
-                    type={param.type === 'int' ? 'number' : 'text'}
-                    value={param.value}
-                    required={param.required === 'true'}
-                    placeholder={
-                      param.required === 'true' ? 'Required' : 'Optional'
-                    }
-                    style={{ width: '100px' }}
-                    onChange={(e) =>
-                      handleParameterChange(
-                        param.name,
-                        param.type === 'int'
-                          ? parseInt(e.target.value)
-                          : e.target.value,
-                      )
-                    }
+                  ) : param.type === 'bool' ? (
+                    <select
+                      value={param.value}
+                      style={{ width: '100px' }}
+                      onChange={(e) =>
+                        handleParameterChange(
+                          param.name,
+                          e.target.value === 'true',
+                        )
+                      }
+                    >
+                      <option value="true">True</option>
+                      <option value="false">False</option>
+                    </select>
+                  ) : (
+                    <input
+                      type={param.type === 'int' ? 'number' : 'text'}
+                      value={param.value}
+                      required={param.required === 'true'}
+                      placeholder={
+                        param.required === 'true' ? 'Required' : 'Optional'
+                      }
+                      style={{ width: '100px' }}
+                      onChange={(e) =>
+                        handleParameterChange(
+                          param.name,
+                          param.type === 'int'
+                            ? parseInt(e.target.value)
+                            : e.target.value,
+                        )
+                      }
+                    />
+                  )}
+                  {param.required === 'true' && (
+                    <span style={{ color: 'red', marginLeft: '5px' }}>*</span>
+                  )}
+                </div>
+                {index < nodeConfig.parameters.length - 1 && (
+                  <hr
+                    style={{ margin: '8px 0', borderTop: '1px solid #ddd' }}
                   />
                 )}
-                {param.required === 'true' && (
-                  <span style={{ color: 'red', marginLeft: '5px' }}>*</span>
-                )}
               </div>
-              {index < nodeConfig.parameters.length - 1 && (
-                <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
         <div className="parameter-item">
           <label>Layer type:</label>
           <span>{nodeConfig.feature}</span>
