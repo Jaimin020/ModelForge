@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getNodeFeatureMap } from '../utils/nodeOps/nodeFetMap';
 import { ModelNodeManager } from '../utils/graphMngr/ModelNodeManager.ts';
 
-export const ParameterViewer = ({ selectedNode }) => {
+export const ParameterViewer = ({ selectedNode,height }) => {
   const [nodeParams, setNodeParams] = useState({});
   const nodeManager = ModelNodeManager.getInstance();
 
@@ -32,39 +32,29 @@ export const ParameterViewer = ({ selectedNode }) => {
       nodeConfig = nodeParams.get(selectedNode.label);
     }
 
+    let displayableParams = nodeConfig.parameters.filter(param => param.display === true);
     return (
       <>
+      {displayableParams.length > 0 && (
         <div style={{ marginTop: '10px' }}>
           <label style={{ fontWeight: 'bold' }}>Parameters:</label>
           <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
-          {nodeConfig.parameters.map((param, index) => (
+          {displayableParams.map((param, index) => (
             <div key={index}>
               <div className="parameter-item">
                 <label>{param.name}:</label>
                 {param.type === 'file' ? (
                     <div style={{ display: 'flex', gap: '5px' }}>
-                      <input
-                        type="text"
-                        value={param.value || ''}
-                        readOnly
-                        placeholder="Select file..."
-                        style={{ width: '100px' }}
-                      />
-                      <button
-                        onClick={async () => {
-                          const filePath = await window.dialog.filePicker();
-                          if (filePath) {
-                            handleParameterChange(param.name, filePath);
-                            setNodeParams(new Map(nodeParams));
-                          }
-                        }}
-                        style={{
-                          padding: '2px 8px',
-                          fontSize: '11px'
-                        }}
-                      >
-                        Browse
-                      </button>
+                      <span style={{ 
+                        fontWeight: 'bold',
+                        fontSize: '13px',
+                        maxWidth: '100px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {param.value ? param.value.split('/').pop() : 'No file selected'}
+                      </span>
                     </div>
                   ) :param.type === 'bool' ? (
                   <select
@@ -109,7 +99,7 @@ export const ParameterViewer = ({ selectedNode }) => {
             </div>
           ))}
         </div>
-        <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
+      )}
         <div className="parameter-item">
           <label>Layer type:</label>
           <span>{nodeConfig.feature}</span>
@@ -146,6 +136,7 @@ export const ParameterViewer = ({ selectedNode }) => {
         borderRadius: '0px',
         padding: '5px',
         margin: '5px',
+        height: height || '190px', // Use provided height or default
       }}
     >
       <div
@@ -165,7 +156,7 @@ export const ParameterViewer = ({ selectedNode }) => {
           padding: '8px',
           border: '1px solid #ddd',
           borderRadius: '0px',
-          height: '190px',
+          height: `calc(100% - 30px)`, // Adjust content height based on container
           overflowY: 'scroll',
           fontSize: '12px',
         }}

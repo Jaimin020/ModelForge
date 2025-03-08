@@ -8,6 +8,18 @@ export class GraphController {
   }
 
   setGraphData(data: any): void {
-    this.graphService.setGraphData(data);
+    this.graphService.setGraphData({
+      nodes: data.nodes,
+      edges: data.edges,
+      hyperparameters: data.hyperparameters
+    });
+  }
+  
+  getGraphData() {
+    return {
+      nodes: this.graphService.getAllNodes(),
+      edges: this.graphService.getAllEdges(),
+      hyperparameters: this.graphService.getHyperparameters()
+    };
   }
 }

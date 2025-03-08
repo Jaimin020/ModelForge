@@ -3,12 +3,13 @@ import { useEffect, useRef } from 'react';
 
 export const DiagnosticViewer = ({ output }) => {
   const viewerRef = useRef(null);
+  const safeOutput = typeof output === 'string' ? output : String(output);
 
   useEffect(() => {
     if (viewerRef.current) {
       viewerRef.current.scrollTop = viewerRef.current.scrollHeight;
     }
-  }, [output]);
+  }, [safeOutput]);
 
   return (
     <div
@@ -43,7 +44,7 @@ export const DiagnosticViewer = ({ output }) => {
           fontSize: '12px',
         }}
       >
-        {output || 'No output yet...'}
+        {safeOutput || 'No output yet...'}
       </pre>
     </div>
   );

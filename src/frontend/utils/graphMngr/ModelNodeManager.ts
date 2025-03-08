@@ -65,4 +65,19 @@ export class ModelNodeManager {
     this.nodes.set(visNodeId, { ...node, parameters: updatedParams });
     return true;
   }
+
+  updateMultipleNodeParameters(visNodeId: number,
+    paramUpdates: Array<{ name: string; value: any }>) : boolean
+    {
+      const node = this.nodes.get(visNodeId);
+      if (!node) return false;
+
+      const updatedParams = node.parameters.map(param => {
+        const update = paramUpdates.find(u => u.name === param.name);
+        return update ? { ...param, value: update.value } : param;
+      });
+
+      this.nodes.set(visNodeId, { ...node, parameters: updatedParams });
+      return true;
+    }
 }

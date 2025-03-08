@@ -169,3 +169,19 @@ canvas {
   overflow: hidden;
   min-height: 0;
 }
+
+.horizontal-divider {
+  width: 100%;
+  border: 1px solid #ccc;
+  transition: background-color 0.2s;
+}
+
+.horizontal-divider:hover {
+  background-color: #999;
+}
+
+.left-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}

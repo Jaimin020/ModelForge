@@ -4,10 +4,12 @@ export class GraphService {
   private static instance: GraphService;
   private nodes: Map<number, ModelNode>;
   private edges: Edge[];
+  private hyperparameters: any;
 
   private constructor() {
     this.nodes = new Map();
     this.edges = [];
+    this.hyperparameters = {};
   }
 
   static getInstance(): GraphService {
@@ -17,12 +19,15 @@ export class GraphService {
     return GraphService.instance;
   }
 
-  setGraphData(data: GraphData): void {
+  setGraphData(data: GraphData & { hyperparameters?: any }): void {
     this.nodes.clear();
     data.nodes.forEach((node: ModelNode) => {
       this.nodes.set(node.id, node);
     });
     this.edges = [...data.edges];
+    if (data.hyperparameters) {
+      this.hyperparameters = data.hyperparameters;
+    }
   }
 
   getNodeById(id: number): ModelNode | undefined {
@@ -51,6 +56,10 @@ export class GraphService {
 
   getAllEdges(): Edge[] {
     return this.edges;
+  }
+
+  getHyperparameters(): any {
+    return this.hyperparameters;
   }
 
   getSequentialLayers(): ModelNode[] {

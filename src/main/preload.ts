@@ -22,6 +22,7 @@ const fileHandler = {
   readFile: (filePath: string) => ipcRenderer.invoke('readFile', filePath),
   writeFile: (filePath: string, data: string) =>
     ipcRenderer.invoke('writeFile', filePath, data),
+  readCsvOrExelFile: (filePath: string) => ipcRenderer.invoke('readCsvOrExelFile', filePath),
 };
 
 contextBridge.exposeInMainWorld('api', pythonHandler);

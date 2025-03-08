@@ -19,6 +19,7 @@ import fs from 'fs';
 import { paths } from './config';
 import { installPython } from './python_setup';
 import { setupIpcHandlers } from '../backend/ipc/ipcHandler';
+import * as XLSX from 'xlsx';
 
 class AppUpdater {
   constructor() {
@@ -218,17 +219,59 @@ ipcMain.handle('readFile', async (event, filePath) => {
 });
 
 ipcMain.handle('writeFile', async (event, filePath, data) => {
-  return fs.promises.writeFile(filePath, data, 'utf8');
+  return fs.promises.writeFile(filePath, data);
 });
 
 ipcMain.handle('select-file', async () => {
   const result = await dialog.showOpenDialog(mainWindow!, {
     properties: ['openFile'],
     filters: [
-      { name: 'CSV Files', extensions: ['csv'] },
+      { name: 'CSV Files', extensions: ['csv', 'xlsx'] },
       { name: 'Excel Files', extensions: ['xlsx', 'xls'] }
     ]
   });
   
   return result.canceled ? null : result.filePaths[0];
+});
+
+ipcMain.handle('readCsvOrExelFile', async (event, filePath) => {
+  try {
+    // Read file as binary buffer
+    const fileBuffer = fs.readFileSync(filePath);
+    
+    // Parse Excel file from buffer
+    const workbook = XLSX.read(fileBuffer, {
+      type: 'buffer',
+      cellDates: true,
+      cellNF: false,
+      cellText: false
+    });
+    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+    const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+    
+    const rowCount = data.length;
+    const columnCount = data[0]?.length || 0;
+    let columnNames = [];
+    let hasHeaders = false;
+    
+    if (rowCount > 0) {
+      const firstRow:any = data[0];
+      hasHeaders = firstRow.every((cell:any) => typeof cell === 'string');
+      columnNames = hasHeaders 
+        ? firstRow 
+        : Array.from({ length: columnCount }, (_, i) => `column_${i + 1}`);
+    }
+
+    return {
+      data: XLSX.utils.sheet_to_json(firstSheet),
+      stats: {
+        rowCount: hasHeaders ? rowCount - 1 : rowCount,
+        columnCount,
+        columnNames,
+        hasHeaders
+      }
+    };
+  } catch (error:any) {
+    throw new Error(`Failed to read file: ${error.message}`);
+  }
 });

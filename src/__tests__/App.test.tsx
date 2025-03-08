@@ -10,10 +10,10 @@ jest.mock('fs', () => ({
 }));
 
 // Mock electron
-jest.mock('electron', () => ({
+jest.mock('electron', async() => ({
   ipcRenderer: {
-    on: jest.fn(),
-    send: jest.fn()
+    on: await jest.fn(),
+    send: await jest.fn()
   }
 }));
 
