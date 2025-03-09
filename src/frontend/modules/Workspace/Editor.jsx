@@ -1,13 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Network, DataSet } from "vis-network/standalone/umd/vis-network.min.js";
-import { Toolbar } from "../../components/Toolbar.jsx";
-import { DiagnosticViewer } from "../../components/DiagnosticViewer.jsx";
-import { ParameterViewer } from "../../components/ParameterViewer.jsx";
-import { LayerSelectionPanel} from "../LayerSelectionPanel/LayerSelectionPanel.jsx"
-import { getNodeByName } from "../../utils/nodeOps/getNodeByName.jsx";
-import { ModelNodeManager } from "../../utils/graphMngr/ModelNodeManager.ts";
-import { GraphAnalyzer } from "../../utils/graphMngr/GraphAnalyzer.ts";
-import "./style.css";
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Network,
+  DataSet,
+} from 'vis-network/standalone/umd/vis-network.min.js';
+import { Toolbar } from '../../components/Toolbar.jsx';
+import { DiagnosticViewer } from '../../components/DiagnosticViewer.jsx';
+import { ParameterViewer } from '../../components/ParameterViewer.jsx';
+import { LayerSelectionPanel } from '../LayerSelectionPanel/LayerSelectionPanel.jsx';
+import { getNodeByName } from '../../utils/nodeOps/getNodeByName.jsx';
+import { ModelNodeManager } from '../../utils/graphMngr/ModelNodeManager.ts';
+import { GraphAnalyzer } from '../../utils/graphMngr/GraphAnalyzer.ts';
+import { ModelInputModal } from '../../components/ModelInputModal.jsx';
+import { HyperparameterModal } from '../../components/HyperparameterModal';
+import { GraphDataManager } from '../../utils/graphUtils/GraphDataManager.ts';
+import './style.css';
 
 const DesignApp = () => {
   const leftPanelRef = useRef();
@@ -17,6 +23,7 @@ const DesignApp = () => {
   const containerRef = useRef();
   const [draggedShape, setDraggedShape] = useState(null);
   const [leftPanelWidth, setLeftPanelWidth] = useState(250); // Default left panel width
+  const [layerSelectionHeight, setLayerSelectionHeight] = useState(300); // Default height
   const isDragging = useRef(false); // Track whether the divider is being dragged
 
   const nodes = useRef(new DataSet([]));
@@ -24,13 +31,18 @@ const DesignApp = () => {
   const networkInstance = useRef(null);
   const resizeObserver = useRef(null);
 
-  const [output, setOutput] = useState("");
+  const [output, setOutput] = useState('');
   const [isRunning, setIsRunning] = useState(false);
 
   // Add state for selected node
   const [selectedNode, setSelectedNode] = useState(null);
 
   const nodeManager = ModelNodeManager.getInstance();
+  const graphManager = GraphDataManager.getInstance();
+
+  const [isInputNode, setIsInputNode] = useState(false);
+  const [isInputModalOpen, setIsInputModalOpen] = useState(false);
+  const [isHyperParamModalOpen, setIsHyperParamModalOpen] = useState(false);
 
   // 🛠️ Initialize the vis-network once (like componentDidMount)
   useEffect(() => {
@@ -38,19 +50,17 @@ const DesignApp = () => {
     const data = { nodes: nodes.current, edges: edges.current };
 
     const options = {
-      edges: { smooth: false,
-          arrows: 'to',
-       },
+      edges: { smooth: false, arrows: 'to' },
       physics: { enabled: false, minVelocity: 0.75 },
-      interaction: { 
+      interaction: {
         hover: true,
         zoomView: true,
         navigationButtons: false,
         keyboard: true,
-        zoomSpeed: 1,    // Zoom speed multiplier
+        zoomSpeed: 1, // Zoom speed multiplier
       },
       manipulation: {
-        addEdge: (data,callback) => {
+        addEdge: (data, callback) => {
           callback(data);
         },
         enabled: true,
@@ -58,14 +68,15 @@ const DesignApp = () => {
         addNode: false,
         //addEdge: true,
         editEdge: true,
-        deleteNode: (data,callback) => {
+        deleteNode: (data, callback) => {
           setSelectedNode(null);
+          setIsInputModalOpen(null);
           nodeManager.deleteNode(data.nodes[0]);
           callback(data);
         },
         deleteEdge: true,
       },
-      nodes: { shape: "box" },
+      nodes: { shape: 'box' },
     };
 
     networkInstance.current = new Network(container, data, options);
@@ -83,8 +94,12 @@ const DesignApp = () => {
         const nodeId = params.nodes[0];
         const node = nodes.current.get(nodeId);
         setSelectedNode(node);
+        // Check if selected node is input type
+        const modelNode = nodeManager.getNode(nodeId);
+        setIsInputNode(modelNode?.feature?.toLowerCase().includes('input'));
       } else {
         setSelectedNode(null);
+        setIsInputNode(false);
       }
     });
 
@@ -98,7 +113,7 @@ const DesignApp = () => {
 
   // 🛠️ Handle drag start to store the dragged shape
   const handleDragStart = (e) => {
-    setDraggedShape(e.target.getAttribute("data-shape"));
+    setDraggedShape(e.target.getAttribute('data-shape'));
   };
 
   // 🛠️ Handle drop event on the vis-network container
@@ -110,13 +125,13 @@ const DesignApp = () => {
     const canvasPosition = networkInstance.current.DOMtoCanvas({ x, y });
 
     const defaultData = {
-      id: (Math.random() * 1e7),
+      id: Math.random() * 1e7,
       x: canvasPosition.x,
       y: canvasPosition.y,
-      label: draggedShape || "New Node",
+      label: draggedShape || 'New Node',
     };
     const data = await getNodeByName(defaultData.label);
-    nodeManager.createNode(defaultData.id,{
+    nodeManager.createNode(defaultData.id, {
       name: data.name,
       feature: data.feature,
       library: data.library,
@@ -126,7 +141,7 @@ const DesignApp = () => {
       outport: data.outport,
       parameters: data.parameters,
       code: data.code,
-    })
+    });
     nodes.current.add(defaultData);
 
     //set Node param valeues
@@ -136,8 +151,8 @@ const DesignApp = () => {
   // 🛠️ Start dragging the divider
   const handleMouseDown = (e) => {
     isDragging.current = true;
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
   };
 
   // 🛠️ Move the divider and adjust panel sizes
@@ -155,71 +170,151 @@ const DesignApp = () => {
     setLeftPanelWidth(newWidth);
   };
 
+  const handleVerticalDividerMouseDown = (e) => {
+    const startY = e.clientY;
+    const startHeight = layerSelectionHeight;
+
+    const minHeight = 150; // Minimum height for layer selection
+    const maxHeight = window.innerHeight - 350; // Maximum height, leaving space for parameter viewer
+
+    const handleMouseMove = (e) => {
+      const deltaY = e.clientY - startY;
+      const newHeight = Math.max(
+        100,
+        Math.min(startHeight + deltaY, window.innerHeight - 200),
+      );
+      if (newHeight >= minHeight && newHeight <= maxHeight) {
+        setLayerSelectionHeight(newHeight);
+      }
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
   // 🛠️ End dragging the divider
   const handleMouseUp = () => {
     isDragging.current = false;
-    document.removeEventListener("mousemove", handleMouseMove);
-    document.removeEventListener("mouseup", handleMouseUp);
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
   };
 
   const executePythonScript = async () => {
     if (isRunning) {
-      setOutput((prev) => prev + "\nProcess already running. Please wait.");
+      setOutput((prev) => prev + '\nProcess already running. Please wait.');
       return;
     }
+    graphManager.setNodes(nodes);
+    graphManager.setEdges(edges);
+    window.backend.trainModel(graphManager.getGraphDataAsJson());
     setIsRunning(true);
-  
+
     try {
-      window.dialog.onDialogUpdate((message) => {
+      await window.dialog.onDialogUpdate((message) => {
         setOutput((prevOutput) => prevOutput + message);
       });
-      
-      await window.api.runPython("src/__tests__/my_script.py");
+
+      window.api.runPython('src/__tests__/my_script.py');
     } catch (error) {
       setOutput((prevOutput) => prevOutput + `\n${error}`);
     } finally {
       setIsRunning(false);
     }
   };
-  
+
   // Update handleRun
   const handleRun = () => {
-    setOutput("");
+    setOutput('');
     //check for graph.
     const currentEdges = edges.current.get();
     const graphAnalyzer = new GraphAnalyzer();
     const result = graphAnalyzer.validateGraph(currentEdges);
-    setOutput((prevOutput) => prevOutput + "Compiling Model\n--> ");
-    if(result.isValid)
-    {
-      executePythonScript();
+    const hyperParam = graphManager.getHyperparameters();
+    if (!hyperParam) {
+      setOutput((prev) => prev + 'Please set hyperparameters.\n');
+      return;
     }
-    else{
-      setOutput((prevOutput) => prevOutput + result.errors.join("\n--> "));
+    setOutput((prevOutput) => prevOutput + 'Compiling Model\n--> ');
+    if (result.isValid) {
+      setOutput((prevOutput) => prevOutput + 'All Checks PASS\n');
+      executePythonScript();
+    } else {
+      setOutput((prevOutput) => prevOutput + result.errors.join('\n--> '));
     }
   };
-  
 
   const handleStop = async () => {
     if (isRunning) {
       await window.api.stopPython();
       setIsRunning(false);
-      setOutput(prev => prev + '\nProcess stopped by user.');
+      setOutput((prev) => prev + '\nProcess stopped by user.');
     }
   };
 
   return (
     <div className="container" ref={containerRef}>
-      <Toolbar onRun={handleRun} onStop={handleStop} isRunning={isRunning} />
+      <Toolbar
+        onRun={handleRun}
+        onStop={handleStop}
+        isRunning={isRunning}
+        showInputConfig={isInputNode}
+        onInputConfig={() => setIsInputModalOpen(true)}
+        onHyperParam={() => setIsHyperParamModalOpen(true)}
+      />
+      <ModelInputModal
+        isOpen={isInputModalOpen}
+        onClose={() => setIsInputModalOpen(false)}
+        selectedNode={selectedNode}
+      />
+      <HyperparameterModal
+        isOpen={isHyperParamModalOpen}
+        onClose={() => setIsHyperParamModalOpen(false)}
+      />
       <div className="main-content">
         {/* Left Panel */}
         <div
           className="left-panel"
           ref={leftPanelRef}
-          style={{ width: `${leftPanelWidth}px` }}
+          style={{
+            width: `${leftPanelWidth}px`,
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+          }}
         >
-          <LayerSelectionPanel onDragStart={handleDragStart} />
-          <ParameterViewer selectedNode={selectedNode} />
+          <div
+            style={{
+              height: `${layerSelectionHeight}px`,
+              overflow: 'auto',
+              minHeight: '100px',
+              maxHeight: `calc(100% - 150px)`,
+              display: 'flex', // Add flex display
+              flexDirection: 'column', // Stack children vertically
+            }}
+          >
+            <LayerSelectionPanel onDragStart={handleDragStart} />
+          </div>
+
+          <div
+            className="horizontal-divider"
+            onMouseDown={handleVerticalDividerMouseDown}
+            style={{ cursor: 'row-resize' }}
+          />
+
+          <div
+            style={{
+              flex: 1,
+              minHeight: '150px', // Minimum height for parameter viewer
+              overflow: 'auto',
+            }}
+          >
+            <ParameterViewer selectedNode={selectedNode} height="100%" />
+          </div>
         </div>
 
         {/* Divider for resizing columns */}
@@ -230,24 +325,24 @@ const DesignApp = () => {
         ></div>
 
         {/* Right side container */}
-        <div className="right-side" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {/* Right Panel */}
         <div
-          className="right-panel"
-          ref={rightPanelRef}
+          className="right-side"
+          style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
         >
-          <div
-            id="mynetwork"
-            ref={networkRef}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={handleDrop}
-          ></div>
+          {/* Right Panel */}
+          <div className="right-panel" ref={rightPanelRef}>
+            <div
+              id="mynetwork"
+              ref={networkRef}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={handleDrop}
+            ></div>
+          </div>
+
+          {/* Diagnostic Viewer below */}
+          <DiagnosticViewer output={output} />
         </div>
-        
-        {/* Diagnostic Viewer below */}
-        <DiagnosticViewer output={output} />
       </div>
-    </div>
     </div>
   );
 };

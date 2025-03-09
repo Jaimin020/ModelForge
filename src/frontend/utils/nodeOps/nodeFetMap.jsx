@@ -9,17 +9,17 @@ export const getNodeFeatureMap = async (xmlFileName) => {
   // Initialize XML parser
   const parser = new XMLParser({
     ignoreAttributes: false,
-    attributeNamePrefix: "",
+    attributeNamePrefix: '',
     allowBooleanAttributes: true,
     parseAttributeValue: true,
     parseTagValue: true,
-    trimValues: true
+    trimValues: true,
   });
   const result = parser.parse(xmlData);
 
   // Extract node names and features
   if (result.nodes && result.nodes.node) {
-    result.nodes.node.forEach(node => {
+    result.nodes.node.forEach((node) => {
       const nodeInfo = {
         name: node.name,
         feature: node.feature,
@@ -28,11 +28,11 @@ export const getNodeFeatureMap = async (xmlFileName) => {
         inport: node.inport,
         outport: node.outport,
         parameters: node.parameters.param,
-        code: node.code
+        code: node.code,
       };
       nodeFeatureMap.set(node.name, nodeInfo);
     });
   }
-  
+
   return nodeFeatureMap;
 };

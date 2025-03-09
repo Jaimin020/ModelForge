@@ -1,23 +1,23 @@
-import React from "react";
-import { Card, CardHeader, CardFooter } from "@fluentui/react-components";
-import { Button, Text } from "@fluentui/react-components";
-import "./Homepage.css";
+import React from 'react';
+import { Card, CardHeader, CardFooter } from '@fluentui/react-components';
+import { Button, Text } from '@fluentui/react-components';
+import './Homepage.css';
 
 const Homepage = () => {
   // Dummy data for recently opened files
   const recentFiles = [
-    "Project1.dl",
-    "ModelBasicNN.py",
-    "AdvancedModel.mat",
-    "Dataset.csv",
+    'Project1.dl',
+    'ModelBasicNN.py',
+    'AdvancedModel.mat',
+    'Dataset.csv',
   ];
 
   // Card options
   const cardOptions = [
-    { title: "Blank", description: "Start from scratch" },
-    { title: "Basic NN", description: "Create a simple Neural Network" },
-    { title: "Advanced Model", description: "Pre-built advanced structures" },
-    { title: "Import Dataset", description: "Start with a dataset" },
+    { title: 'Blank', description: 'Start from scratch' },
+    { title: 'Basic NN', description: 'Create a simple Neural Network' },
+    { title: 'Advanced Model', description: 'Pre-built advanced structures' },
+    { title: 'Import Dataset', description: 'Start with a dataset' },
   ];
 
   return (
@@ -45,7 +45,11 @@ const Homepage = () => {
         </Text>
         <div className="cards-container">
           {cardOptions.map((option, index) => (
-            <Card key={index} className="option-card" onClick={() => alert(option.title)}>
+            <Card
+              key={index}
+              className="option-card"
+              onClick={() => alert(option.title)}
+            >
               <CardHeader headerText={option.title} />
               <CardFooter>
                 <Text>{option.description}</Text>
