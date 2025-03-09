@@ -1,5 +1,13 @@
 import { FileStats } from '../../../interface/SpreadsheetInterface';
 
+declare global {
+  interface Window {
+    file: {
+      readCsvOrExelFile: (filePath: string) => Promise<any>;
+    };
+  }
+}
+
 export class SpreadsheetOps {
   private static instance: SpreadsheetOps;
   private fileData: any = null;
