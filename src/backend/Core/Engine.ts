@@ -3,8 +3,8 @@ import { getModelPyCode } from './CodeGen/getModelPyCode';
 
 export class Engine {
   modelDataObj = new ModelData();
-  constructor(rawData: any) {
-    this.modelDataObj.generateModelData('MyModel', rawData);
+  constructor(rawLayersData: any, hyperparameters: any) {
+    this.modelDataObj.generateModelData('MyModel', rawLayersData , hyperparameters);
   }
 
   getInputData() {}
@@ -14,7 +14,7 @@ export class Engine {
   getOptimizerData() {}
 
   getLayerData() {
-    return this.modelDataObj.getModelData();
+    return this.modelDataObj.getLayersData();
   }
 
   getPyCode() {

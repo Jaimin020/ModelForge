@@ -22,4 +22,8 @@ export class GraphController {
       hyperparameters: this.graphService.getHyperparameters(),
     };
   }
+
+  getHyperparameters() {
+    return this.graphService.getHyperparameters();
+  }
 }
