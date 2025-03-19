@@ -54,10 +54,10 @@ export default class MenuBuilder {
 
   buildDarwinTemplate(): MenuItemConstructorOptions[] {
     const subMenuAbout: DarwinMenuItemConstructorOptions = {
-      label: 'DeepGUI',
+      label: 'Model Forge',
       submenu: [
         {
-          label: 'About DeepGUI',
+          label: 'About Model Forge',
           selector: 'orderFrontStandardAboutPanel:',
         },
         { type: 'separator' },
@@ -105,6 +105,13 @@ export default class MenuBuilder {
       submenu: [
         {
           label: 'Reload',
+          accelerator: 'Command+R',
+          click: () => {
+            this.mainWindow.webContents.reload();
+          },
+        },
+        {
+          label: 'Fit',
           accelerator: 'Command+R',
           click: () => {
             this.mainWindow.webContents.reload();

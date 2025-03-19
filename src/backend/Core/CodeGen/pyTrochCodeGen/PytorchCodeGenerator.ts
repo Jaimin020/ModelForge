@@ -1,18 +1,14 @@
-import { modelTemplate } from './PyCode.js';
+import { importTemplate,inputTemplate,modelTemplate } from './PyCode.js';
 import { AbstractCodeGenerator } from '../AbstractCodeGenerator';
 import * as ejs from 'ejs';
 
 export class PyTorchCodeGenerator extends AbstractCodeGenerator {
   getImports(): string {
-    return `import torch
-import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import DataLoader`;
+    return importTemplate;
   }
 
   getInput(): string {
-    return `# Data loading and preprocessing code will go here
-# This will be implemented based on the input data format`;
+    return ejs.render(inputTemplate, this.inputData);
   }
 
   getModel(): string {

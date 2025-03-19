@@ -3,8 +3,10 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const basePath = process.env.BASE_PATH || path.resolve(__dirname, '..');
+
 export const paths = {
-  base: process.env.BASE_PATH || path.resolve(__dirname, '..'),
-  assets:
-    process.env.ASSETS_PATH || path.join(process.env.BASE_PATH || '', 'assets'),
+  base: basePath,
+  assets: process.env.ASSETS_PATH || path.join(basePath, 'assets'),
+  venvPython: process.env.VENV_PYTHON_PATH?.replace('${BASE_PATH}', basePath) || ''
 };

@@ -24,7 +24,6 @@ import { resolveHtmlPath } from './util';
 import { ChildProcess, spawn } from 'child_process';
 import fs from 'fs';
 import { paths } from './config';
-import { installPython } from './python_setup';
 import { setupIpcHandlers } from '../backend/ipc/ipcHandler';
 import * as XLSX from 'xlsx';
 
@@ -150,7 +149,6 @@ app
   .whenReady()
   .then(async () => {
     // Install Python first
-    await installPython();
     createWindow();
     app.on('activate', () => {
       // Disable browser shortcuts
@@ -182,14 +180,31 @@ function disableBrowserShortcuts() {
 }
 let pythonProcess: ChildProcess | null = null;
 
+async function formatPythonFile(scriptPath: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const formatProcess = spawn('python3', ['-m', 'black', scriptPath]);
+    
+    formatProcess.on('close', (code: number) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(`Formatting failed with code ${code}`);
+      }
+    });
+  });
+}
+
 ipcMain.handle(
   'run-python',
   async (
     _event: Electron.IpcMainInvokeEvent,
     scriptPath: string,
   ): Promise<string> => {
+    // Format the file first
+    // await formatPythonFile(scriptPath);
+    
     return new Promise((resolve, reject) => {
-      pythonProcess = spawn('python3', ['-u', scriptPath]);
+      pythonProcess = spawn(paths.venvPython, ['-u', scriptPath]);
       let output = '';
 
       pythonProcess.stdout?.on('data', (data: Buffer) => {
@@ -204,7 +219,7 @@ ipcMain.handle(
         if (code === 0) {
           resolve(output);
         } else {
-          reject(`Process exited with code ${code}\n${output}`);
+          resolve(`Process exited with code ${code}\n${output}`);
         }
         // Ensure the process is terminated
         pythonProcess?.kill();
@@ -254,18 +269,18 @@ ipcMain.handle('readCsvOrExelFile', async (event, filePath) => {
       cellText: false,
     });
     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+    const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }) as any[][];
 
     const rowCount = data.length;
     const columnCount = data[0]?.length || 0;
-    let columnNames = [];
+    let columnNames: string[] = [];
     let hasHeaders = false;
 
     if (rowCount > 0) {
-      const firstRow: any = data[0];
-      hasHeaders = firstRow.every((cell: any) => typeof cell === 'string');
+      const firstRow = data[0];
+      hasHeaders = firstRow.every((cell) => typeof cell === 'string');
       columnNames = hasHeaders
-        ? firstRow
+        ? firstRow as string[]
         : Array.from({ length: columnCount }, (_, i) => `column_${i + 1}`);
     }
 

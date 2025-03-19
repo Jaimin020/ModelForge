@@ -14,10 +14,11 @@ export class Engine {
   private createCodeGenerator(framework: string): AbstractCodeGenerator {
     const layerData = this.modelDataObj.getLayersData();
     const hyperParams = this.modelDataObj.getHyperparameters();
+    const inputData = this.modelDataObj.getInputData();
 
     switch (framework.toLowerCase()) {
       case 'pytorch':
-        return new PyTorchCodeGenerator(layerData, hyperParams);
+        return new PyTorchCodeGenerator(layerData, hyperParams, inputData);
       default:
         throw new Error(`Unsupported framework: ${framework}`);
     }
@@ -34,6 +35,6 @@ export class Engine {
   }
 
   getPyCode() {
-    return this.codeGenerator.generateCode();;
+    return this.codeGenerator.generateCode();
   }
 }

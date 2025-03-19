@@ -13,6 +13,7 @@ import { GraphAnalyzer } from '../../utils/graphMngr/GraphAnalyzer.ts';
 import { ModelInputModal } from '../../components/ModelInputModal.jsx';
 import { HyperparameterModal } from '../../components/HyperparameterModal';
 import { GraphDataManager } from '../../utils/graphUtils/GraphDataManager.ts';
+import Convert from 'ansi-to-html';
 import './style.css';
 
 const DesignApp = () => {
@@ -43,6 +44,9 @@ const DesignApp = () => {
   const [isInputNode, setIsInputNode] = useState(false);
   const [isInputModalOpen, setIsInputModalOpen] = useState(false);
   const [isHyperParamModalOpen, setIsHyperParamModalOpen] = useState(false);
+
+  // Add at the top of component
+  const convert = new Convert({newline: true});
 
   // 🛠️ Initialize the vis-network once (like componentDidMount)
   useEffect(() => {
@@ -103,11 +107,28 @@ const DesignApp = () => {
       }
     });
 
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
+        e.preventDefault();
+        if (networkInstance.current) {
+          networkInstance.current.fit();
+        }
+      }
+    });
+
     resizeObserver.current.observe(container);
 
     return () => {
       if (resizeObserver.current) resizeObserver.current.disconnect();
       if (networkInstance.current) networkInstance.current.destroy();
+      document.removeEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
+          e.preventDefault();
+          if (networkInstance.current) {
+            networkInstance.current.fit();
+          }
+        }
+      });
     };
   }, []);
 
@@ -216,10 +237,11 @@ const DesignApp = () => {
 
     try {
       await window.dialog.onDialogUpdate((message) => {
-        setOutput((prevOutput) => prevOutput + message);
+        const htmlOutput = convert.toHtml(message);
+        setOutput((prevOutput) => prevOutput + htmlOutput);
       });
-
-      window.api.runPython('src/__tests__/my_script.py');
+      setOutput((prevOutput) => prevOutput + "\n------------------------------------- \nModel Execution initlated\n------------------------------------- \n");
+      window.api.runPython('/Users/jaiminchauhan/MF_Project/demo.py');
     } catch (error) {
       setOutput((prevOutput) => prevOutput + `\n${error}`);
     } finally {
@@ -239,7 +261,7 @@ const DesignApp = () => {
       setOutput((prev) => prev + 'Please set hyperparameters.\n');
       return;
     }
-    setOutput((prevOutput) => prevOutput + 'Compiling Model\n--> ');
+    setOutput((prevOutput) => prevOutput + '------------------------------------- \nModel Compilation initlated\n------------------------------------- \n--> ');
     if (result.isValid) {
       setOutput((prevOutput) => prevOutput + 'All Checks PASS\n');
       executePythonScript();

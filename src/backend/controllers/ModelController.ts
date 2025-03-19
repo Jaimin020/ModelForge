@@ -1,13 +1,18 @@
 import { GraphController } from './GraphController';
 import { Engine } from '../Core/Engine';
+import { FileManager } from '../Core/FileManager';
+
 export class ModelController {
   graphController = new GraphController();
+  fileMngr = FileManager.getInstance();
   trainModel(modelGraph: any) {
     this.graphController.setGraphData(modelGraph);
 
     const sequences = this.graphController.getLayerSequence();
     const hyperparameters = this.graphController.getHyperparameters();
     const engine = new Engine(sequences,hyperparameters);
-    console.log(engine.getPyCode());
+    const code = engine.getPyCode();
+    const pathToSave = "/Users/jaiminchauhan/MF_Project/demo.py";
+    this.fileMngr.saveFile(pathToSave,code);
   }
 }
