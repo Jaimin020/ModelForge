@@ -13,6 +13,7 @@ import { GraphAnalyzer } from '../../utils/graphMngr/GraphAnalyzer.ts';
 import { ModelInputModal } from '../../components/ModelInputModal.jsx';
 import { HyperparameterModal } from '../../components/HyperparameterModal';
 import { GraphDataManager } from '../../utils/graphUtils/GraphDataManager.ts';
+import { LoadingOverlay } from '../Loading/LoadingModal.jsx'
 import Convert from 'ansi-to-html';
 import './style.css';
 
@@ -47,6 +48,9 @@ const DesignApp = () => {
 
   // Add at the top of component
   const convert = new Convert({newline: true});
+
+  //Loaing overlay message
+  const [loadingMessage, setLoadingMessage] = useState('');
 
   // 🛠️ Initialize the vis-network once (like componentDidMount)
   useEffect(() => {
@@ -112,6 +116,12 @@ const DesignApp = () => {
         e.preventDefault();
         if (networkInstance.current) {
           networkInstance.current.fit();
+        }
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault();
+        if (networkInstance.current) {
+          onSave();
         }
       }
     });
@@ -278,8 +288,78 @@ const DesignApp = () => {
     }
   };
 
+  const onSave = async () =>{
+    if (!isRunning) {
+      setLoadingMessage('Saaving...');
+      graphManager.setNodes(nodes);
+      graphManager.setEdges(edges);
+      window.backend.saveModel(graphManager.getGraphDataAsJson());
+      setLoadingMessage('');
+      setOutput((prev) => prev + '\nModel saved successfully.');
+    }
+    else {
+      setOutput((prev) => prev + '\nPlease stop the training process before saving.');
+    }
+  }
+
+  const onOpen = async () => {
+    setLoadingMessage('Opening...');
+    const pathToload = await window.dialog.filePicker({name: 'Load_File', extensions: ['mff']});
+    setLoadingMessage('');
+    try {
+      setLoadingMessage('Loading...');
+      const result = await window.backend.loadModel(pathToload);
+      if (result && result.nodes && result.edges) {
+        // Clear existing nodes and edges
+        nodes.current.clear();
+        edges.current.clear();
+        
+        // Add the loaded nodes to the network
+        nodes.current.add(result.nodes);
+        
+        // Add the loaded edges to the network
+        edges.current.add(result.edges);
+        
+        // Restore the model nodes in the ModelNodeManager
+        const nodeManager = ModelNodeManager.getInstance();
+        result.nodes.forEach(node => {
+          nodeManager.createNode(node.id, {
+            name: node.name,
+            feature: node.feature,
+            library: node.library,
+            framework: node.framework,
+            codeId: node.codeId,
+            inport: node.inport,
+            outport: node.outport,
+            parameters: node.parameters,
+            code: node.code
+          });
+        });
+        
+        // Set hyperparameters if they exist
+        if (result.hyperparameters) {
+          graphManager.setHyperparameters(result.hyperparameters);
+        }
+        
+        // Fit the network to show all nodes
+        if (networkInstance.current) {
+          networkInstance.current.fit();
+        }
+        
+        setOutput(prev => prev + '\nModel loaded successfully.');
+      } else {
+        setOutput(prev => prev + '\nFailed to load model: Invalid model data.');
+      }
+      setLoadingMessage('');
+    } catch (error) {
+      console.error('Error loading model:', error);
+      setOutput(prev => prev + `\nError loading model: ${error.message}`);
+    }
+  };
+
   return (
     <div className="container" ref={containerRef}>
+      <LoadingOverlay isVisible={!!loadingMessage} message={loadingMessage} />
       <Toolbar
         onRun={handleRun}
         onStop={handleStop}
@@ -287,6 +367,8 @@ const DesignApp = () => {
         showInputConfig={isInputNode}
         onInputConfig={() => setIsInputModalOpen(true)}
         onHyperParam={() => setIsHyperParamModalOpen(true)}
+        onSave={onSave}
+        onOpen={onOpen}
       />
       <ModelInputModal
         isOpen={isInputModalOpen}

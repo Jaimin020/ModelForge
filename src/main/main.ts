@@ -244,12 +244,11 @@ ipcMain.handle('writeFile', async (event, filePath, data) => {
   return fs.promises.writeFile(filePath, data);
 });
 
-ipcMain.handle('select-file', async () => {
+ipcMain.handle('select-file', async (event, fileFomrate) => {
   const result = await dialog.showOpenDialog(mainWindow!, {
     properties: ['openFile'],
     filters: [
-      { name: 'CSV Files', extensions: ['csv', 'xlsx'] },
-      { name: 'Excel Files', extensions: ['xlsx', 'xls'] },
+      fileFomrate
     ],
   });
 

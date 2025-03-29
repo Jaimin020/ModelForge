@@ -8,6 +8,8 @@ export const Toolbar = ({
   showInputConfig,
   onInputConfig,
   onHyperParam,
+  onSave,
+  onOpen,
 }) => {
   const [isInputModalOpen, setIsInputModalOpen] = useState(false);
 
@@ -33,6 +35,36 @@ export const Toolbar = ({
     outline: 'none',
     transition: 'all 0.2s ease',
     boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+  };
+
+  const openButtonStyle = {
+    ...buttonStyle,
+    backgroundColor: '#FF9800',
+    color: 'white',
+    '&:hover': {
+      backgroundColor: '#e68a00',
+      transform: 'translateY(-1px)',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+    },
+    '&:active': {
+      transform: 'translateY(0)',
+      boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+    },
+  };
+
+  const saveButtonStyle = {
+    ...buttonStyle,
+    backgroundColor: '#2196F3',
+    color: 'white',
+    '&:hover': {
+      backgroundColor: '#0b7dda',
+      transform: 'translateY(-1px)',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+    },
+    '&:active': {
+      transform: 'translateY(0)',
+      boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+    },
   };
 
   const runButtonStyle = {
@@ -89,6 +121,50 @@ export const Toolbar = ({
 
   return (
     <div style={toolbarStyle}>
+      <button
+        style={openButtonStyle}
+        onClick={onOpen}
+        title="Open Model"
+        onMouseOver={(e) => {
+          e.currentTarget.style.backgroundColor = '#e68a00';
+          e.currentTarget.style.transform = 'translateY(-1px)';
+          e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.backgroundColor = '#FF9800';
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+        }}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8.5 10.5a.5.5 0 0 0-1 0v1.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 12.293v-1.793z"/>
+          <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H2z"/>
+          <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4z"/>
+        </svg>
+        Open
+      </button>
+      
+      <button
+        style={saveButtonStyle}
+        onClick={onSave}
+        title="Save Model"
+        onMouseOver={(e) => {
+          e.currentTarget.style.backgroundColor = '#0b7dda';
+          e.currentTarget.style.transform = 'translateY(-1px)';
+          e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.backgroundColor = '#2196F3';
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+        }}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v4.5h2a.5.5 0 0 1 .354.854l-2.5 2.5a.5.5 0 0 1-.708 0l-2.5-2.5A.5.5 0 0 1 5.5 6.5h2V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z" />
+        </svg>
+        Save
+      </button>
+      
       <button
         style={runButtonStyle}
         onClick={onRun}

@@ -15,7 +15,7 @@ const dialogHandler = {
       callback(message);
     });
   },
-  filePicker: () => ipcRenderer.invoke('select-file'),
+  filePicker: (fileFormate:string) => ipcRenderer.invoke('select-file', fileFormate),
 };
 
 const fileHandler = {

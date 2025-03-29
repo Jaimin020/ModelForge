@@ -15,10 +15,11 @@ export class Engine {
     const layerData = this.modelDataObj.getLayersData();
     const hyperParams = this.modelDataObj.getHyperparameters();
     const inputData = this.modelDataObj.getInputData();
+    const lossFunction = this.modelDataObj.getLossFunction();
 
     switch (framework.toLowerCase()) {
       case 'pytorch':
-        return new PyTorchCodeGenerator(layerData, hyperParams, inputData);
+        return new PyTorchCodeGenerator(layerData, hyperParams, inputData, lossFunction);
       default:
         throw new Error(`Unsupported framework: ${framework}`);
     }

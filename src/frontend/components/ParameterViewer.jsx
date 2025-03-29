@@ -4,11 +4,35 @@ import { ModelNodeManager } from '../utils/graphMngr/ModelNodeManager.ts';
 
 export const ParameterViewer = ({ selectedNode, height }) => {
   const [nodeParams, setNodeParams] = useState({});
+  const [tempValues, setTempValues] = useState({});
   const nodeManager = ModelNodeManager.getInstance();
 
   const handleParameterChange = (paramName, value) => {
+    setTempValues({
+      ...tempValues,
+      [paramName]: value
+    });
+  };
+
+  const handleUpdateParameter = (paramName) => {
+    if (selectedNode && tempValues[paramName] !== undefined) {
+      nodeManager.updateNodeParameter(selectedNode.id, paramName, tempValues[paramName]);
+    }
+  };
+
+  const handleResetParameter = (paramName, paramType) => {
+    // Set default values based on parameter type
+    const defaultValue = paramType === 'int' ? 1 : paramType === 'bool' ? true : '';
+    
+    // Update the temp value
+    setTempValues({
+      ...tempValues,
+      [paramName]: defaultValue
+    });
+    
+    // Also update the actual node parameter
     if (selectedNode) {
-      nodeManager.updateNodeParameter(selectedNode.id, paramName, value);
+      nodeManager.updateNodeParameter(selectedNode.id, paramName, defaultValue);
     }
   };
 
@@ -21,6 +45,22 @@ export const ParameterViewer = ({ selectedNode, height }) => {
     };
     loadNodes();
   }, []);
+
+  useEffect(() => {
+    // Reset temp values when selected node changes
+    if (selectedNode && selectedNode.id) {
+      const nodeConfig = nodeManager.getNode(selectedNode.id);
+      if (nodeConfig && nodeConfig.parameters) {
+        const initialValues = {};
+        nodeConfig.parameters.forEach(param => {
+          initialValues[param.name] = param.value;
+        });
+        setTempValues(initialValues);
+      }
+    } else {
+      setTempValues({});
+    }
+  }, [selectedNode]);
 
   const renderParameters = () => {
     if (!selectedNode || !nodeParams.get(selectedNode.label)) return null;
@@ -63,34 +103,80 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                       </span>
                     </div>
                   ) : param.type === 'bool' ? (
-                    <select
-                      value={param.value}
-                      style={{ width: '100px' }}
-                      onChange={(e) =>
-                        handleParameterChange(
-                          param.name,
-                          e.target.value === 'true',
-                        )
-                      }
-                    >
-                      <option value="true">True</option>
-                      <option value="false">False</option>
-                    </select>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                      <select
+                        value={tempValues[param.name] === true ? "True" : "False"}
+                        style={{ width: '100px' }}
+                        onChange={(e) =>
+                          handleParameterChange(
+                            param.name,
+                            e.target.value === "True"?"True":"False"
+                          )
+                        }
+                      >
+                        <option value="True">true</option>
+                        <option value="False">false</option>
+                      </select>
+                      <div style={{ display: 'flex', gap: '5px' }}>
+                        <button 
+                          onClick={() => handleUpdateParameter(param.name)}
+                          style={{ fontSize: '10px', padding: '2px 5px' }}
+                        >
+                          Update
+                        </button>
+                        <button 
+                          onClick={() => handleResetParameter(param.name, param.type)}
+                          style={{ fontSize: '10px', padding: '2px 5px' }}
+                        >
+                          Reset
+                        </button>
+                      </div>
+                    </div>
+                  ) : param.type === 'int' ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                      <input
+                        type="number"
+                        value={tempValues[param.name] !== undefined ? tempValues[param.name] : param.value}
+                        required={param.required === 'true'}
+                        placeholder={
+                          param.required === 'true' ? 'Required' : 'Optional'
+                        }
+                        style={{ width: '100px' }}
+                        onChange={(e) =>
+                          handleParameterChange(
+                            param.name,
+                            parseInt(e.target.value)
+                          )
+                        }
+                      />
+                      <div style={{ display: 'flex', gap: '5px' }}>
+                        <button 
+                          onClick={() => handleUpdateParameter(param.name)}
+                          style={{ fontSize: '10px', padding: '2px 5px' }}
+                        >
+                          Update
+                        </button>
+                        <button 
+                          onClick={() => handleResetParameter(param.name, param.type)}
+                          style={{ fontSize: '10px', padding: '2px 5px' }}
+                        >
+                          Reset
+                        </button>
+                      </div>
+                    </div>
                   ) : (
                     <input
-                      type={param.type === 'int' ? 'number' : 'text'}
-                      value={param.value}
+                      type="text"
+                      value={tempValues[param.name] !== undefined ? tempValues[param.name] : param.value}
                       required={param.required === 'true'}
                       placeholder={
                         param.required === 'true' ? 'Required' : 'Optional'
                       }
                       style={{ width: '100px' }}
-                      onChange={(e) =>
+                      onBlur={(e) =>
                         handleParameterChange(
                           param.name,
-                          param.type === 'int'
-                            ? parseInt(e.target.value)
-                            : e.target.value,
+                          e.target.value
                         )
                       }
                     />

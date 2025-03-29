@@ -2,11 +2,13 @@ export abstract class AbstractCodeGenerator {
     protected inputData: any;
     protected modelData: any;
     protected hyperparameters: any;
+    protected lossFunction: any;
   
-    constructor(modelData: any, hyperparameters: any, inputData: any) {
+    constructor(modelData: any, hyperparameters: any, inputData: any,lossFunction:any) {
       this.inputData = inputData;
       this.modelData = modelData;
       this.hyperparameters = hyperparameters;
+      this.lossFunction = lossFunction;
     }
   
     abstract getImports(): string;
@@ -19,10 +21,10 @@ export abstract class AbstractCodeGenerator {
     generateCode(): string {
       return [
         this.getImports(),
-        this.getInput()
-        // this.getModel(),
-        // this.getHyperparameters(),
-        // this.getTrainingLoop(),
+        this.getInput(),
+        this.getHyperparameters(),
+        this.getModel(),
+        this.getTrainingLoop()
         // this.getSaveModel()
       ].join('\n\n');
     }

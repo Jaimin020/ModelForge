@@ -6,14 +6,14 @@ export const HyperparameterModal = ({ isOpen, onClose }) => {
     learning_rate: 0.001,
     epochs: 100,
     batch_size: 32,
-    optimizer: 'adam',
+    optimizer: 'Adam',
     momentum: 0.9,
     weight_decay: 0.0001,
     dropout_rate: 0.2,
     early_stopping_patience: 5,
   });
 
-  const optimizerOptions = ['adam', 'sgd', 'rmsprop', 'adagrad'];
+  const optimizerOptions = ['Adam', 'sgd', 'rmsprop', 'adagrad'];
   const graphManager = GraphDataManager.getInstance();
 
   const handleInputChange = (e) => {
