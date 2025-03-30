@@ -14,6 +14,7 @@ import { ModelInputModal } from '../../components/ModelInputModal.jsx';
 import { HyperparameterModal } from '../../components/HyperparameterModal';
 import { GraphDataManager } from '../../utils/graphUtils/GraphDataManager.ts';
 import { LoadingOverlay } from '../Loading/LoadingModal.jsx'
+import { FooterLine } from '../Footer/FooterLine.jsx'
 import Convert from 'ansi-to-html';
 import './style.css';
 
@@ -51,6 +52,9 @@ const DesignApp = () => {
 
   //Loaing overlay message
   const [loadingMessage, setLoadingMessage] = useState('');
+
+  //FrameWork Info
+  const [activeFramework, setActiveFramework] = useState('PyTorch');
 
   // 🛠️ Initialize the vis-network once (like componentDidMount)
   useEffect(() => {
@@ -242,8 +246,8 @@ const DesignApp = () => {
     }
     graphManager.setNodes(nodes);
     graphManager.setEdges(edges);
-    window.backend.trainModel(graphManager.getGraphDataAsJson());
     setIsRunning(true);
+    window.backend.trainModel(graphManager.getGraphDataAsJson());
 
     try {
       await window.dialog.onDialogUpdate((message) => {
@@ -251,7 +255,7 @@ const DesignApp = () => {
         setOutput((prevOutput) => prevOutput + htmlOutput);
       });
       setOutput((prevOutput) => prevOutput + "\n------------------------------------- \nModel Execution initlated\n------------------------------------- \n");
-      window.api.runPython('/Users/jaiminchauhan/MF_Project/demo.py');
+      await window.api.runPython('/Users/jaiminchauhan/MF_Project/demo.py');
     } catch (error) {
       setOutput((prevOutput) => prevOutput + `\n${error}`);
     } finally {
@@ -290,7 +294,7 @@ const DesignApp = () => {
 
   const onSave = async () =>{
     if (!isRunning) {
-      setLoadingMessage('Saaving...');
+      setLoadingMessage('Saving...');
       graphManager.setNodes(nodes);
       graphManager.setEdges(edges);
       window.backend.saveModel(graphManager.getGraphDataAsJson());
@@ -419,6 +423,7 @@ const DesignApp = () => {
           >
             <ParameterViewer selectedNode={selectedNode} height="100%" />
           </div>
+          <FooterLine isRunning={isRunning} framework={activeFramework} />
         </div>
 
         {/* Divider for resizing columns */}
