@@ -12,6 +12,28 @@ export const Toolbar = ({
   onOpen,
 }) => {
   const [isInputModalOpen, setIsInputModalOpen] = useState(false);
+  // Function to handle training button click
+  const handleTrainClick = () => {
+    // Get the graph data
+    const graphDataManager = GraphDataManager.getInstance();
+    const graphData = graphDataManager.getGraphDataAsJson();
+    
+    // Open a new window with the TrainingPage
+    const trainingWindow = window.open('', '_blank', 'width=1000,height=800');
+    
+    // Pass the graph data to the new window
+    if (trainingWindow) {
+      trainingWindow.graphData = graphData;
+      
+      // Load the TrainingPage in the new window
+      trainingWindow.location.href = '/#/training';
+      
+      // Call the original onRun handler if provided
+      if (onRun) {
+        onRun(graphData);
+      }
+    }
+  };
 
   const toolbarStyle = {
     display: 'flex',
@@ -35,6 +57,13 @@ export const Toolbar = ({
     outline: 'none',
     transition: 'all 0.2s ease',
     boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+  };
+
+  const dividerStyle = {
+    height: '24px',
+    width: '1px',
+    backgroundColor: '#d0d0d0',
+    margin: '0 8px',
   };
 
   const openButtonStyle = {
@@ -69,10 +98,10 @@ export const Toolbar = ({
 
   const runButtonStyle = {
     ...buttonStyle,
-    backgroundColor: '#005eb8',
+    backgroundColor: '#4CAF50',
     color: 'white',
     '&:hover': {
-      backgroundColor: '#004080',
+      backgroundColor: '#45a049',
       transform: 'translateY(-1px)',
       boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
     },
@@ -84,10 +113,10 @@ export const Toolbar = ({
 
   const stopButtonStyle = {
     ...buttonStyle,
-    backgroundColor: '#003366',
+    backgroundColor: '#F44336',
     color: 'white',
     '&:hover': {
-      backgroundColor: '#002040',
+      backgroundColor: '#d32f2f',
       transform: 'translateY(-1px)',
       boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
     },
@@ -164,6 +193,8 @@ export const Toolbar = ({
         </svg>
         Save
       </button>
+      {/* First vertical divider */}
+      <div style={dividerStyle}></div>
       
       <button
         style={runButtonStyle}
@@ -171,12 +202,12 @@ export const Toolbar = ({
         disabled={isRunning}
         title="Train"
         onMouseOver={(e) => {
-          e.currentTarget.style.backgroundColor = '#004080';
+          e.currentTarget.style.backgroundColor = '#45a049';
           e.currentTarget.style.transform = 'translateY(-1px)';
           e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
         }}
         onMouseOut={(e) => {
-          e.currentTarget.style.backgroundColor = '#005eb8';
+          e.currentTarget.style.backgroundColor = '#4CAF50';
           e.currentTarget.style.transform = 'translateY(0)';
           e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
         }}
@@ -191,12 +222,12 @@ export const Toolbar = ({
         onClick={onStop}
         title="Stop"
         onMouseOver={(e) => {
-          e.currentTarget.style.backgroundColor = '#002040';
+          e.currentTarget.style.backgroundColor = '#d32f2f';
           e.currentTarget.style.transform = 'translateY(-1px)';
           e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
         }}
         onMouseOut={(e) => {
-          e.currentTarget.style.backgroundColor = '#003366';
+          e.currentTarget.style.backgroundColor = '#F44336';
           e.currentTarget.style.transform = 'translateY(0)';
           e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
         }}
@@ -206,6 +237,8 @@ export const Toolbar = ({
         </svg>
         Stop
       </button>
+
+      <div style={dividerStyle}></div>
 
       <button
         style={hyperParamButtonStyle}

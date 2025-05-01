@@ -59,7 +59,7 @@
         <inport>1</inport>
         <outport>1</outport>
         <parameters>
-            <param name="inplace" type="bool" default="false" display="true"/>
+            <param name="inplace" type="bool" default="false" display="false"/>
         </parameters>
         <code>torch.nn.ReLU(inplace={inplace})</code>
     </node>

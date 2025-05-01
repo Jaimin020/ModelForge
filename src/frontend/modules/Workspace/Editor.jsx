@@ -14,7 +14,8 @@ import { ModelInputModal } from '../../components/ModelInputModal.jsx';
 import { HyperparameterModal } from '../../components/HyperparameterModal';
 import { GraphDataManager } from '../../utils/graphUtils/GraphDataManager.ts';
 import { LoadingOverlay } from '../Loading/LoadingModal.jsx'
-import { FooterLine } from '../Footer/FooterLine.jsx'
+import { FooterLine } from '../Footer/FooterLine.jsx';
+import { openNewWindow } from '../../utils/windowUtils/windowUtils'
 import Convert from 'ansi-to-html';
 import './style.css';
 
@@ -239,6 +240,18 @@ const DesignApp = () => {
     document.removeEventListener('mouseup', handleMouseUp);
   };
 
+  const handleOpenNewWindow = async () => {
+    const windowId = await openNewWindow({
+      width: 800,
+      height: 600,
+      title: 'New Project'
+    });
+    
+    if (windowId) {
+      console.log(`New window opened with ID: ${windowId}`);
+    }
+  };
+
   const executePythonScript = async () => {
     if (isRunning) {
       setOutput((prev) => prev + '\nProcess already running. Please wait.');
@@ -247,6 +260,7 @@ const DesignApp = () => {
     graphManager.setNodes(nodes);
     graphManager.setEdges(edges);
     setIsRunning(true);
+    handleOpenNewWindow();
     window.backend.trainModel(graphManager.getGraphDataAsJson());
 
     try {
@@ -267,6 +281,7 @@ const DesignApp = () => {
   const handleRun = () => {
     setOutput('');
     //check for graph.
+    handleOpenNewWindow();
     const currentEdges = edges.current.get();
     const graphAnalyzer = new GraphAnalyzer();
     const result = graphAnalyzer.validateGraph(currentEdges);

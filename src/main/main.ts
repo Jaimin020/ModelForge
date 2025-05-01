@@ -26,6 +26,7 @@ import fs from 'fs';
 import { paths } from './config';
 import { setupIpcHandlers } from '../backend/ipc/ipcHandler';
 import * as XLSX from 'xlsx';
+import { createNewWindow } from './windowManager';
 
 class AppUpdater {
   constructor() {
@@ -295,4 +296,9 @@ ipcMain.handle('readCsvOrExelFile', async (event, filePath) => {
   } catch (error: any) {
     throw new Error(`Failed to read file: ${error.message}`);
   }
+});
+
+ipcMain.handle('create-new-window', (event, windowOptions = {}) => {
+  const newWindow = createNewWindow(windowOptions);
+  return newWindow.id; // Return the window ID for reference
 });
