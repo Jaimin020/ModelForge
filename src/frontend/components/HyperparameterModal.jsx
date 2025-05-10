@@ -13,7 +13,7 @@ export const HyperparameterModal = ({ isOpen, onClose }) => {
     early_stopping_patience: 5,
   });
 
-  const optimizerOptions = ['Adam', 'sgd', 'rmsprop', 'adagrad'];
+  const optimizerOptions = ['Adam', 'SGD', 'RMSprop', 'Adagrad'];
   const graphManager = GraphDataManager.getInstance();
 
   const handleInputChange = (e) => {

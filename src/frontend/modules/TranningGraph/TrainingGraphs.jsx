@@ -45,16 +45,37 @@ const TrainingGraphs = ({ trainingData, isTraining=false }) => {
     plugins: {
       legend: {
         position: 'top',
+        labels: {
+          boxWidth: 10,
+          font: {
+            size: 10
+          }
+        }
       },
       title: {
         display: true,
         text: 'Training and Test Loss',
+        font: {
+          size: 14
+        }
       },
     },
     scales: {
       y: {
         beginAtZero: false,
+        ticks: {
+          font: {
+            size: 10
+          }
+        }
       },
+      x: {
+        ticks: {
+          font: {
+            size: 10
+          }
+        }
+      }
     },
     animation: {
       duration: isTraining ? 0 : 1000, // Disable animation during training for performance
@@ -67,17 +88,38 @@ const TrainingGraphs = ({ trainingData, isTraining=false }) => {
     plugins: {
       legend: {
         position: 'top',
+        labels: {
+          boxWidth: 10,
+          font: {
+            size: 10
+          }
+        }
       },
       title: {
         display: true,
         text: 'Training and Test Accuracy',
+        font: {
+          size: 14
+        }
       },
     },
     scales: {
       y: {
         beginAtZero: true,
         max: 1,
+        ticks: {
+          font: {
+            size: 10
+          }
+        }
       },
+      x: {
+        ticks: {
+          font: {
+            size: 10
+          }
+        }
+      }
     },
     animation: {
       duration: isTraining ? 0 : 1000, // Disable animation during training for performance
@@ -122,11 +164,13 @@ const TrainingGraphs = ({ trainingData, isTraining=false }) => {
 
   return (
     <div className="training-graphs-container">
-      <div className="graph-container">
-        <Line options={lossOptions} data={lossData} />
-      </div>
-      <div className="graph-container">
-        <Line options={accuracyOptions} data={accuracyData} />
+      <div className="graphs-row">
+        <div className="graph-container">
+          <Line options={lossOptions} data={lossData} />
+        </div>
+        <div className="graph-container">
+          <Line options={accuracyOptions} data={accuracyData} />
+        </div>
       </div>
       
       {isTraining && (
@@ -139,36 +183,54 @@ const TrainingGraphs = ({ trainingData, isTraining=false }) => {
         .training-graphs-container {
           display: flex;
           flex-direction: column;
-          gap: 20px;
-          padding: 20px;
+          gap: 15px;
+          padding: 10px;
           width: 100%;
-          height: auto;
-          overflow: auto;
+          height: 100%;
+          overflow: hidden;
+        }
+        
+        .graphs-row {
+          display: flex;
+          flex-direction: row;
+          gap: 15px;
+          width: 100%;
+          height: calc(100% - 40px);
+          
+          @media (max-width: 768px) {
+            flex-direction: column;
+            height: calc(100% - 50px);
+          }
         }
         
         .graph-container {
-          height: 300px;
-          max-height: 350px;
-          width: 100%;
+          flex: 1;
+          height: 100%;
+          min-height: 200px;
           background-color: white;
           border-radius: 8px;
-          padding: 15px;
+          padding: 10px;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           position: relative;
         }
         
         .training-status {
           text-align: center;
-          padding: 10px;
+          padding: 8px;
           background-color: #f0f0f0;
           border-radius: 4px;
           font-weight: bold;
           width: 100%;
+          font-size: 14px;
         }
 
-        @media (max-height: 800px) {
+        @media (max-height: 600px) {
           .graph-container {
-            height: 250px;
+            min-height: 180px;
+          }
+          .training-status {
+            padding: 5px;
+            font-size: 12px;
           }
         }
       `}</style>

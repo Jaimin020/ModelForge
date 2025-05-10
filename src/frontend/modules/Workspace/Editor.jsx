@@ -16,6 +16,7 @@ import { GraphDataManager } from '../../utils/graphUtils/GraphDataManager.ts';
 import { LoadingOverlay } from '../Loading/LoadingModal.jsx'
 import { FooterLine } from '../Footer/FooterLine.jsx';
 import { openNewWindow } from '../../utils/windowUtils/windowUtils'
+import { TEST_PY_FILE } from '../../../envPath.js';
 import Convert from 'ansi-to-html';
 import './style.css';
 
@@ -260,7 +261,7 @@ const DesignApp = () => {
     graphManager.setNodes(nodes);
     graphManager.setEdges(edges);
     setIsRunning(true);
-    handleOpenNewWindow();
+    //handleOpenNewWindow();
     window.backend.trainModel(graphManager.getGraphDataAsJson());
 
     try {
@@ -269,7 +270,7 @@ const DesignApp = () => {
         setOutput((prevOutput) => prevOutput + htmlOutput);
       });
       setOutput((prevOutput) => prevOutput + "\n------------------------------------- \nModel Execution initlated\n------------------------------------- \n");
-      await window.api.runPython('/Users/jaiminchauhan/MF_Project/demo.py');
+      await window.api.runPython(TEST_PY_FILE);
     } catch (error) {
       setOutput((prevOutput) => prevOutput + `\n${error}`);
     } finally {
@@ -281,7 +282,6 @@ const DesignApp = () => {
   const handleRun = () => {
     setOutput('');
     //check for graph.
-    handleOpenNewWindow();
     const currentEdges = edges.current.get();
     const graphAnalyzer = new GraphAnalyzer();
     const result = graphAnalyzer.validateGraph(currentEdges);

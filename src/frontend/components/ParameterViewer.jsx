@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getNodeFeatureMap } from '../utils/nodeOps/nodeFetMap';
 import { ModelNodeManager } from '../utils/graphMngr/ModelNodeManager.ts';
+import { PYTORCH_NODE_PATH } from '../../envPath'
 
 export const ParameterViewer = ({ selectedNode, height }) => {
   const [nodeParams, setNodeParams] = useState({});
@@ -39,7 +40,7 @@ export const ParameterViewer = ({ selectedNode, height }) => {
   useEffect(() => {
     const loadNodes = async () => {
       const fetMap = await getNodeFeatureMap(
-        '/Users/jaiminchauhan/Projects/Git/ModelForge/src/frontend/utils/pyTorchNodes.xml',
+        PYTORCH_NODE_PATH,
       );
       setNodeParams(fetMap);
     };

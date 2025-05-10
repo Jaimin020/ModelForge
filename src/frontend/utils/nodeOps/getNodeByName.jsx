@@ -1,9 +1,11 @@
 import { XMLParser } from 'fast-xml-parser';
 import { getNodeFeatureMap } from './nodeFetMap';
+import { PYTORCH_NODE_PATH } from '../../../envPath';
+
 
 export const getNodeByName = async (nodeName) => {
   const fetMap = await getNodeFeatureMap(
-    '/Users/jaiminchauhan/Projects/Git/ModelForge/src/frontend/utils/pyTorchNodes.xml',
+    PYTORCH_NODE_PATH,
   );
   return fetMap.get(nodeName);
 };

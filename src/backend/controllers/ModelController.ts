@@ -1,6 +1,8 @@
 import { GraphController } from './GraphController';
 import { Engine } from '../Core/Engine';
 import { FileManager } from '../Core/FileManager';
+import { TEST_PY_FILE,TEST_DIR } from '../../envPath'
+import path from 'path';
 
 export class ModelController {
   graphController = new GraphController();
@@ -13,13 +15,13 @@ export class ModelController {
     const hyperparameters = this.graphController.getHyperparameters();
     const engine = new Engine(sequences,hyperparameters);
     const code = engine.getPyCode();
-    const pathToSave = "/Users/jaiminchauhan/MF_Project/demo.py";
+    const pathToSave = TEST_PY_FILE;
     this.fileMngr.saveFile(pathToSave,code);
   }
 
   saveModel(modelGraph: any) {
     const fileName = 'model.mff';
-    const pathToSave = "/Users/jaiminchauhan/MF_Project/" + fileName;
+    const pathToSave = path.join(TEST_DIR, fileName);
     const content = JSON.stringify(modelGraph);
     this.fileMngr.saveFile(pathToSave,content);
   }
