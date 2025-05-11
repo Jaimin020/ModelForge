@@ -23,8 +23,37 @@ jobs:
       - name: ✨ Check Formatting
         run: npx prettier --check "src/**/*.{ts,tsx,js,jsx,json,css,scss}"
 
+  python-setup-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v3
+        
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          
+      - name: 📦 Install Dependencies
+        run: npm ci
+        
+      - name: 📥 Download Python Setup
+        run: curl -L "https://drive.google.com/file/d/1N0fr40XlEUpoWexgTJqWIFK1bJxOTdnz/view?usp=drive_link" -o myenv.tar.gz
+        
+      - name: 📂 Create Directory
+        run: mkdir -p src/main/installed-python
+        
+      - name: 📦 Extract Python Setup
+        run: tar -xzf myenv.tar.gz -C src/main/installed-python
+        
+      - name: 🔧 Setup Environment Path
+        run: node setupEnvPath.js
+        
+      - name: 🧪 Run Demo Test
+        run: python src/__test__/demo.py
+
   build:
-    needs: prettier
+    needs: [prettier, python-setup-test]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
