@@ -49,17 +49,8 @@ ___
 - **Backend**: Node.js
 - **ML Frameworks**: TensorFlow/Keras, PyTorch  
 - **Visualization**: `vis-network`
-- **Packaging**: `electron-builder`  
-
----
-
-## **Technology Stack**  
-- **Frontend**: Electron + React  
-- **Backend**: Node.js
-- **ML Frameworks**: TensorFlow/Keras, PyTorch  
-- **Visualization**: `vis-network`
-- **Packaging**: `electron-builder`  
-
+- **Packaging**: `electron-builder`
+  
 ---
 ## **Installation**  
 
