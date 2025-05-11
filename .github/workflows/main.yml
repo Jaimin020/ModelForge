@@ -41,6 +41,9 @@ jobs:
 
       - name: 📦 Install Dependencies
         run: npm install
+        
+      - name: 🔧 Setup Environment Path
+        run: node setupEnvPath.js
 
       - name: 🛠 Build Electron App
         run: npm run build
