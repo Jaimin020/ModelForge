@@ -10,7 +10,7 @@ import os
 
 
 # Load and preprocess data
-file_path = '/Users/jaiminchauhan/MF_Project/train_new_F.csv'
+file_path = 'train_new.csv'
 file_extension = os.path.splitext(file_path)[1].lower()
 
 if file_extension == '.csv':
