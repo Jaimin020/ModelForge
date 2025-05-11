@@ -18,10 +18,14 @@ export class ModelData {
     });
   }
 
-  generateModelData(modelName: string, layersData: any[], hyperparameters: any) {
+  generateModelData(
+    modelName: string,
+    layersData: any[],
+    hyperparameters: any,
+  ) {
     this.inputData = layersData[0];
-    this.lossFunction = layersData[layersData.length - 1]; 
-    this.layersData  = {
+    this.lossFunction = layersData[layersData.length - 1];
+    this.layersData = {
       model_name: modelName,
       layers: this.formatLayerData(layersData.slice(1, -1)),
     };
@@ -29,16 +33,33 @@ export class ModelData {
   }
 
   getInputData() {
-    const selectedFeatures = this.inputData.parameters.find((p:any) => p.name === 'Selected Feature')?.value || [];
+    const selectedFeatures =
+      this.inputData.parameters.find((p: any) => p.name === 'Selected Feature')
+        ?.value || [];
     return {
-      file_name: this.inputData.parameters.find((p:any) => p.name === 'File')?.value || 'dataset.csv',
-      train_split: this.inputData.parameters.find((p:any) => p.name === 'Train Split')?.value || 0.8,
-      test_split: this.inputData.parameters.find((p:any) => p.name === 'Train Split')?.value || 0.2,
-      features: Array.isArray(selectedFeatures) 
-      ? selectedFeatures.map(f => decodeURIComponent(f).replace(/&#34;/g, '"').replace(/['"]/g, ''))
-      : [decodeURIComponent(selectedFeatures).replace(/&#34;/g, '"').replace(/['"]/g, '')],
-      predictor: this.inputData.parameters.find((p:any) => p.name === 'Selected Predictor')?.value || [],
-      batch_size: Number(this.hyperparameters.batch_size || 32)
+      file_name:
+        this.inputData.parameters.find((p: any) => p.name === 'File')?.value ||
+        'dataset.csv',
+      train_split:
+        this.inputData.parameters.find((p: any) => p.name === 'Train Split')
+          ?.value || 0.8,
+      test_split:
+        this.inputData.parameters.find((p: any) => p.name === 'Train Split')
+          ?.value || 0.2,
+      features: Array.isArray(selectedFeatures)
+        ? selectedFeatures.map((f) =>
+            decodeURIComponent(f).replace(/&#34;/g, '"').replace(/['"]/g, ''),
+          )
+        : [
+            decodeURIComponent(selectedFeatures)
+              .replace(/&#34;/g, '"')
+              .replace(/['"]/g, ''),
+          ],
+      predictor:
+        this.inputData.parameters.find(
+          (p: any) => p.name === 'Selected Predictor',
+        )?.value || [],
+      batch_size: Number(this.hyperparameters.batch_size || 32),
     };
   }
 

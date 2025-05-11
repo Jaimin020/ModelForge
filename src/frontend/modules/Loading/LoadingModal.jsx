@@ -3,7 +3,7 @@ import './style.css';
 
 export const LoadingOverlay = ({ isVisible, message = 'Processing...' }) => {
   if (!isVisible) return null;
-  
+
   return (
     <div className="loading-overlay">
       <div className="loading-container">

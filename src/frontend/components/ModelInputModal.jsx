@@ -19,7 +19,10 @@ export const ModelInputModal = ({ isOpen, onClose, selectedNode }) => {
   const [columns, setColumns] = useState([]);
 
   const handleFileSelect = async () => {
-    const filePath = await window.dialog.filePicker({name: 'Select_File', extensions: ['csv', 'xlsx']});
+    const filePath = await window.dialog.filePicker({
+      name: 'Select_File',
+      extensions: ['csv', 'xlsx'],
+    });
     if (filePath) {
       const spreadsheet = SpreadsheetOps.getInstance();
       const loaded = await spreadsheet.loadFile(filePath);

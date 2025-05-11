@@ -19,10 +19,10 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
-const TrainingGraphs = ({ trainingData, isTraining=false }) => {
+const TrainingGraphs = ({ trainingData, isTraining = false }) => {
   const [epochs, setEpochs] = useState([]);
   const [trainLoss, setTrainLoss] = useState([]);
   const [trainAccuracy, setTrainAccuracy] = useState([]);
@@ -31,11 +31,11 @@ const TrainingGraphs = ({ trainingData, isTraining=false }) => {
 
   useEffect(() => {
     if (trainingData && trainingData.length > 0) {
-      setEpochs(trainingData.map(data => data.epoch));
-      setTrainLoss(trainingData.map(data => data.trainLoss));
-      setTrainAccuracy(trainingData.map(data => data.trainAccuracy));
-      setTestLoss(trainingData.map(data => data.testLoss));
-      setTestAccuracy(trainingData.map(data => data.testAccuracy));
+      setEpochs(trainingData.map((data) => data.epoch));
+      setTrainLoss(trainingData.map((data) => data.trainLoss));
+      setTrainAccuracy(trainingData.map((data) => data.trainAccuracy));
+      setTestLoss(trainingData.map((data) => data.testLoss));
+      setTestAccuracy(trainingData.map((data) => data.testAccuracy));
     }
   }, [trainingData]);
 
@@ -48,16 +48,16 @@ const TrainingGraphs = ({ trainingData, isTraining=false }) => {
         labels: {
           boxWidth: 10,
           font: {
-            size: 10
-          }
-        }
+            size: 10,
+          },
+        },
       },
       title: {
         display: true,
         text: 'Training and Test Loss',
         font: {
-          size: 14
-        }
+          size: 14,
+        },
       },
     },
     scales: {
@@ -65,17 +65,17 @@ const TrainingGraphs = ({ trainingData, isTraining=false }) => {
         beginAtZero: false,
         ticks: {
           font: {
-            size: 10
-          }
-        }
+            size: 10,
+          },
+        },
       },
       x: {
         ticks: {
           font: {
-            size: 10
-          }
-        }
-      }
+            size: 10,
+          },
+        },
+      },
     },
     animation: {
       duration: isTraining ? 0 : 1000, // Disable animation during training for performance
@@ -91,16 +91,16 @@ const TrainingGraphs = ({ trainingData, isTraining=false }) => {
         labels: {
           boxWidth: 10,
           font: {
-            size: 10
-          }
-        }
+            size: 10,
+          },
+        },
       },
       title: {
         display: true,
         text: 'Training and Test Accuracy',
         font: {
-          size: 14
-        }
+          size: 14,
+        },
       },
     },
     scales: {
@@ -109,17 +109,17 @@ const TrainingGraphs = ({ trainingData, isTraining=false }) => {
         max: 1,
         ticks: {
           font: {
-            size: 10
-          }
-        }
+            size: 10,
+          },
+        },
       },
       x: {
         ticks: {
           font: {
-            size: 10
-          }
-        }
-      }
+            size: 10,
+          },
+        },
+      },
     },
     animation: {
       duration: isTraining ? 0 : 1000, // Disable animation during training for performance
@@ -172,13 +172,16 @@ const TrainingGraphs = ({ trainingData, isTraining=false }) => {
           <Line options={accuracyOptions} data={accuracyData} />
         </div>
       </div>
-      
+
       {isTraining && (
         <div className="training-status">
-          <p>Training in progress... Epoch: {epochs.length > 0 ? epochs[epochs.length - 1] : 0}</p>
+          <p>
+            Training in progress... Epoch:{' '}
+            {epochs.length > 0 ? epochs[epochs.length - 1] : 0}
+          </p>
         </div>
       )}
-      
+
       <style jsx>{`
         .training-graphs-container {
           display: flex;
@@ -189,20 +192,20 @@ const TrainingGraphs = ({ trainingData, isTraining=false }) => {
           height: 100%;
           overflow: hidden;
         }
-        
+
         .graphs-row {
           display: flex;
           flex-direction: row;
           gap: 15px;
           width: 100%;
           height: calc(100% - 40px);
-          
+
           @media (max-width: 768px) {
             flex-direction: column;
             height: calc(100% - 50px);
           }
         }
-        
+
         .graph-container {
           flex: 1;
           height: 100%;
@@ -213,7 +216,7 @@ const TrainingGraphs = ({ trainingData, isTraining=false }) => {
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           position: relative;
         }
-        
+
         .training-status {
           text-align: center;
           padding: 8px;

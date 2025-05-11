@@ -3,9 +3,9 @@ import path from 'path';
 
 export class FileManager {
   private static instance: FileManager;
-  
+
   private constructor() {}
-  
+
   static getInstance(): FileManager {
     if (!FileManager.instance) {
       FileManager.instance = new FileManager();

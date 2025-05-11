@@ -8,9 +8,7 @@ export const LayerSelectionPanel = ({ onDragStart }) => {
 
   useEffect(() => {
     const loadNodes = async () => {
-      const names = await getNodeNames(
-        PYTORCH_NODE_PATH,
-      );
+      const names = await getNodeNames(PYTORCH_NODE_PATH);
       setNodeNames(names);
     };
     loadNodes();

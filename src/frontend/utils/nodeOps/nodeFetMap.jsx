@@ -20,12 +20,13 @@ export const getNodeFeatureMap = async (xmlFileName) => {
   // Extract node names and features
   if (result.nodes && result.nodes.node) {
     result.nodes.node.forEach((node) => {
-       // Ensure parameters is always an array
-       const parameters = node.parameters && node.parameters.param
-       ? Array.isArray(node.parameters.param)
-         ? node.parameters.param
-         : [node.parameters.param]
-       : [];
+      // Ensure parameters is always an array
+      const parameters =
+        node.parameters && node.parameters.param
+          ? Array.isArray(node.parameters.param)
+            ? node.parameters.param
+            : [node.parameters.param]
+          : [];
       const nodeInfo = {
         name: node.name,
         feature: node.feature,

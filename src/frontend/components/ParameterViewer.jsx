@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getNodeFeatureMap } from '../utils/nodeOps/nodeFetMap';
 import { ModelNodeManager } from '../utils/graphMngr/ModelNodeManager.ts';
-import { PYTORCH_NODE_PATH } from '../../envPath'
+import { PYTORCH_NODE_PATH } from '../../envPath';
 
 export const ParameterViewer = ({ selectedNode, height }) => {
   const [nodeParams, setNodeParams] = useState({});
@@ -11,26 +11,31 @@ export const ParameterViewer = ({ selectedNode, height }) => {
   const handleParameterChange = (paramName, value) => {
     setTempValues({
       ...tempValues,
-      [paramName]: value
+      [paramName]: value,
     });
   };
 
   const handleUpdateParameter = (paramName) => {
     if (selectedNode && tempValues[paramName] !== undefined) {
-      nodeManager.updateNodeParameter(selectedNode.id, paramName, tempValues[paramName]);
+      nodeManager.updateNodeParameter(
+        selectedNode.id,
+        paramName,
+        tempValues[paramName],
+      );
     }
   };
 
   const handleResetParameter = (paramName, paramType) => {
     // Set default values based on parameter type
-    const defaultValue = paramType === 'int' ? 1 : paramType === 'bool' ? true : '';
-    
+    const defaultValue =
+      paramType === 'int' ? 1 : paramType === 'bool' ? true : '';
+
     // Update the temp value
     setTempValues({
       ...tempValues,
-      [paramName]: defaultValue
+      [paramName]: defaultValue,
     });
-    
+
     // Also update the actual node parameter
     if (selectedNode) {
       nodeManager.updateNodeParameter(selectedNode.id, paramName, defaultValue);
@@ -39,9 +44,7 @@ export const ParameterViewer = ({ selectedNode, height }) => {
 
   useEffect(() => {
     const loadNodes = async () => {
-      const fetMap = await getNodeFeatureMap(
-        PYTORCH_NODE_PATH,
-      );
+      const fetMap = await getNodeFeatureMap(PYTORCH_NODE_PATH);
       setNodeParams(fetMap);
     };
     loadNodes();
@@ -53,7 +56,7 @@ export const ParameterViewer = ({ selectedNode, height }) => {
       const nodeConfig = nodeManager.getNode(selectedNode.id);
       if (nodeConfig && nodeConfig.parameters) {
         const initialValues = {};
-        nodeConfig.parameters.forEach(param => {
+        nodeConfig.parameters.forEach((param) => {
           initialValues[param.name] = param.value;
         });
         setTempValues(initialValues);
@@ -104,14 +107,22 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                       </span>
                     </div>
                   ) : param.type === 'bool' ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '5px',
+                      }}
+                    >
                       <select
-                        value={tempValues[param.name] === true ? "True" : "False"}
+                        value={
+                          tempValues[param.name] === true ? 'True' : 'False'
+                        }
                         style={{ width: '100px' }}
                         onChange={(e) =>
                           handleParameterChange(
                             param.name,
-                            e.target.value === "True"?"True":"False"
+                            e.target.value === 'True' ? 'True' : 'False',
                           )
                         }
                       >
@@ -119,14 +130,16 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                         <option value="False">false</option>
                       </select>
                       <div style={{ display: 'flex', gap: '5px' }}>
-                        <button 
+                        <button
                           onClick={() => handleUpdateParameter(param.name)}
                           style={{ fontSize: '10px', padding: '2px 5px' }}
                         >
                           Update
                         </button>
-                        <button 
-                          onClick={() => handleResetParameter(param.name, param.type)}
+                        <button
+                          onClick={() =>
+                            handleResetParameter(param.name, param.type)
+                          }
                           style={{ fontSize: '10px', padding: '2px 5px' }}
                         >
                           Reset
@@ -134,10 +147,20 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                       </div>
                     </div>
                   ) : param.type === 'int' ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '5px',
+                      }}
+                    >
                       <input
                         type="number"
-                        value={tempValues[param.name] !== undefined ? tempValues[param.name] : param.value}
+                        value={
+                          tempValues[param.name] !== undefined
+                            ? tempValues[param.name]
+                            : param.value
+                        }
                         required={param.required === 'true'}
                         placeholder={
                           param.required === 'true' ? 'Required' : 'Optional'
@@ -146,19 +169,21 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                         onChange={(e) =>
                           handleParameterChange(
                             param.name,
-                            parseInt(e.target.value)
+                            parseInt(e.target.value),
                           )
                         }
                       />
                       <div style={{ display: 'flex', gap: '5px' }}>
-                        <button 
+                        <button
                           onClick={() => handleUpdateParameter(param.name)}
                           style={{ fontSize: '10px', padding: '2px 5px' }}
                         >
                           Update
                         </button>
-                        <button 
-                          onClick={() => handleResetParameter(param.name, param.type)}
+                        <button
+                          onClick={() =>
+                            handleResetParameter(param.name, param.type)
+                          }
                           style={{ fontSize: '10px', padding: '2px 5px' }}
                         >
                           Reset
@@ -168,17 +193,18 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                   ) : (
                     <input
                       type="text"
-                      value={tempValues[param.name] !== undefined ? tempValues[param.name] : param.value}
+                      value={
+                        tempValues[param.name] !== undefined
+                          ? tempValues[param.name]
+                          : param.value
+                      }
                       required={param.required === 'true'}
                       placeholder={
                         param.required === 'true' ? 'Required' : 'Optional'
                       }
                       style={{ width: '100px' }}
                       onBlur={(e) =>
-                        handleParameterChange(
-                          param.name,
-                          e.target.value
-                        )
+                        handleParameterChange(param.name, e.target.value)
                       }
                     />
                   )}

@@ -9,5 +9,5 @@ export const backendService = {
   },
   async loadModel(modelConfig: any) {
     return await ipcRenderer.invoke('load-model', modelConfig);
-  }
+  },
 };

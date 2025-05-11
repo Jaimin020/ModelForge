@@ -184,7 +184,7 @@ let pythonProcess: ChildProcess | null = null;
 async function formatPythonFile(scriptPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const formatProcess = spawn('python3', ['-m', 'black', scriptPath]);
-    
+
     formatProcess.on('close', (code: number) => {
       if (code === 0) {
         resolve();
@@ -203,7 +203,7 @@ ipcMain.handle(
   ): Promise<string> => {
     // Format the file first
     // await formatPythonFile(scriptPath);
-    
+
     return new Promise((resolve, reject) => {
       pythonProcess = spawn(paths.venvPython, ['-u', scriptPath]);
       let output = '';
@@ -248,9 +248,7 @@ ipcMain.handle('writeFile', async (event, filePath, data) => {
 ipcMain.handle('select-file', async (event, fileFomrate) => {
   const result = await dialog.showOpenDialog(mainWindow!, {
     properties: ['openFile'],
-    filters: [
-      fileFomrate
-    ],
+    filters: [fileFomrate],
   });
 
   return result.canceled ? null : result.filePaths[0];
@@ -280,7 +278,7 @@ ipcMain.handle('readCsvOrExelFile', async (event, filePath) => {
       const firstRow = data[0];
       hasHeaders = firstRow.every((cell) => typeof cell === 'string');
       columnNames = hasHeaders
-        ? firstRow as string[]
+        ? (firstRow as string[])
         : Array.from({ length: columnCount }, (_, i) => `column_${i + 1}`);
     }
 

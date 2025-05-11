@@ -1,7 +1,7 @@
 import { GraphController } from './GraphController';
 import { Engine } from '../Core/Engine';
 import { FileManager } from '../Core/FileManager';
-import { TEST_PY_FILE,TEST_DIR } from '../../envPath'
+import { TEST_PY_FILE, TEST_DIR } from '../../envPath';
 import path from 'path';
 
 export class ModelController {
@@ -13,17 +13,17 @@ export class ModelController {
 
     const sequences = this.graphController.getLayerSequence();
     const hyperparameters = this.graphController.getHyperparameters();
-    const engine = new Engine(sequences,hyperparameters);
+    const engine = new Engine(sequences, hyperparameters);
     const code = engine.getPyCode();
     const pathToSave = TEST_PY_FILE;
-    this.fileMngr.saveFile(pathToSave,code);
+    this.fileMngr.saveFile(pathToSave, code);
   }
 
   saveModel(modelGraph: any) {
     const fileName = 'model.mff';
     const pathToSave = path.join(TEST_DIR, fileName);
     const content = JSON.stringify(modelGraph);
-    this.fileMngr.saveFile(pathToSave,content);
+    this.fileMngr.saveFile(pathToSave, content);
   }
 
   async loadModel(filePath: string) {
@@ -31,5 +31,4 @@ export class ModelController {
     const modelGraph = JSON.parse(content?.toString() || '{}');
     return modelGraph;
   }
-
 }

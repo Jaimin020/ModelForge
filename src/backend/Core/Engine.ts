@@ -7,8 +7,12 @@ export class Engine {
   private codeGenerator: AbstractCodeGenerator;
 
   constructor(rawLayersData: any, hyperparameters: any) {
-    this.modelDataObj.generateModelData('MyModel', rawLayersData , hyperparameters);
-    this.codeGenerator = this.createCodeGenerator("PyTorch");
+    this.modelDataObj.generateModelData(
+      'MyModel',
+      rawLayersData,
+      hyperparameters,
+    );
+    this.codeGenerator = this.createCodeGenerator('PyTorch');
   }
 
   private createCodeGenerator(framework: string): AbstractCodeGenerator {
@@ -19,7 +23,12 @@ export class Engine {
 
     switch (framework.toLowerCase()) {
       case 'pytorch':
-        return new PyTorchCodeGenerator(layerData, hyperParams, inputData, lossFunction);
+        return new PyTorchCodeGenerator(
+          layerData,
+          hyperParams,
+          inputData,
+          lossFunction,
+        );
       default:
         throw new Error(`Unsupported framework: ${framework}`);
     }

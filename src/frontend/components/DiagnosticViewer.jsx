@@ -43,7 +43,7 @@ export const DiagnosticViewer = ({ output }) => {
           fontSize: '12px',
         }}
       >
-        <div dangerouslySetInnerHTML={{__html: output}}></div>
+        <div dangerouslySetInnerHTML={{ __html: output }}></div>
       </pre>
     </div>
   );

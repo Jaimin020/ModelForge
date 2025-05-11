@@ -15,7 +15,8 @@ const dialogHandler = {
       callback(message);
     });
   },
-  filePicker: (fileFormate:string) => ipcRenderer.invoke('select-file', fileFormate),
+  filePicker: (fileFormate: string) =>
+    ipcRenderer.invoke('select-file', fileFormate),
 };
 
 const fileHandler = {
@@ -27,7 +28,8 @@ const fileHandler = {
 };
 
 const windowHandler = {
-  openNewWindow: (options: any) => ipcRenderer.invoke('create-new-window', options),
+  openNewWindow: (options: any) =>
+    ipcRenderer.invoke('create-new-window', options),
 };
 
 contextBridge.exposeInMainWorld('api', pythonHandler);

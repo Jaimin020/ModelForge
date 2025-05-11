@@ -17,17 +17,17 @@ export const Toolbar = ({
     // Get the graph data
     const graphDataManager = GraphDataManager.getInstance();
     const graphData = graphDataManager.getGraphDataAsJson();
-    
+
     // Open a new window with the TrainingPage
     const trainingWindow = window.open('', '_blank', 'width=1000,height=800');
-    
+
     // Pass the graph data to the new window
     if (trainingWindow) {
       trainingWindow.graphData = graphData;
-      
+
       // Load the TrainingPage in the new window
       trainingWindow.location.href = '/#/training';
-      
+
       // Call the original onRun handler if provided
       if (onRun) {
         onRun(graphData);
@@ -166,13 +166,13 @@ export const Toolbar = ({
         }}
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-          <path d="M8.5 10.5a.5.5 0 0 0-1 0v1.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 12.293v-1.793z"/>
-          <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H2z"/>
-          <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4z"/>
+          <path d="M8.5 10.5a.5.5 0 0 0-1 0v1.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 12.293v-1.793z" />
+          <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H2z" />
+          <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4z" />
         </svg>
         Open
       </button>
-      
+
       <button
         style={saveButtonStyle}
         onClick={onSave}
@@ -195,7 +195,7 @@ export const Toolbar = ({
       </button>
       {/* First vertical divider */}
       <div style={dividerStyle}></div>
-      
+
       <button
         style={runButtonStyle}
         onClick={onRun}

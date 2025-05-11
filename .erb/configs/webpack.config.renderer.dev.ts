@@ -57,7 +57,7 @@ const configuration: webpack.Configuration = {
       path.join(webpackPaths.srcRendererPath, 'train.tsx'),
     ],
   },
-  
+
   // Change the output filename to include the entry name
   output: {
     path: webpackPaths.distRendererPath,

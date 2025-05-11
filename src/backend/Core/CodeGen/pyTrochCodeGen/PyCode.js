@@ -79,7 +79,6 @@ print(f"Number of epochs: {num_epochs}")
 print(f"Learning rate: {learning_rate}")
 print("-" * 50)`;
 
-
 export const modelTemplate = `class <%= model_name %>(nn.Module):
     def __init__(self):
         super(<%= model_name %>, self).__init__()
