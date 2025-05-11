@@ -52,7 +52,7 @@ _Drag-and-Drop AI Model Builder with Code Generation_
 - **ML Frameworks**: TensorFlow/Keras, PyTorch
 - **Visualization**: `vis-network`
 - **Packaging**: `electron-builder`
-
+  
 ---
 
 ## **Installation**
@@ -80,8 +80,15 @@ _Drag-and-Drop AI Model Builder with Code Generation_
    npm install
    ```
 4. Make a copy of the .env.example file as .env and set the BASE_PATH accordingly.
-
+5. Execute the environment path setup script
+    ```sh
+    node setupEnvPath.js
+    ```
 ---
+### **Python Setup**
+1. [Download Python Setup](https://drive.google.com/file/d/1N0fr40XlEUpoWexgTJqWIFK1bJxOTdnz/view?usp=sharing)
+2. Extract the downloaded setup to src/main/installed-python within the ModelForge directory.
+---  
 
 ### **Running the Electron Application**
 
