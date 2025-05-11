@@ -8,8 +8,32 @@ export const Toolbar = ({
   showInputConfig,
   onInputConfig,
   onHyperParam,
+  onSave,
+  onOpen,
 }) => {
   const [isInputModalOpen, setIsInputModalOpen] = useState(false);
+  // Function to handle training button click
+  const handleTrainClick = () => {
+    // Get the graph data
+    const graphDataManager = GraphDataManager.getInstance();
+    const graphData = graphDataManager.getGraphDataAsJson();
+
+    // Open a new window with the TrainingPage
+    const trainingWindow = window.open('', '_blank', 'width=1000,height=800');
+
+    // Pass the graph data to the new window
+    if (trainingWindow) {
+      trainingWindow.graphData = graphData;
+
+      // Load the TrainingPage in the new window
+      trainingWindow.location.href = '/#/training';
+
+      // Call the original onRun handler if provided
+      if (onRun) {
+        onRun(graphData);
+      }
+    }
+  };
 
   const toolbarStyle = {
     display: 'flex',
@@ -35,12 +59,49 @@ export const Toolbar = ({
     boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
   };
 
-  const runButtonStyle = {
+  const dividerStyle = {
+    height: '24px',
+    width: '1px',
+    backgroundColor: '#d0d0d0',
+    margin: '0 8px',
+  };
+
+  const openButtonStyle = {
     ...buttonStyle,
-    backgroundColor: '#005eb8',
+    backgroundColor: '#FF9800',
     color: 'white',
     '&:hover': {
-      backgroundColor: '#004080',
+      backgroundColor: '#e68a00',
+      transform: 'translateY(-1px)',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+    },
+    '&:active': {
+      transform: 'translateY(0)',
+      boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+    },
+  };
+
+  const saveButtonStyle = {
+    ...buttonStyle,
+    backgroundColor: '#2196F3',
+    color: 'white',
+    '&:hover': {
+      backgroundColor: '#0b7dda',
+      transform: 'translateY(-1px)',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+    },
+    '&:active': {
+      transform: 'translateY(0)',
+      boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+    },
+  };
+
+  const runButtonStyle = {
+    ...buttonStyle,
+    backgroundColor: '#4CAF50',
+    color: 'white',
+    '&:hover': {
+      backgroundColor: '#45a049',
       transform: 'translateY(-1px)',
       boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
     },
@@ -52,10 +113,10 @@ export const Toolbar = ({
 
   const stopButtonStyle = {
     ...buttonStyle,
-    backgroundColor: '#003366',
+    backgroundColor: '#F44336',
     color: 'white',
     '&:hover': {
-      backgroundColor: '#002040',
+      backgroundColor: '#d32f2f',
       transform: 'translateY(-1px)',
       boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
     },
@@ -90,17 +151,63 @@ export const Toolbar = ({
   return (
     <div style={toolbarStyle}>
       <button
+        style={openButtonStyle}
+        onClick={onOpen}
+        title="Open Model"
+        onMouseOver={(e) => {
+          e.currentTarget.style.backgroundColor = '#e68a00';
+          e.currentTarget.style.transform = 'translateY(-1px)';
+          e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.backgroundColor = '#FF9800';
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+        }}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8.5 10.5a.5.5 0 0 0-1 0v1.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 12.293v-1.793z" />
+          <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H2z" />
+          <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4z" />
+        </svg>
+        Open
+      </button>
+
+      <button
+        style={saveButtonStyle}
+        onClick={onSave}
+        title="Save Model"
+        onMouseOver={(e) => {
+          e.currentTarget.style.backgroundColor = '#0b7dda';
+          e.currentTarget.style.transform = 'translateY(-1px)';
+          e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.backgroundColor = '#2196F3';
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+        }}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v4.5h2a.5.5 0 0 1 .354.854l-2.5 2.5a.5.5 0 0 1-.708 0l-2.5-2.5A.5.5 0 0 1 5.5 6.5h2V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z" />
+        </svg>
+        Save
+      </button>
+      {/* First vertical divider */}
+      <div style={dividerStyle}></div>
+
+      <button
         style={runButtonStyle}
         onClick={onRun}
         disabled={isRunning}
         title="Train"
         onMouseOver={(e) => {
-          e.currentTarget.style.backgroundColor = '#004080';
+          e.currentTarget.style.backgroundColor = '#45a049';
           e.currentTarget.style.transform = 'translateY(-1px)';
           e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
         }}
         onMouseOut={(e) => {
-          e.currentTarget.style.backgroundColor = '#005eb8';
+          e.currentTarget.style.backgroundColor = '#4CAF50';
           e.currentTarget.style.transform = 'translateY(0)';
           e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
         }}
@@ -115,12 +222,12 @@ export const Toolbar = ({
         onClick={onStop}
         title="Stop"
         onMouseOver={(e) => {
-          e.currentTarget.style.backgroundColor = '#002040';
+          e.currentTarget.style.backgroundColor = '#d32f2f';
           e.currentTarget.style.transform = 'translateY(-1px)';
           e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
         }}
         onMouseOut={(e) => {
-          e.currentTarget.style.backgroundColor = '#003366';
+          e.currentTarget.style.backgroundColor = '#F44336';
           e.currentTarget.style.transform = 'translateY(0)';
           e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
         }}
@@ -130,6 +237,8 @@ export const Toolbar = ({
         </svg>
         Stop
       </button>
+
+      <div style={dividerStyle}></div>
 
       <button
         style={hyperParamButtonStyle}

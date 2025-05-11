@@ -13,6 +13,11 @@ import { GraphAnalyzer } from '../../utils/graphMngr/GraphAnalyzer.ts';
 import { ModelInputModal } from '../../components/ModelInputModal.jsx';
 import { HyperparameterModal } from '../../components/HyperparameterModal';
 import { GraphDataManager } from '../../utils/graphUtils/GraphDataManager.ts';
+import { LoadingOverlay } from '../Loading/LoadingModal.jsx';
+import { FooterLine } from '../Footer/FooterLine.jsx';
+import { openNewWindow } from '../../utils/windowUtils/windowUtils';
+import { TEST_PY_FILE } from '../../../envPath.js';
+import Convert from 'ansi-to-html';
 import './style.css';
 
 const DesignApp = () => {
@@ -43,6 +48,15 @@ const DesignApp = () => {
   const [isInputNode, setIsInputNode] = useState(false);
   const [isInputModalOpen, setIsInputModalOpen] = useState(false);
   const [isHyperParamModalOpen, setIsHyperParamModalOpen] = useState(false);
+
+  // Add at the top of component
+  const convert = new Convert({ newline: true });
+
+  //Loaing overlay message
+  const [loadingMessage, setLoadingMessage] = useState('');
+
+  //FrameWork Info
+  const [activeFramework, setActiveFramework] = useState('PyTorch');
 
   // 🛠️ Initialize the vis-network once (like componentDidMount)
   useEffect(() => {
@@ -103,11 +117,34 @@ const DesignApp = () => {
       }
     });
 
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
+        e.preventDefault();
+        if (networkInstance.current) {
+          networkInstance.current.fit();
+        }
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault();
+        if (networkInstance.current) {
+          onSave();
+        }
+      }
+    });
+
     resizeObserver.current.observe(container);
 
     return () => {
       if (resizeObserver.current) resizeObserver.current.disconnect();
       if (networkInstance.current) networkInstance.current.destroy();
+      document.removeEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
+          e.preventDefault();
+          if (networkInstance.current) {
+            networkInstance.current.fit();
+          }
+        }
+      });
     };
   }, []);
 
@@ -204,6 +241,18 @@ const DesignApp = () => {
     document.removeEventListener('mouseup', handleMouseUp);
   };
 
+  const handleOpenNewWindow = async () => {
+    const windowId = await openNewWindow({
+      width: 800,
+      height: 600,
+      title: 'New Project',
+    });
+
+    if (windowId) {
+      console.log(`New window opened with ID: ${windowId}`);
+    }
+  };
+
   const executePythonScript = async () => {
     if (isRunning) {
       setOutput((prev) => prev + '\nProcess already running. Please wait.');
@@ -211,15 +260,21 @@ const DesignApp = () => {
     }
     graphManager.setNodes(nodes);
     graphManager.setEdges(edges);
-    window.backend.trainModel(graphManager.getGraphDataAsJson());
     setIsRunning(true);
+    //handleOpenNewWindow();
+    window.backend.trainModel(graphManager.getGraphDataAsJson());
 
     try {
       await window.dialog.onDialogUpdate((message) => {
-        setOutput((prevOutput) => prevOutput + message);
+        const htmlOutput = convert.toHtml(message);
+        setOutput((prevOutput) => prevOutput + htmlOutput);
       });
-
-      window.api.runPython('src/__tests__/my_script.py');
+      setOutput(
+        (prevOutput) =>
+          prevOutput +
+          '\n------------------------------------- \nModel Execution initlated\n------------------------------------- \n',
+      );
+      await window.api.runPython(TEST_PY_FILE);
     } catch (error) {
       setOutput((prevOutput) => prevOutput + `\n${error}`);
     } finally {
@@ -239,7 +294,11 @@ const DesignApp = () => {
       setOutput((prev) => prev + 'Please set hyperparameters.\n');
       return;
     }
-    setOutput((prevOutput) => prevOutput + 'Compiling Model\n--> ');
+    setOutput(
+      (prevOutput) =>
+        prevOutput +
+        '------------------------------------- \nModel Compilation initlated\n------------------------------------- \n--> ',
+    );
     if (result.isValid) {
       setOutput((prevOutput) => prevOutput + 'All Checks PASS\n');
       executePythonScript();
@@ -256,8 +315,84 @@ const DesignApp = () => {
     }
   };
 
+  const onSave = async () => {
+    if (!isRunning) {
+      setLoadingMessage('Saving...');
+      graphManager.setNodes(nodes);
+      graphManager.setEdges(edges);
+      window.backend.saveModel(graphManager.getGraphDataAsJson());
+      setLoadingMessage('');
+      setOutput((prev) => prev + '\nModel saved successfully.');
+    } else {
+      setOutput(
+        (prev) => prev + '\nPlease stop the training process before saving.',
+      );
+    }
+  };
+
+  const onOpen = async () => {
+    setLoadingMessage('Opening...');
+    const pathToload = await window.dialog.filePicker({
+      name: 'Load_File',
+      extensions: ['mff'],
+    });
+    setLoadingMessage('');
+    try {
+      setLoadingMessage('Loading...');
+      const result = await window.backend.loadModel(pathToload);
+      if (result && result.nodes && result.edges) {
+        // Clear existing nodes and edges
+        nodes.current.clear();
+        edges.current.clear();
+
+        // Add the loaded nodes to the network
+        nodes.current.add(result.nodes);
+
+        // Add the loaded edges to the network
+        edges.current.add(result.edges);
+
+        // Restore the model nodes in the ModelNodeManager
+        const nodeManager = ModelNodeManager.getInstance();
+        result.nodes.forEach((node) => {
+          nodeManager.createNode(node.id, {
+            name: node.name,
+            feature: node.feature,
+            library: node.library,
+            framework: node.framework,
+            codeId: node.codeId,
+            inport: node.inport,
+            outport: node.outport,
+            parameters: node.parameters,
+            code: node.code,
+          });
+        });
+
+        // Set hyperparameters if they exist
+        if (result.hyperparameters) {
+          graphManager.setHyperparameters(result.hyperparameters);
+        }
+
+        // Fit the network to show all nodes
+        if (networkInstance.current) {
+          networkInstance.current.fit();
+        }
+
+        setOutput((prev) => prev + '\nModel loaded successfully.');
+      } else {
+        setOutput(
+          (prev) => prev + '\nFailed to load model: Invalid model data.',
+        );
+      }
+      setLoadingMessage('');
+    } catch (error) {
+      console.error('Error loading model:', error);
+      setOutput((prev) => prev + `\nError loading model: ${error.message}`);
+    }
+  };
+
   return (
     <div className="container" ref={containerRef}>
+      <LoadingOverlay isVisible={!!loadingMessage} message={loadingMessage} />
       <Toolbar
         onRun={handleRun}
         onStop={handleStop}
@@ -265,6 +400,8 @@ const DesignApp = () => {
         showInputConfig={isInputNode}
         onInputConfig={() => setIsInputModalOpen(true)}
         onHyperParam={() => setIsHyperParamModalOpen(true)}
+        onSave={onSave}
+        onOpen={onOpen}
       />
       <ModelInputModal
         isOpen={isInputModalOpen}
@@ -315,6 +452,7 @@ const DesignApp = () => {
           >
             <ParameterViewer selectedNode={selectedNode} height="100%" />
           </div>
+          <FooterLine isRunning={isRunning} framework={activeFramework} />
         </div>
 
         {/* Divider for resizing columns */}

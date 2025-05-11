@@ -15,7 +15,8 @@ const dialogHandler = {
       callback(message);
     });
   },
-  filePicker: () => ipcRenderer.invoke('select-file'),
+  filePicker: (fileFormate: string) =>
+    ipcRenderer.invoke('select-file', fileFormate),
 };
 
 const fileHandler = {
@@ -26,10 +27,16 @@ const fileHandler = {
     ipcRenderer.invoke('readCsvOrExelFile', filePath),
 };
 
+const windowHandler = {
+  openNewWindow: (options: any) =>
+    ipcRenderer.invoke('create-new-window', options),
+};
+
 contextBridge.exposeInMainWorld('api', pythonHandler);
 contextBridge.exposeInMainWorld('dialog', dialogHandler);
 contextBridge.exposeInMainWorld('file', fileHandler);
 contextBridge.exposeInMainWorld('backend', backendService);
+contextBridge.exposeInMainWorld('windowMngr', windowHandler);
 
 export type PythonHandler = typeof pythonHandler;
 export type DialogHandler = typeof dialogHandler;

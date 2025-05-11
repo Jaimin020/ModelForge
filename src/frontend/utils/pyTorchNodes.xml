@@ -59,15 +59,15 @@
         <inport>1</inport>
         <outport>1</outport>
         <parameters>
-            <param name="inplace" type="bool" default="false" display="true"/>
+            <param name="inplace" type="bool" default="false" display="false"/>
         </parameters>
         <code>torch.nn.ReLU(inplace={inplace})</code>
     </node>
     <node>
-    <name>Cross Entropy Loss</name>
-    <feature>Cross Entropy Loss Function</feature>
+    <name>MSE Loss</name>
+    <feature>MSE Loss</feature>
     <library>torch.nn</library>
-    <codeId>cross_entropy_loss</codeId>
+    <codeId>MSELoss</codeId>
     <inport>1</inport>
     <outport>0</outport>
     <parameters>
@@ -75,7 +75,7 @@
         <param name="reduction" type="string" default="mean" display="false"/>
         <param name="ignore_index" type="int" default="-100" display="false"/>
     </parameters>
-    <code>torch.nn.CrossEntropyLoss(weight={weight}, reduction='{reduction}', ignore_index={ignore_index})</code>
+    <code>torch.nn.MSELoss(weight={weight}, reduction='{reduction}', ignore_index={ignore_index})</code>
 </node>
 
 </nodes>

@@ -18,7 +18,7 @@
       "request": "attach",
       "port": 1212,
       "webRoot": "${workspaceFolder}",
-      "timeout": 15000,
+      "timeout": 15000
     }
   ],
   "compounds": [

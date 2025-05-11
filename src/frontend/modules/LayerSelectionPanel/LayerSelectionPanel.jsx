@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getNodeNames } from '../../utils/nodeOps/nodeName';
+import { PYTORCH_NODE_PATH } from '../../../envPath';
 import '../Workspace/style.css';
 
 export const LayerSelectionPanel = ({ onDragStart }) => {
@@ -7,9 +8,7 @@ export const LayerSelectionPanel = ({ onDragStart }) => {
 
   useEffect(() => {
     const loadNodes = async () => {
-      const names = await getNodeNames(
-        '/Users/jaiminchauhan/Projects/Git/ModelForge/src/frontend/utils/pyTorchNodes.xml',
-      );
+      const names = await getNodeNames(PYTORCH_NODE_PATH);
       setNodeNames(names);
     };
     loadNodes();
