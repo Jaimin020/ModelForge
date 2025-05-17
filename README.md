@@ -86,7 +86,7 @@ _Drag-and-Drop AI Model Builder with Code Generation_
     ```
 ---
 ### **Python Setup**
-1. [Download Python Setup](https://drive.google.com/file/d/1N0fr40XlEUpoWexgTJqWIFK1bJxOTdnz/view?usp=sharing)
+1. Download Python Setup: [Windows](https://drive.google.com/file/d/1fpVbtID13g75Yvk31RLJnO6bO2tU72-R/view?usp=sharing ), [Mac](https://drive.google.com/file/d/1N0fr40XlEUpoWexgTJqWIFK1bJxOTdnz/view?usp=sharing)
 2. Extract the downloaded setup to src/main/installed-python within the ModelForge directory.
 ---  
 

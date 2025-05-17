@@ -10,7 +10,7 @@ import os
 
 
 # Load and preprocess data
-file_path = 'train_new.csv'
+file_path = r'C:\Users\yashj\Desktop\ModelForgeGit\ModelForge\src\__tests__\train_new.csv'
 file_extension = os.path.splitext(file_path)[1].lower()
 
 if file_extension == '.csv':
@@ -82,7 +82,7 @@ print("-" * 50)
 class MyModel(nn.Module):
     def __init__(self):
         super(MyModel, self).__init__()
-        self.layer1 = nn.Linear(1, 1, True)
+        self.layer1 = nn.Linear(1, 1, )
         
     def forward(self, x):
         x = self.layer1(x)
