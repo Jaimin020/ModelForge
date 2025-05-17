@@ -320,9 +320,9 @@ const DesignApp = () => {
       setLoadingMessage('Saving...');
       graphManager.setNodes(nodes);
       graphManager.setEdges(edges);
-      window.backend.saveModel(graphManager.getGraphDataAsJson());
+      const pathToSave = await window.backend.saveModel(graphManager.getGraphDataAsJson());
       setLoadingMessage('');
-      setOutput((prev) => prev + '\nModel saved successfully.');
+      setOutput((prev) => prev + '\nModel saved successfully at: ' + pathToSave);
     } else {
       setOutput(
         (prev) => prev + '\nPlease stop the training process before saving.',

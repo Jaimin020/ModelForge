@@ -19,11 +19,12 @@ export class ModelController {
     this.fileMngr.saveFile(pathToSave, code);
   }
 
-  saveModel(modelGraph: any) {
+  async saveModel(modelGraph: any) {
     const fileName = 'model.mff';
     const pathToSave = path.join(TEST_DIR, fileName);
     const content = JSON.stringify(modelGraph);
     this.fileMngr.saveFile(pathToSave, content);
+    return pathToSave;
   }
 
   async loadModel(filePath: string) {
