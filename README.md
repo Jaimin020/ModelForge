@@ -97,4 +97,8 @@ _Drag-and-Drop AI Model Builder with Code Generation_
    npm start
    ```
 
+### **Before creating pull request**
+```sh
+npx prettier --write "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}"
+```
 ---
