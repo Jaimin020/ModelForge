@@ -116,13 +116,13 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                     >
                       <select
                         value={
-                          tempValues[param.name] === true ? 'True' : 'False'
+                          tempValues[param.name] ? 'True' : 'False'
                         }
                         style={{ width: '100px' }}
                         onChange={(e) =>
                           handleParameterChange(
                             param.name,
-                            e.target.value === 'True' ? 'True' : 'False',
+                            e.target.value === 'True'
                           )
                         }
                       >
@@ -161,9 +161,9 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                             ? tempValues[param.name]
                             : param.value
                         }
-                        required={param.required === 'true'}
+                        required={param.required}
                         placeholder={
-                          param.required === 'true' ? 'Required' : 'Optional'
+                          param.required ? 'Required' : 'Optional'
                         }
                         style={{ width: '100px' }}
                         onChange={(e) =>
@@ -198,9 +198,9 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                           ? tempValues[param.name]
                           : param.value
                       }
-                      required={param.required === 'true'}
+                      required={param.required}
                       placeholder={
-                        param.required === 'true' ? 'Required' : 'Optional'
+                        param.required ? 'Required' : 'Optional'
                       }
                       style={{ width: '100px' }}
                       onBlur={(e) =>
@@ -208,9 +208,9 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                       }
                     />
                   )}
-                  {param.required === 'true' && (
+                  {/* {param.required && (
                     <span style={{ color: 'red', marginLeft: '5px' }}>*</span>
-                  )}
+                  )} */}
                 </div>
                 {index < nodeConfig.parameters.length - 1 && (
                   <hr
