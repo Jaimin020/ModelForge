@@ -20,7 +20,7 @@ export const DiagnosticViewer = ({ output }) => {
       const viewerBottom = viewerRef.current.getBoundingClientRect().bottom;
 
       // (viewerTop-containerTop) is the offset having the border and title bar
-      const newHeight = (viewerBottom - e.clientY) - (viewerTop-containerTop);
+      const newHeight = viewerBottom - e.clientY - (viewerTop - containerTop);
       setHeight(Math.max(80, newHeight)); // minimum height
     };
     const handleMouseUp = () => {
