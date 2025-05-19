@@ -254,6 +254,20 @@ ipcMain.handle('select-file', async (event, fileFomrate) => {
   return result.canceled ? null : result.filePaths[0];
 });
 
+ipcMain.handle('save-file-dialog', async (_event, { defaultName, extensions }) => {
+  const { canceled, filePath } = await dialog.showSaveDialog({
+    defaultPath: defaultName,
+    filters: [
+      {
+        name: 'Files',
+        extensions: extensions
+      }
+    ]
+  });
+
+  return canceled ? null : filePath;
+});
+
 ipcMain.handle('readCsvOrExelFile', async (event, filePath) => {
   try {
     // Read file as binary buffer

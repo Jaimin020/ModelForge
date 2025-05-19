@@ -320,7 +320,8 @@ const DesignApp = () => {
       setLoadingMessage('Saving...');
       graphManager.setNodes(nodes);
       graphManager.setEdges(edges);
-      const pathToSave = await window.backend.saveModel(graphManager.getGraphDataAsJson());
+      const pathToSave = await window.dialog.saveFilePathPicker('model.mff',['mff']);
+      await window.backend.saveModel(graphManager.getGraphDataAsJson(), pathToSave);
       setLoadingMessage('');
       setOutput((prev) => prev + '\nModel saved successfully at: ' + pathToSave);
     } else {
