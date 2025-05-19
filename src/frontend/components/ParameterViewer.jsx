@@ -88,7 +88,10 @@ export const ParameterViewer = ({ selectedNode, height }) => {
             {displayableParams.map((param, index) => (
               <div key={index}>
                 <div className="parameter-item">
-                  <label>{param.name}:</label>
+                  <label>{param.name}</label>
+                  {param.required && (
+                    <span style={{ color: 'red', marginLeft: '2px' }}>*</span>
+                  )}
                   {param.type === 'file' ? (
                     <div style={{ display: 'flex', gap: '5px' }}>
                       <span
@@ -115,14 +118,12 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                       }}
                     >
                       <select
-                        value={
-                          tempValues[param.name] ? 'True' : 'False'
-                        }
+                        value={tempValues[param.name] ? 'True' : 'False'}
                         style={{ width: '100px' }}
                         onChange={(e) =>
                           handleParameterChange(
                             param.name,
-                            e.target.value === 'True'
+                            e.target.value === 'True',
                           )
                         }
                       >
@@ -162,9 +163,7 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                             : param.value
                         }
                         required={param.required}
-                        placeholder={
-                          param.required ? 'Required' : 'Optional'
-                        }
+                        placeholder={param.required ? 'Required' : 'Optional'}
                         style={{ width: '100px' }}
                         onChange={(e) =>
                           handleParameterChange(
@@ -199,18 +198,13 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                           : param.value
                       }
                       required={param.required}
-                      placeholder={
-                        param.required ? 'Required' : 'Optional'
-                      }
+                      placeholder={param.required ? 'Required' : 'Optional'}
                       style={{ width: '100px' }}
                       onBlur={(e) =>
                         handleParameterChange(param.name, e.target.value)
                       }
                     />
                   )}
-                  {/* {param.required && (
-                    <span style={{ color: 'red', marginLeft: '5px' }}>*</span>
-                  )} */}
                 </div>
                 {index < nodeConfig.parameters.length - 1 && (
                   <hr
