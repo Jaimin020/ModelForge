@@ -19,6 +19,8 @@ import { openNewWindow } from '../../utils/windowUtils/windowUtils';
 import { TEST_PY_FILE } from '../../../envPath.js';
 import Convert from 'ansi-to-html';
 import './style.css';
+// For error and message strings
+import { editorMessages, editorErrors, separators } from '../../utils/strings/editorStrings.js';
 
 const DesignApp = () => {
   const leftPanelRef = useRef();
@@ -252,13 +254,13 @@ const DesignApp = () => {
     });
 
     if (windowId) {
-      console.log(`New window opened with ID: ${windowId}`);
+      console.log(editorMessages.NEW_WINDOW_OPENED(windowId));
     }
   };
 
   const executePythonScript = async () => {
     if (isRunning) {
-      setOutput((prev) => prev + '\nProcess already running. Please wait.');
+      setOutput((prev) => prev + separators.NEW_LINE + editorErrors.PROCESS_ALREADY_RUNNING);
       return;
     }
     graphManager.setNodes(nodes);
@@ -274,8 +276,7 @@ const DesignApp = () => {
       });
       setOutput(
         (prevOutput) =>
-          prevOutput +
-          '\n------------------------------------- \nModel Execution initlated\n------------------------------------- \n',
+          prevOutput + separators.LINE_SEPARATOR + editorMessages.MODEL_EXECUTION_INITIATED + separators.LINE_SEPARATOR,
       );
       await window.api.runPython(TEST_PY_FILE);
     } catch (error) {
@@ -294,16 +295,15 @@ const DesignApp = () => {
     const result = graphAnalyzer.validateGraph(currentEdges);
     const hyperParam = graphManager.getHyperparameters();
     if (!hyperParam) {
-      setOutput((prev) => prev + 'Please set hyperparameters.\n');
+      setOutput((prev) => prev + editorErrors.SET_HYPERPARAMETERS +separators.NEW_LINE);
       return;
     }
     setOutput(
       (prevOutput) =>
-        prevOutput +
-        '------------------------------------- \nModel Compilation initlated\n------------------------------------- \n--> ',
+        prevOutput + separators.LINE_SEPARATOR + editorMessages.MODEL_COMPILATION_INITIATED + separators.LINE_SEPARATOR,
     );
     if (result.isValid) {
-      setOutput((prevOutput) => prevOutput + 'All Checks PASS\n');
+      setOutput((prevOutput) => prevOutput + editorMessages.ALL_CHECKS_PASSED);
       executePythonScript();
     } else {
       setOutput((prevOutput) => prevOutput + result.errors.join('\n--> '));
@@ -314,7 +314,7 @@ const DesignApp = () => {
     if (isRunning) {
       await window.api.stopPython();
       setIsRunning(false);
-      setOutput((prev) => prev + '\nProcess stopped by user.');
+      setOutput((prev) => prev + separators.NEW_LINE + editorErrors.USER_STOPPED);
     }
   };
 
@@ -332,7 +332,7 @@ const DesignApp = () => {
 
         if (pathToSaveRef.current === null) {
           setLoadingMessage('');
-          setOutput((prev) => prev + '\nSave cancelled.');
+          setOutput((prev) => prev + separators.NEW_LINE + editorErrors.SAVE_CANCELLED);
           return;
         }
       }
@@ -345,15 +345,15 @@ const DesignApp = () => {
         setLoadingMessage('');
         setOutput(
           (prev) =>
-            prev + '\nModel saved successfully at: ' + pathToSaveRef.current,
+            prev + separators.NEW_LINE + editorMessages.MODEL_SAVED_SUCCESS(pathToSaveRef.current),
         );
       } catch (error) {
-        console.error('Error saving model:', error);
-        setOutput((prev) => prev + `\nError saving model: ${error.message}`);
+        console.error(editorErrors.ERROR_SAVING_MODEL(error));
+        setOutput((prev) => prev + separators.NEW_LINE + editorErrors.ERROR_SAVING_MODEL(error.message));
       }
     } else {
       setOutput(
-        (prev) => prev + '\nPlease stop the training process before saving.',
+        (prev) => prev + separators.NEW_LINE + editorErrors.STOP_TRAINING_BEFORE_SAVE,
       );
     }
   };
@@ -407,16 +407,16 @@ const DesignApp = () => {
 
         pathToSaveRef.current = pathToload;
 
-        setOutput((prev) => prev + '\nModel loaded successfully.');
+        setOutput((prev) => prev + separators.NEW_LINE + editorMessages.MODEL_LOADED_SUCCESS);
       } else {
         setOutput(
-          (prev) => prev + '\nFailed to load model: Invalid model data.',
+          (prev) => prev + separators.NEW_LINE + editorErrors.LOAD_FAILED_INVALID_MODEL,
         );
       }
       setLoadingMessage('');
     } catch (error) {
-      console.error('Error loading model:', error);
-      setOutput((prev) => prev + `\nError loading model: ${error.message}`);
+      console.error(editorErrors.ERROR_LOADING_MODEL(error));
+      setOutput((prev) => prev + separators.NEW_LINE + editorErrors.ERROR_LOADING_MODEL(error.message));
     }
   };
 

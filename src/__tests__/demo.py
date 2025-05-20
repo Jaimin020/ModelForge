@@ -54,7 +54,7 @@ X_test_tensor = torch.FloatTensor(X_test.values)
 y_test_tensor = torch.FloatTensor(y_test.values)
 
 # Create data loaders
-batch_size = 1
+batch_size = 32
 train_dataset = TensorDataset(X_train_tensor, y_train_tensor)
 test_dataset = TensorDataset(X_test_tensor, y_test_tensor)
 
@@ -69,7 +69,7 @@ print("-" * 50)
 
 
 # Initialize hyperparameters
-num_epochs = 100
+num_epochs = 10
 learning_rate = 0.001
 
 # Print hyperparameter configuration
