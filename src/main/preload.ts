@@ -18,8 +18,8 @@ const dialogHandler = {
   filePicker: (fileFormate: string) =>
     ipcRenderer.invoke('select-file', fileFormate),
 
-  saveFilePathPicker: (defaultName: string, extensions: string[]) =>
-    ipcRenderer.invoke('save-file-dialog', { defaultName, extensions }),
+  saveFilePathPicker: (fileFormate: string) =>
+    ipcRenderer.invoke('save-file-dialog', fileFormate),
 };
 
 const fileHandler = {
