@@ -30,3 +30,6 @@ npm-debug.log.*
 .env
 
 src/main/installed-python/
+
+src/envPath.js
+src/__tests__/

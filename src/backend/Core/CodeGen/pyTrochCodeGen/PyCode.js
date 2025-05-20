@@ -10,7 +10,7 @@ import os
 `;
 
 export const inputTemplate = `# Load and preprocess data
-file_path = '<%= file_name %>'
+file_path = r'<%= file_name %>'
 file_extension = os.path.splitext(file_path)[1].lower()
 
 if file_extension == '.csv':

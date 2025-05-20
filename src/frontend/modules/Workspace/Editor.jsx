@@ -39,6 +39,9 @@ const DesignApp = () => {
   const [output, setOutput] = useState('');
   const [isRunning, setIsRunning] = useState(false);
 
+  // Save Path
+  const pathToSaveRef = useRef(null);
+
   // Add state for selected node
   const [selectedNode, setSelectedNode] = useState(null);
 
@@ -320,9 +323,34 @@ const DesignApp = () => {
       setLoadingMessage('Saving...');
       graphManager.setNodes(nodes);
       graphManager.setEdges(edges);
-      window.backend.saveModel(graphManager.getGraphDataAsJson());
-      setLoadingMessage('');
-      setOutput((prev) => prev + '\nModel saved successfully.');
+
+      if (pathToSaveRef.current === null) {
+        pathToSaveRef.current = await window.dialog.saveFilePathPicker({
+          defaultName: 'model.mff',
+          extensions: ['mff'],
+        });
+
+        if (pathToSaveRef.current === null) {
+          setLoadingMessage('');
+          setOutput((prev) => prev + '\nSave cancelled.');
+          return;
+        }
+      }
+
+      try {
+        await window.backend.saveModel(
+          graphManager.getGraphDataAsJson(),
+          pathToSaveRef.current,
+        );
+        setLoadingMessage('');
+        setOutput(
+          (prev) =>
+            prev + '\nModel saved successfully at: ' + pathToSaveRef.current,
+        );
+      } catch (error) {
+        console.error('Error saving model:', error);
+        setOutput((prev) => prev + `\nError saving model: ${error.message}`);
+      }
     } else {
       setOutput(
         (prev) => prev + '\nPlease stop the training process before saving.',
@@ -376,6 +404,8 @@ const DesignApp = () => {
         if (networkInstance.current) {
           networkInstance.current.fit();
         }
+
+        pathToSaveRef.current = pathToload;
 
         setOutput((prev) => prev + '\nModel loaded successfully.');
       } else {

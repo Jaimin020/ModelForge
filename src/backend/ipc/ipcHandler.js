@@ -7,9 +7,9 @@ export function setupIpcHandlers() {
     return await modelController.trainModel(modelGraph);
   });
 
-  ipcMain.handle('save-model', async (event, modelGraph) => {
+  ipcMain.handle('save-model', async (event, modelGraph, filePath) => {
     const modelController = new ModelController();
-    return await modelController.saveModel(modelGraph);
+    return await modelController.saveModel(modelGraph, filePath);
   });
 
   ipcMain.handle('load-model', async (event, modelPath) => {

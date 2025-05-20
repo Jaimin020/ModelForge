@@ -1,13 +1,13 @@
 import { ipcRenderer } from 'electron';
 
 export const backendService = {
-  async trainModel(modelConfig: any) {
-    return await ipcRenderer.invoke('train-model', modelConfig);
+  async trainModel(modelGraph: any) {
+    return await ipcRenderer.invoke('train-model', modelGraph);
   },
-  async saveModel(modelConfig: any) {
-    return await ipcRenderer.invoke('save-model', modelConfig);
+  async saveModel(modelGraph: any, modelPath: string) {
+    return await ipcRenderer.invoke('save-model', modelGraph, modelPath);
   },
-  async loadModel(modelConfig: any) {
-    return await ipcRenderer.invoke('load-model', modelConfig);
+  async loadModel(modelPath: string) {
+    return await ipcRenderer.invoke('load-model', modelPath);
   },
 };
