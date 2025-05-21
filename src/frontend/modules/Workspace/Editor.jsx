@@ -23,8 +23,9 @@ import './style.css';
 import {
   editorMessages,
   editorErrors,
-  separators,
 } from '../../utils/strings/editorStrings.js';
+import { separators } from '../../utils/strings/constants.js';
+import { loaderMessages } from '../../utils/strings/loaderStrings.js';
 
 const DesignApp = () => {
   const leftPanelRef = useRef();
@@ -284,9 +285,9 @@ const DesignApp = () => {
       setOutput(
         (prevOutput) =>
           prevOutput +
-          separators.LINE_SEPARATOR +
+          separators.LINE_SEP +
           editorMessages.MODEL_EXECUTION_INITIATED +
-          separators.LINE_SEPARATOR,
+          separators.LINE_SEP,
       );
       await window.api.runPython(TEST_PY_FILE);
     } catch (error) {
@@ -313,9 +314,9 @@ const DesignApp = () => {
     setOutput(
       (prevOutput) =>
         prevOutput +
-        separators.LINE_SEPARATOR +
+        separators.LINE_SEP +
         editorMessages.MODEL_COMPILATION_INITIATED +
-        separators.LINE_SEPARATOR,
+        separators.LINE_SEP,
     );
     if (result.isValid) {
       setOutput((prevOutput) => prevOutput + editorMessages.ALL_CHECKS_PASSED);
@@ -337,7 +338,7 @@ const DesignApp = () => {
 
   const onSave = async () => {
     if (!isRunning) {
-      setLoadingMessage('Saving...');
+      setLoadingMessage(loaderMessages.SAVING);
       graphManager.setNodes(nodes);
       graphManager.setEdges(edges);
 
@@ -348,7 +349,7 @@ const DesignApp = () => {
         });
 
         if (pathToSaveRef.current === null) {
-          setLoadingMessage('');
+          setLoadingMessage(loaderMessages.EMPTY);
           setOutput(
             (prev) => prev + separators.NEW_LINE + editorErrors.SAVE_CANCELLED,
           );
@@ -361,7 +362,7 @@ const DesignApp = () => {
           graphManager.getGraphDataAsJson(),
           pathToSaveRef.current,
         );
-        setLoadingMessage('');
+        setLoadingMessage(loaderMessages.EMPTY);
         setOutput(
           (prev) =>
             prev +
@@ -386,14 +387,14 @@ const DesignApp = () => {
   };
 
   const onOpen = async () => {
-    setLoadingMessage('Opening...');
+    setLoadingMessage(loaderMessages.OPENING);
     const pathToload = await window.dialog.filePicker({
       name: 'Load_File',
       extensions: ['mff'],
     });
-    setLoadingMessage('');
+    setLoadingMessage(loaderMessages.EMPTY);
     try {
-      setLoadingMessage('Loading...');
+      setLoadingMessage(loaderMessages.LOADING);
       const result = await window.backend.loadModel(pathToload);
       if (result && result.nodes && result.edges) {
         // Clear existing nodes and edges
@@ -444,7 +445,7 @@ const DesignApp = () => {
             prev + separators.NEW_LINE + editorErrors.LOAD_FAILED_INVALID_MODEL,
         );
       }
-      setLoadingMessage('');
+      setLoadingMessage(loaderMessages.EMPTY);
     } catch (error) {
       console.error(editorErrors.ERROR_LOADING_MODEL(error));
       setOutput(

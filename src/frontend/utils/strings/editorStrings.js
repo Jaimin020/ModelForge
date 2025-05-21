@@ -17,8 +17,3 @@ export const editorErrors = {
   LOAD_FAILED_INVALID_MODEL: 'Failed to load model: Invalid model data.',
   ERROR_LOADING_MODEL: (err) => `Error loading model: ${err}`,
 };
-
-export const separators = {
-  LINE_SEPARATOR: '\n-------------------------------------\n',
-  NEW_LINE: '\n',
-};
