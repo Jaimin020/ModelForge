@@ -39,6 +39,14 @@ export class GraphDataManager {
     return this.hyperparameters;
   }
 
+  clearAllNodesAndEdges() {
+    this.nodes = [];
+    this.edges = [];
+    const nodeManager = ModelNodeManager.getInstance();
+    nodeManager.clearAllNodes();
+
+  }
+
   getGraphDataAsJson() {
     const nodeManager = ModelNodeManager.getInstance();
     const nodesData = this.nodes.current.get().map((node: any) => {

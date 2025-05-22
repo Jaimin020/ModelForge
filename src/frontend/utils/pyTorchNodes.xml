@@ -27,9 +27,9 @@
         <inport>1</inport>
         <outport>1</outport>
         <parameters>
-            <param name="in_features" type="int" required="true" display="true"/>
-            <param name="out_features" type="int" required="true" display="true"/>
-            <param name="bias" type="bool" default="true" display="true"/>
+            <param name="in_features" type="int" required="true" value="1" display="true"/>
+            <param name="out_features" type="int" required="true" value="1" display="true"/>
+            <param name="bias" type="bool" required="false" default="true" display="true"/>
         </parameters>
         <code>torch.nn.Linear(in_features={in_features}, out_features={out_features}, bias={bias})</code>
     </node>
@@ -42,11 +42,11 @@
         <inport>1</inport>
         <outport>1</outport>
         <parameters>
-            <param name="in_channels" type="int" required="true" display="true"/>
-            <param name="out_channels" type="int" required="true" display="true"/>
-            <param name="kernel_size" type="int" required="true" display="true"/>
-            <param name="stride" type="int" default="1" display="true"/>
-            <param name="padding" type="int" default="0" display="true"/>
+            <param name="in_channels" type="int" required="true" value="1" display="true"/>
+            <param name="out_channels" type="int" required="true" value="1" display="true"/>
+            <param name="kernel_size" type="int" required="true" value="1" display="true"/>
+            <param name="stride" type="int" required="false" value="1" display="true"/>
+            <param name="padding" type="int" required="false" value="0" display="true"/>
         </parameters>
         <code>torch.nn.Conv2d(in_channels={in_channels}, out_channels={out_channels}, kernel_size={kernel_size}, stride={stride}, padding={padding})</code>
     </node>
@@ -59,7 +59,7 @@
         <inport>1</inport>
         <outport>1</outport>
         <parameters>
-            <param name="inplace" type="bool" default="false" display="false"/>
+            <param name="inplace" type="bool" required="false" default="false" display="false"/>
         </parameters>
         <code>torch.nn.ReLU(inplace={inplace})</code>
     </node>
@@ -71,9 +71,9 @@
     <inport>1</inport>
     <outport>0</outport>
     <parameters>
-        <param name="weight" type="Tensor" default="None" display="false"/>
-        <param name="reduction" type="string" default="mean" display="false"/>
-        <param name="ignore_index" type="int" default="-100" display="false"/>
+        <param name="weight" type="Tensor" required="false" default="None" display="false"/>
+        <param name="reduction" type="string" required="false" default="mean" display="false"/>
+        <param name="ignore_index" type="int" required="false" value="false" display="false"/>
     </parameters>
     <code>torch.nn.MSELoss(weight={weight}, reduction='{reduction}', ignore_index={ignore_index})</code>
 </node>
