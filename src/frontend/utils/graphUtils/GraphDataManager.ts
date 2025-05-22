@@ -44,7 +44,6 @@ export class GraphDataManager {
     this.edges = [];
     const nodeManager = ModelNodeManager.getInstance();
     nodeManager.clearAllNodes();
-
   }
 
   getGraphDataAsJson() {
