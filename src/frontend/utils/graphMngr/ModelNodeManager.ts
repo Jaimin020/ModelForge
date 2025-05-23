@@ -50,6 +50,10 @@ export class ModelNodeManager {
     return this.nodes.delete(visNodeId);
   }
 
+  clearAllNodes(): void {
+    this.nodes.clear();
+  }
+
   updateNodeParameter(
     visNodeId: number,
     paramName: string,

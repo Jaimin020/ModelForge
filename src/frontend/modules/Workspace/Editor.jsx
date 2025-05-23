@@ -372,6 +372,7 @@ const DesignApp = () => {
         // Clear existing nodes and edges
         nodes.current.clear();
         edges.current.clear();
+        graphManager.clearAllNodesAndEdges();
 
         // Add the loaded nodes to the network
         nodes.current.add(result.nodes);
