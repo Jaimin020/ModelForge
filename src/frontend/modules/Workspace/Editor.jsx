@@ -336,9 +336,34 @@ const DesignApp = () => {
     }
   };
 
+  // Add this function inside the DesignApp component
+  const updateNodePositions = () => {
+    if (!networkInstance.current) return;
+
+    // Get all node IDs
+    const nodeIds = nodes.current.getIds();
+
+    // Get positions for all nodes from the network
+    const positions = networkInstance.current.getPositions(nodeIds);
+
+    // Update each node with its current position
+    nodeIds.forEach((id) => {
+      if (positions[id]) {
+        nodes.current.update({
+          id: id,
+          x: positions[id].x,
+          y: positions[id].y,
+        });
+      }
+    });
+  };
+
   const onSave = async () => {
     if (!isRunning) {
       setLoadingMessage(loaderMessages.SAVING);
+
+      // Update node positions before saving
+      updateNodePositions();
       graphManager.setNodes(nodes);
       graphManager.setEdges(edges);
 
