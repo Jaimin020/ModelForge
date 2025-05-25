@@ -36,6 +36,34 @@ global.ResizeObserver = class ResizeObserver {
 // Mock requestAnimationFrame
 global.requestAnimationFrame = (callback) => setTimeout(callback, 0);
 
+// Mock components with async operations
+jest.mock('../frontend/modules/LayerSelectionPanel/LayerSelectionPanel.jsx', () => {
+  return {
+    __esModule: true,
+    default: () => <div data-testid="mocked-layer-panel">Layer Panel</div>
+  };
+});
+
+jest.mock('../frontend/components/ParameterViewer.jsx', () => {
+  return {
+    __esModule: true,
+    default: () => <div data-testid="mocked-parameter-viewer">Parameter Viewer</div>
+  };
+});
+
+jest.mock('../frontend/modules/Workspace/Editor.jsx', () => {
+  return {
+    __esModule: true,
+    default: () => <div data-testid="mocked-editor">Editor</div>
+  };
+});
+
+// Mock utility functions
+jest.mock('../frontend/utils/nodeOps/nodeName.jsx', () => ({
+  getNodeNames: jest.fn().mockResolvedValue(['node1', 'node2']),
+  getNodeFeatureMap: jest.fn().mockResolvedValue({ node1: { params: [] } })
+}));
+
 describe('App', () => {
   it('should render', () => {
     expect(render(<App />)).toBeTruthy();
