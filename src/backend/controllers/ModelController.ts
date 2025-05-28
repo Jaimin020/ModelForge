@@ -2,7 +2,6 @@ import { GraphController } from './GraphController';
 import { Engine } from '../Core/Engine';
 import { FileManager } from '../Core/FileManager';
 import { TEST_PY_FILE, TEST_DIR } from '../../envPath';
-import path from 'path';
 
 export class ModelController {
   graphController = new GraphController();

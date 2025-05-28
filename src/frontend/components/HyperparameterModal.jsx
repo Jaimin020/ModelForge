@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import HyperparametersMngr from '../utils/graphMngr/HyperparametersMngr.ts';
 import { GraphDataManager } from '../utils/graphUtils/GraphDataManager.ts';
 
 export const HyperparameterModal = ({ isOpen, onClose }) => {
@@ -13,24 +14,49 @@ export const HyperparameterModal = ({ isOpen, onClose }) => {
     early_stopping_patience: 5,
   });
 
-  const optimizerOptions = ['Adam', 'SGD', 'RMSprop', 'Adagrad'];
-  const graphManager = GraphDataManager.getInstance();
+  const hyperparametersMngr = HyperparametersMngr.getInstance();
+
+  // Load hyperparameters from manager on component mount
+  useEffect(() => {
+    if (isOpen) {
+      const currentParams = hyperparametersMngr.getHyperparametersAsObject();
+      setHyperparameters(currentParams);
+    }
+  }, [isOpen]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    let parsedValue = value;
+
+    // Convert to number for numeric inputs
+    const hyperParam = hyperparametersMngr.getHyperparameter(name);
+    if (hyperParam && hyperParam.type === 'number') {
+      parsedValue = parseFloat(value);
+    }
+
     setHyperparameters((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: parsedValue,
     }));
   };
 
   if (!isOpen) return null;
 
   const handleHyperParamSave = (params) => {
-    // Handle the hyperparameters here
-    graphManager.setHyperparameters(params);
+    // Update hyperparameters in the manager
+    const graphDataManager = GraphDataManager.getInstance();
+    graphDataManager.setHyperparameters(params);
     onClose();
   };
+
+  // Get optimizer options from the manager
+  const optimizerParam = hyperparametersMngr.getHyperparameter('optimizer');
+  const optimizerOptions = optimizerParam?.options || [
+    'Adam',
+    'SGD',
+    'RMSprop',
+    'Adagrad',
+  ];
 
   return (
     <div

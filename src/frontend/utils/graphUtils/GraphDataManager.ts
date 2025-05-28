@@ -1,4 +1,5 @@
 import { ModelNodeManager } from '../graphMngr/ModelNodeManager';
+import HyperparametersMngr from '../graphMngr/HyperparametersMngr';
 
 export class GraphDataManager {
   private static instance: GraphDataManager;
@@ -23,8 +24,10 @@ export class GraphDataManager {
     this.edges = edges;
   }
 
-  setHyperparameters(hyperparameters: any) {
-    this.hyperparameters = hyperparameters;
+  setHyperparameters(params: any) {
+    const hyperparametersMngr = HyperparametersMngr.getInstance();
+    hyperparametersMngr.updateMultipleHyperparameters(params);
+    this.hyperparameters = hyperparametersMngr.getHyperparametersAsObject();
   }
 
   getNodes() {

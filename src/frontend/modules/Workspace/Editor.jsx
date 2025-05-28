@@ -433,6 +433,10 @@ const DesignApp = () => {
         // Add the loaded edges to the network
         edges.current.add(result.edges);
 
+        // Add hyperparameters if they exist
+        if (result.hyperparameters) {
+          graphManager.setHyperparameters(result.hyperparameters);
+        }
         // Restore the model nodes in the ModelNodeManager
         const nodeManager = ModelNodeManager.getInstance();
         result.nodes.forEach((node) => {

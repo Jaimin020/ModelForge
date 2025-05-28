@@ -24,7 +24,7 @@ jobs:
         run: npx prettier --check "src/**/*.{ts,tsx,js,jsx,json,css,scss}"
 
   build:
-    needs: prettier
+    needs: [prettier]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -47,6 +47,9 @@ jobs:
 
       - name: 🛠 Build Electron App
         run: npm run build
+      
+      - name: 🧪 Run Tests
+        run: npm test
 
       - name: 📤 Upload Build Artifacts
         uses: actions/upload-artifact@v4

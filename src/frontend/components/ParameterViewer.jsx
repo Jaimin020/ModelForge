@@ -17,10 +17,20 @@ export const ParameterViewer = ({ selectedNode, height }) => {
 
   const handleUpdateParameter = (paramName) => {
     if (selectedNode && tempValues[paramName] !== undefined) {
+      // Convert boolean values to string 'True'/'False' if paramName is 'id'
+      let valueToUpdate = tempValues[paramName];
+      if (paramName === 'bias') {
+        if (valueToUpdate === true) {
+          valueToUpdate = 'True';
+        } else if (valueToUpdate === false) {
+          valueToUpdate = 'False';
+        }
+      }
+
       nodeManager.updateNodeParameter(
         selectedNode.id,
         paramName,
-        tempValues[paramName],
+        valueToUpdate,
       );
     }
   };
