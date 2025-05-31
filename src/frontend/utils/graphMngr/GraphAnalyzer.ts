@@ -168,7 +168,7 @@ export class GraphAnalyzer {
         // Check if parameter is required and has no value
         if (parameter.required && this.isEmptyValue(parameter.value)) {
           errors.push(
-            `Node "${node.name}" is missing required property "${parameter.name}"`
+            `Node "${node.name}" is missing required property "${parameter.name}"`,
           );
         }
       });
@@ -184,19 +184,19 @@ export class GraphAnalyzer {
     if (value === null || value === undefined || Number.isNaN(value)) {
       return true;
     }
-    
+
     if (typeof value === 'string' && value.trim() === '') {
       return true;
     }
-    
+
     if (Array.isArray(value) && value.length === 0) {
       return true;
     }
-    
+
     if (typeof value === 'object' && Object.keys(value).length === 0) {
       return true;
     }
-    
+
     return false;
   }
 }
