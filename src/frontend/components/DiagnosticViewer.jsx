@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { AlertTriangle, Info, XCircle } from 'lucide-react';
 
 export const DiagnosticViewer = ({ output }) => {
   const viewerRef = useRef(null);
@@ -41,6 +42,42 @@ export const DiagnosticViewer = ({ output }) => {
     isDragging.current = true;
   };
 
+  const iconMap = {
+    info: (
+      <Info
+        style={{
+          color: '#3B82F6',
+          marginRight: '2px',
+          position: 'relative',
+          top: '2px',
+        }}
+        size={14}
+      />
+    ), // blue-500
+    warn: (
+      <AlertTriangle
+        style={{
+          color: '#E69700',
+          marginRight: '2px',
+          position: 'relative',
+          top: '2px',
+        }}
+        size={14}
+      />
+    ), // yellow-500
+    error: (
+      <XCircle
+        style={{
+          color: '#EF4444',
+          marginRight: '2px',
+          position: 'relative',
+          top: '2px',
+        }}
+        size={14}
+      />
+    ), // red-500
+  };
+
   return (
     <div style={{ margin: '5px' }}>
       {/* Drag handle above border */}
@@ -79,7 +116,7 @@ export const DiagnosticViewer = ({ output }) => {
           Diagnostic Viewer
         </div>
 
-        <pre
+        <div
           ref={viewerRef}
           style={{
             backgroundColor: '#f5f5f5',
@@ -88,12 +125,17 @@ export const DiagnosticViewer = ({ output }) => {
             borderRadius: '0px',
             height: `${height}px`,
             overflowY: 'scroll',
-            fontSize: '12px',
+            fontSize: '14px',
             margin: 0,
           }}
         >
-          <div dangerouslySetInnerHTML={{ __html: output }} />
-        </pre>
+          {output.map((entry, idx) => (
+            <div key={idx} className="flex items-start">
+              {iconMap[entry.type] || iconMap.info}
+              <span>{entry.message}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

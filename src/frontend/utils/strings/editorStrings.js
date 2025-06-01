@@ -11,9 +11,12 @@ export const editorErrors = {
   PROCESS_ALREADY_RUNNING: 'Process already running. Please wait.',
   SET_HYPERPARAMETERS: 'Please set hyperparameters.',
   USER_STOPPED: 'Process stopped by user.',
-  SAVE_CANCELLED: 'Save cancelled!',
   ERROR_SAVING_MODEL: (err) => `Error saving model: ${err}`,
   STOP_TRAINING_BEFORE_SAVE: 'Please stop the training process before saving.',
   LOAD_FAILED_INVALID_MODEL: 'Failed to load model: Invalid model data.',
   ERROR_LOADING_MODEL: (err) => `Error loading model: ${err}`,
+};
+
+export const editorWarns = {
+  SAVE_CANCELLED: 'Save cancelled!',
 };

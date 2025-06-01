@@ -23,9 +23,12 @@ import './style.css';
 import {
   editorMessages,
   editorErrors,
+  editorWarns,
 } from '../../utils/strings/editorStrings.js';
 import { separators } from '../../utils/strings/constants.js';
 import { loaderMessages } from '../../utils/strings/loaderStrings.js';
+
+import { appendDiagnostic } from '../../utils/DiagnosticViewer/diagnosticUtil.ts';
 
 const DesignApp = () => {
   const leftPanelRef = useRef();
@@ -43,7 +46,7 @@ const DesignApp = () => {
   const networkInstance = useRef(null);
   const resizeObserver = useRef(null);
 
-  const [output, setOutput] = useState('');
+  const [output, setOutput] = useState([]);
   const [isRunning, setIsRunning] = useState(false);
 
   // Save Path
@@ -265,9 +268,12 @@ const DesignApp = () => {
 
   const executePythonScript = async () => {
     if (isRunning) {
-      setOutput(
-        (prev) =>
-          prev + separators.NEW_LINE + editorErrors.PROCESS_ALREADY_RUNNING,
+      setOutput((prevOutput) =>
+        appendDiagnostic(
+          prevOutput,
+          separators.NEW_LINE + editorErrors.PROCESS_ALREADY_RUNNING,
+          'error',
+        ),
       );
       return;
     }
@@ -280,18 +286,24 @@ const DesignApp = () => {
     try {
       await window.dialog.onDialogUpdate((message) => {
         const htmlOutput = convert.toHtml(message);
-        setOutput((prevOutput) => prevOutput + htmlOutput);
+        setOutput((prevOutput) =>
+          appendDiagnostic(prevOutput, htmlOutput, 'info'),
+        );
       });
-      setOutput(
-        (prevOutput) =>
-          prevOutput +
+      setOutput((prevOutput) =>
+        appendDiagnostic(
+          prevOutput,
           separators.LINE_SEP +
-          editorMessages.MODEL_EXECUTION_INITIATED +
-          separators.LINE_SEP,
+            editorMessages.MODEL_EXECUTION_INITIATED +
+            separators.LINE_SEP,
+          'info',
+        ),
       );
       await window.api.runPython(TEST_PY_FILE);
     } catch (error) {
-      setOutput((prevOutput) => prevOutput + `\n${error}`);
+      setOutput((prevOutput) =>
+        appendDiagnostic(prevOutput, separators.NEW_LINE + error, 'error'),
+      );
     } finally {
       setIsRunning(false);
     }
@@ -299,30 +311,39 @@ const DesignApp = () => {
 
   // Update handleRun
   const handleRun = () => {
-    setOutput('');
     //check for graph.
     const currentEdges = edges.current.get();
     const graphAnalyzer = new GraphAnalyzer();
     const result = graphAnalyzer.validateGraph(currentEdges);
     const hyperParam = graphManager.getHyperparameters();
     if (!hyperParam) {
-      setOutput(
-        (prev) => prev + editorErrors.SET_HYPERPARAMETERS + separators.NEW_LINE,
+      setOutput((prevOutput) =>
+        appendDiagnostic(
+          prevOutput,
+          editorErrors.SET_HYPERPARAMETERS + separators.NEW_LINE,
+          'error',
+        ),
       );
       return;
     }
-    setOutput(
-      (prevOutput) =>
-        prevOutput +
+    setOutput((prevOutput) =>
+      appendDiagnostic(
+        prevOutput,
         separators.LINE_SEP +
-        editorMessages.MODEL_COMPILATION_INITIATED +
-        separators.LINE_SEP,
+          editorMessages.MODEL_COMPILATION_INITIATED +
+          separators.LINE_SEP,
+        'info',
+      ),
     );
     if (result.isValid) {
-      setOutput((prevOutput) => prevOutput + editorMessages.ALL_CHECKS_PASSED);
+      setOutput((prevOutput) =>
+        appendDiagnostic(prevOutput, editorMessages.ALL_CHECKS_PASSED, 'info'),
+      );
       executePythonScript();
     } else {
-      setOutput((prevOutput) => prevOutput + result.errors.join('\n--> '));
+      setOutput((prevOutput) =>
+        appendDiagnostic(prevOutput, result.errors.join('\n--> '), 'error'),
+      );
     }
   };
 
@@ -330,8 +351,12 @@ const DesignApp = () => {
     if (isRunning) {
       await window.api.stopPython();
       setIsRunning(false);
-      setOutput(
-        (prev) => prev + separators.NEW_LINE + editorErrors.USER_STOPPED,
+      setOutput((prevOutput) =>
+        appendDiagnostic(
+          prevOutput,
+          separators.NEW_LINE + editorErrors.USER_STOPPED,
+          'error',
+        ),
       );
     }
   };
@@ -350,8 +375,12 @@ const DesignApp = () => {
 
         if (pathToSaveRef.current === null) {
           setLoadingMessage(loaderMessages.EMPTY);
-          setOutput(
-            (prev) => prev + separators.NEW_LINE + editorErrors.SAVE_CANCELLED,
+          setOutput((prevOutput) =>
+            appendDiagnostic(
+              prevOutput,
+              separators.NEW_LINE + editorWarns.SAVE_CANCELLED,
+              'warn',
+            ),
           );
           return;
         }
@@ -363,25 +392,32 @@ const DesignApp = () => {
           pathToSaveRef.current,
         );
         setLoadingMessage(loaderMessages.EMPTY);
-        setOutput(
-          (prev) =>
-            prev +
+        setOutput((prevOutput) =>
+          appendDiagnostic(
+            prevOutput,
             separators.NEW_LINE +
-            editorMessages.MODEL_SAVED_SUCCESS(pathToSaveRef.current),
+              editorMessages.MODEL_SAVED_SUCCESS(pathToSaveRef.current),
+            'info',
+          ),
         );
       } catch (error) {
         console.error(editorErrors.ERROR_SAVING_MODEL(error));
-        setOutput(
-          (prev) =>
-            prev +
+        setOutput((prevOutput) =>
+          appendDiagnostic(
+            prevOutput,
             separators.NEW_LINE +
-            editorErrors.ERROR_SAVING_MODEL(error.message),
+              editorErrors.ERROR_SAVING_MODEL(error.message),
+            'error',
+          ),
         );
       }
     } else {
-      setOutput(
-        (prev) =>
-          prev + separators.NEW_LINE + editorErrors.STOP_TRAINING_BEFORE_SAVE,
+      setOutput((prevOutput) =>
+        appendDiagnostic(
+          prevOutput,
+          separators.NEW_LINE + editorErrors.STOP_TRAINING_BEFORE_SAVE,
+          'error',
+        ),
       );
     }
   };
@@ -436,24 +472,31 @@ const DesignApp = () => {
 
         pathToSaveRef.current = pathToload;
 
-        setOutput(
-          (prev) =>
-            prev + separators.NEW_LINE + editorMessages.MODEL_LOADED_SUCCESS,
+        setOutput((prevOutput) =>
+          appendDiagnostic(
+            prevOutput,
+            separators.NEW_LINE + editorMessages.MODEL_LOADED_SUCCESS,
+            'info',
+          ),
         );
       } else {
-        setOutput(
-          (prev) =>
-            prev + separators.NEW_LINE + editorErrors.LOAD_FAILED_INVALID_MODEL,
+        setOutput((prevOutput) =>
+          appendDiagnostic(
+            prevOutput,
+            separators.NEW_LINE + editorErrors.LOAD_FAILED_INVALID_MODEL,
+            'error',
+          ),
         );
       }
       setLoadingMessage(loaderMessages.EMPTY);
     } catch (error) {
       console.error(editorErrors.ERROR_LOADING_MODEL(error));
-      setOutput(
-        (prev) =>
-          prev +
-          separators.NEW_LINE +
-          editorErrors.ERROR_LOADING_MODEL(error.message),
+      setOutput((prevOutput) =>
+        appendDiagnostic(
+          prevOutput,
+          separators.NEW_LINE + editorErrors.ERROR_LOADING_MODEL(error.message),
+          'error',
+        ),
       );
     }
   };
