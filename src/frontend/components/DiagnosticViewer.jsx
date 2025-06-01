@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { AlertTriangle, Info, XCircle, CheckCircle } from 'lucide-react';
+import { BrushCleaning } from 'lucide-react';
 
-export const DiagnosticViewer = ({ output }) => {
+export const DiagnosticViewer = ({ output, clearOutput }) => {
   const viewerRef = useRef(null);
   const containerRef = useRef(null);
   const isDragging = useRef(false);
@@ -122,9 +123,30 @@ export const DiagnosticViewer = ({ output }) => {
             padding: '3px',
             borderBottom: '1px solid #ddd',
             marginBottom: '3px',
+            paddingBottom: '8px',
           }}
         >
-          Diagnostic Viewer
+          <span>Diagnostic Viewer</span>
+          <button
+            onClick={clearOutput}
+            style={{
+              fontSize: '11px',
+              color: 'black',
+              border: '1px solid grey',
+              padding: '2px 6px',
+              cursor: 'pointer',
+              borderRadius: '3px',
+              float: 'right',
+              position: 'relative',
+              top: '-4px',
+            }}
+          >
+            <span style={{position: 'relative', top:'-2px'}}>Clear</span>
+            <BrushCleaning
+              style={{ marginLeft: '4px', position: 'relative', top: '1px' }}
+              size={14}
+            />
+          </button>
         </div>
 
         <div
