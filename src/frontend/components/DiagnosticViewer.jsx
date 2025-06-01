@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { AlertTriangle, Info, XCircle } from 'lucide-react';
+import { AlertTriangle, Info, XCircle, CheckCircle } from 'lucide-react';
 
 export const DiagnosticViewer = ({ output }) => {
   const viewerRef = useRef(null);
@@ -47,35 +47,46 @@ export const DiagnosticViewer = ({ output }) => {
       <Info
         style={{
           color: '#3B82F6',
-          marginRight: '2px',
+          marginRight: '4px',
           position: 'relative',
           top: '2px',
         }}
         size={14}
       />
-    ), // blue-500
+    ),
     warn: (
       <AlertTriangle
         style={{
           color: '#E69700',
-          marginRight: '2px',
+          marginRight: '4px',
           position: 'relative',
           top: '2px',
         }}
         size={14}
       />
-    ), // yellow-500
+    ),
     error: (
       <XCircle
         style={{
           color: '#EF4444',
-          marginRight: '2px',
+          marginRight: '4px',
           position: 'relative',
           top: '2px',
         }}
         size={14}
       />
-    ), // red-500
+    ),
+    success: (
+      <CheckCircle
+        style={{
+          color: '#10B981',
+          marginRight: '4px',
+          position: 'relative',
+          top: '2px',
+        }}
+        size={14}
+      />
+    ),
   };
 
   return (
@@ -130,9 +141,11 @@ export const DiagnosticViewer = ({ output }) => {
           }}
         >
           {output.map((entry, idx) => (
-            <div key={idx} className="flex items-start">
-              {iconMap[entry.type] || iconMap.info}
-              <span>{entry.message}</span>
+            <div key={idx} className="flex items-start mb-1">
+              {iconMap[entry.type] ? (
+                <span className="mr-2 mt-0.5">{iconMap[entry.type]}</span>
+              ) : null}
+              <span dangerouslySetInnerHTML={{ __html: entry.message }} />
             </div>
           ))}
         </div>

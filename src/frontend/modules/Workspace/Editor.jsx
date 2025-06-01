@@ -24,6 +24,7 @@ import {
   editorMessages,
   editorErrors,
   editorWarns,
+  editorSuccessMsgs,
 } from '../../utils/strings/editorStrings.js';
 import { separators } from '../../utils/strings/constants.js';
 import { loaderMessages } from '../../utils/strings/loaderStrings.js';
@@ -271,7 +272,7 @@ const DesignApp = () => {
       setOutput((prevOutput) =>
         appendDiagnostic(
           prevOutput,
-          separators.NEW_LINE + editorErrors.PROCESS_ALREADY_RUNNING,
+          editorWarns.PROCESS_ALREADY_RUNNING,
           'error',
         ),
       );
@@ -287,23 +288,19 @@ const DesignApp = () => {
       await window.dialog.onDialogUpdate((message) => {
         const htmlOutput = convert.toHtml(message);
         setOutput((prevOutput) =>
-          appendDiagnostic(prevOutput, htmlOutput, 'info'),
+          appendDiagnostic(prevOutput, htmlOutput, 'none'),
         );
       });
       setOutput((prevOutput) =>
         appendDiagnostic(
           prevOutput,
-          separators.LINE_SEP +
-            editorMessages.MODEL_EXECUTION_INITIATED +
-            separators.LINE_SEP,
+          editorMessages.MODEL_EXECUTION_INITIATED,
           'info',
         ),
       );
       await window.api.runPython(TEST_PY_FILE);
     } catch (error) {
-      setOutput((prevOutput) =>
-        appendDiagnostic(prevOutput, separators.NEW_LINE + error, 'error'),
-      );
+      setOutput((prevOutput) => appendDiagnostic(prevOutput, error, 'error'));
     } finally {
       setIsRunning(false);
     }
@@ -318,26 +315,24 @@ const DesignApp = () => {
     const hyperParam = graphManager.getHyperparameters();
     if (!hyperParam) {
       setOutput((prevOutput) =>
-        appendDiagnostic(
-          prevOutput,
-          editorErrors.SET_HYPERPARAMETERS + separators.NEW_LINE,
-          'error',
-        ),
+        appendDiagnostic(prevOutput, editorErrors.SET_HYPERPARAMETERS, 'error'),
       );
       return;
     }
     setOutput((prevOutput) =>
       appendDiagnostic(
         prevOutput,
-        separators.LINE_SEP +
-          editorMessages.MODEL_COMPILATION_INITIATED +
-          separators.LINE_SEP,
+        editorMessages.MODEL_COMPILATION_INITIATED,
         'info',
       ),
     );
     if (result.isValid) {
       setOutput((prevOutput) =>
-        appendDiagnostic(prevOutput, editorMessages.ALL_CHECKS_PASSED, 'info'),
+        appendDiagnostic(
+          prevOutput,
+          editorSuccessMsgs.ALL_CHECKS_PASSED,
+          'success',
+        ),
       );
       executePythonScript();
     } else {
@@ -352,11 +347,7 @@ const DesignApp = () => {
       await window.api.stopPython();
       setIsRunning(false);
       setOutput((prevOutput) =>
-        appendDiagnostic(
-          prevOutput,
-          separators.NEW_LINE + editorErrors.USER_STOPPED,
-          'error',
-        ),
+        appendDiagnostic(prevOutput, editorErrors.USER_STOPPED, 'error'),
       );
     }
   };
@@ -376,11 +367,7 @@ const DesignApp = () => {
         if (pathToSaveRef.current === null) {
           setLoadingMessage(loaderMessages.EMPTY);
           setOutput((prevOutput) =>
-            appendDiagnostic(
-              prevOutput,
-              separators.NEW_LINE + editorWarns.SAVE_CANCELLED,
-              'warn',
-            ),
+            appendDiagnostic(prevOutput, editorWarns.SAVE_CANCELLED, 'warn'),
           );
           return;
         }
@@ -395,9 +382,8 @@ const DesignApp = () => {
         setOutput((prevOutput) =>
           appendDiagnostic(
             prevOutput,
-            separators.NEW_LINE +
-              editorMessages.MODEL_SAVED_SUCCESS(pathToSaveRef.current),
-            'info',
+            editorSuccessMsgs.MODEL_SAVED_SUCCESS(pathToSaveRef.current),
+            'success',
           ),
         );
       } catch (error) {
@@ -405,8 +391,7 @@ const DesignApp = () => {
         setOutput((prevOutput) =>
           appendDiagnostic(
             prevOutput,
-            separators.NEW_LINE +
-              editorErrors.ERROR_SAVING_MODEL(error.message),
+            editorErrors.ERROR_SAVING_MODEL(error.message),
             'error',
           ),
         );
@@ -415,7 +400,7 @@ const DesignApp = () => {
       setOutput((prevOutput) =>
         appendDiagnostic(
           prevOutput,
-          separators.NEW_LINE + editorErrors.STOP_TRAINING_BEFORE_SAVE,
+          editorErrors.STOP_TRAINING_BEFORE_SAVE,
           'error',
         ),
       );
@@ -475,15 +460,15 @@ const DesignApp = () => {
         setOutput((prevOutput) =>
           appendDiagnostic(
             prevOutput,
-            separators.NEW_LINE + editorMessages.MODEL_LOADED_SUCCESS,
-            'info',
+            editorSuccessMsgs.MODEL_LOADED_SUCCESS,
+            'success',
           ),
         );
       } else {
         setOutput((prevOutput) =>
           appendDiagnostic(
             prevOutput,
-            separators.NEW_LINE + editorErrors.LOAD_FAILED_INVALID_MODEL,
+            editorErrors.LOAD_FAILED_INVALID_MODEL,
             'error',
           ),
         );
@@ -494,7 +479,7 @@ const DesignApp = () => {
       setOutput((prevOutput) =>
         appendDiagnostic(
           prevOutput,
-          separators.NEW_LINE + editorErrors.ERROR_LOADING_MODEL(error.message),
+          editorErrors.ERROR_LOADING_MODEL(error.message),
           'error',
         ),
       );

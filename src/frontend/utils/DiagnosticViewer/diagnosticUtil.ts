@@ -1,4 +1,4 @@
-export type DiagnosticType = 'info' | 'warn' | 'error';
+export type DiagnosticType = 'info' | 'warn' | 'error' | 'success' | 'none';
 
 export interface DiagnosticEntry {
   type: DiagnosticType;
