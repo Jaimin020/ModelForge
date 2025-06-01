@@ -12,27 +12,34 @@ export class GraphAnalyzer {
     const errors: string[] = [];
     const nodes = this.modelNodeManager.getAllNodes();
 
-    // Check 1: Validate port connections
+    // Check 1: Validate all required properties have values
+    const propertyValidation = this.validateRequiredProperties();
+    if (!propertyValidation.isValid) {
+      errors.push(...propertyValidation.errors);
+      return { isValid: false, errors };
+    }
+
+    // Check 2: Validate port connections
     const portValidation = this.validatePortConnections(edges);
     if (!portValidation.isValid) {
       errors.push(...portValidation.errors);
       return { isValid: false, errors };
     }
 
-    // Check 2: No cycles allowed
+    // Check 3: No cycles allowed
     const cycleDetector = new CycleDetector(edges);
     if (cycleDetector.hasCycle()) {
       errors.push('Graph contains cycles');
       return { isValid: false, errors };
     }
 
-    // Check 3: No disconnected components
+    // Check 4: No disconnected components
     if (!this.isSingleConnectedComponent(edges)) {
       errors.push('Graph contains disconnected components');
       return { isValid: false, errors };
     }
 
-    // Check 4: First node must be input
+    // Check 5: First node must be input
     const startNodes = this.findStartNodes(edges);
     if (
       startNodes.length !== 1 ||
@@ -45,7 +52,7 @@ export class GraphAnalyzer {
       return { isValid: false, errors };
     }
 
-    // Check 5: Last node must be loss function
+    // Check 6: Last node must be loss function
     const endNodes = this.findEndNodes(edges);
     if (
       endNodes.length !== 1 ||
@@ -143,5 +150,53 @@ export class GraphAnalyzer {
       isValid: errors.length === 0,
       errors,
     };
+  }
+
+  private validateRequiredProperties(): {
+    isValid: boolean;
+    errors: string[];
+  } {
+    const errors: string[] = [];
+    const nodes = this.modelNodeManager.getAllNodes();
+
+    nodes.forEach((node) => {
+      if (!node.parameters || node.parameters.length === 0) {
+        return; // Skip nodes without parameters
+      }
+
+      node.parameters.forEach((parameter) => {
+        // Check if parameter is required and has no value
+        if (parameter.required && this.isEmptyValue(parameter.value)) {
+          errors.push(
+            `Node "${node.name}" is missing required property "${parameter.name}"`,
+          );
+        }
+      });
+    });
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+    };
+  }
+
+  private isEmptyValue(value: any): boolean {
+    if (value === null || value === undefined || Number.isNaN(value)) {
+      return true;
+    }
+
+    if (typeof value === 'string' && value.trim() === '') {
+      return true;
+    }
+
+    if (Array.isArray(value) && value.length === 0) {
+      return true;
+    }
+
+    if (typeof value === 'object' && Object.keys(value).length === 0) {
+      return true;
+    }
+
+    return false;
   }
 }
