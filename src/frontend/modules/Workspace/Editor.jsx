@@ -574,7 +574,7 @@ const DesignApp = () => {
           </div>
 
           {/* Diagnostic Viewer below */}
-          <DiagnosticViewer output={output} clearOutput={() => setOutput([])}/>
+          <DiagnosticViewer output={output} clearOutput={() => setOutput([])} />
         </div>
       </div>
     </div>
