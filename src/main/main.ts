@@ -23,7 +23,7 @@ import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { ChildProcess, spawn } from 'child_process';
 import fs from 'fs';
-import { paths } from './config';
+import { paths, updateVenvPythonPath } from './config';
 import { setupIpcHandlers } from '../backend/ipc/ipcHandler';
 import * as XLSX from 'xlsx';
 import { createNewWindow } from './windowManager';
@@ -76,6 +76,9 @@ const installExtensions = async () => {
 };
 
 const createWindow = async () => {
+  if (app.isPackaged) {
+    updateVenvPythonPath(process.resourcesPath);
+  }
   setupIpcHandlers();
   if (isDebug) {
     await installExtensions();

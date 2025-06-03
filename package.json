@@ -246,7 +246,12 @@
       "output": "release/build"
     },
     "extraResources": [
-      "./assets/**"
+      "./assets/**",
+      {
+        "from": "src/main/installed-python",
+        "to": "installed-python",
+        "filter": ["**/*"]
+      }
     ],
     "publish": {
       "provider": "github",
