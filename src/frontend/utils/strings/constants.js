@@ -1,4 +1,4 @@
 export const separators = {
-  LINE_SEP: '\n-------------------------------------\n',
+  LINE_SEP: '-'.repeat(50),
   NEW_LINE: '\n',
 };

@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { AlertTriangle, Info, XCircle, CheckCircle } from 'lucide-react';
+import { BrushCleaning } from 'lucide-react';
 
-export const DiagnosticViewer = ({ output }) => {
+export const DiagnosticViewer = ({ output, clearOutput }) => {
   const viewerRef = useRef(null);
   const containerRef = useRef(null);
   const isDragging = useRef(false);
@@ -41,6 +43,53 @@ export const DiagnosticViewer = ({ output }) => {
     isDragging.current = true;
   };
 
+  const iconMap = {
+    info: (
+      <Info
+        style={{
+          color: '#3B82F6',
+          marginRight: '4px',
+          position: 'relative',
+          top: '2px',
+        }}
+        size={14}
+      />
+    ),
+    warn: (
+      <AlertTriangle
+        style={{
+          color: '#E69700',
+          marginRight: '4px',
+          position: 'relative',
+          top: '2px',
+        }}
+        size={14}
+      />
+    ),
+    error: (
+      <XCircle
+        style={{
+          color: '#EF4444',
+          marginRight: '4px',
+          position: 'relative',
+          top: '2px',
+        }}
+        size={14}
+      />
+    ),
+    success: (
+      <CheckCircle
+        style={{
+          color: '#10B981',
+          marginRight: '4px',
+          position: 'relative',
+          top: '2px',
+        }}
+        size={14}
+      />
+    ),
+  };
+
   return (
     <div style={{ margin: '5px' }}>
       {/* Drag handle above border */}
@@ -74,12 +123,33 @@ export const DiagnosticViewer = ({ output }) => {
             padding: '3px',
             borderBottom: '1px solid #ddd',
             marginBottom: '3px',
+            paddingBottom: '8px',
           }}
         >
-          Diagnostic Viewer
+          <span>Diagnostic Viewer</span>
+          <button
+            onClick={clearOutput}
+            style={{
+              fontSize: '11px',
+              color: 'black',
+              border: '1px solid grey',
+              padding: '2px 6px',
+              cursor: 'pointer',
+              borderRadius: '3px',
+              float: 'right',
+              position: 'relative',
+              top: '-4px',
+            }}
+          >
+            <span style={{ position: 'relative', top: '-2px' }}>Clear</span>
+            <BrushCleaning
+              style={{ marginLeft: '4px', position: 'relative', top: '1px' }}
+              size={14}
+            />
+          </button>
         </div>
 
-        <pre
+        <div
           ref={viewerRef}
           style={{
             backgroundColor: '#f5f5f5',
@@ -88,12 +158,19 @@ export const DiagnosticViewer = ({ output }) => {
             borderRadius: '0px',
             height: `${height}px`,
             overflowY: 'scroll',
-            fontSize: '12px',
+            fontSize: '14px',
             margin: 0,
           }}
         >
-          <div dangerouslySetInnerHTML={{ __html: output }} />
-        </pre>
+          {output.map((entry, idx) => (
+            <div key={idx} className="flex items-start mb-1">
+              {iconMap[entry.type] ? (
+                <span className="mr-2 mt-0.5">{iconMap[entry.type]}</span>
+              ) : null}
+              <span dangerouslySetInnerHTML={{ __html: entry.message }} />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
