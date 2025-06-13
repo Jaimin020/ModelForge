@@ -10,13 +10,13 @@ import { LayerSelectionPanel } from '../LayerSelectionPanel/LayerSelectionPanel.
 import { getNodeByName } from '../../utils/nodeOps/getNodeByName.jsx';
 import { ModelNodeManager } from '../../utils/graphMngr/ModelNodeManager.ts';
 import { GraphAnalyzer } from '../../utils/graphMngr/GraphAnalyzer.ts';
-import { ModelInputModal } from '../../components/ModelInputModal.jsx';
 import { HyperparameterModal } from '../../components/HyperparameterModal';
 import { GraphDataManager } from '../../utils/graphUtils/GraphDataManager.ts';
 import { LoadingOverlay } from '../Loading/LoadingModal.jsx';
 import { FooterLine } from '../Footer/FooterLine.jsx';
 import { openNewWindow } from '../../utils/windowUtils/windowUtils';
 import { TEST_PY_FILE } from '../../../envPath.js';
+import { ModelInputModal } from '../InputModal/ModelInputModal.jsx';
 import Convert from 'ansi-to-html';
 import './style.css';
 // For error and message strings
