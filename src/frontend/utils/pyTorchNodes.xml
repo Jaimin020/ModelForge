@@ -20,6 +20,25 @@
     </node>
 
     <node>
+        <name>Image Input Layer</name>
+        <feature>Image Input Layer</feature>
+        <library>torch.nn</library>
+        <codeId>input_layer</codeId>
+        <inport>0</inport>
+        <outport>1</outport>
+        <parameters>
+            <param name="Folder" type="file" required="true" display="true"/>
+            <param name="Number of Features" type="int" required="true" display="false"/>
+            <param name="Number of Predictor" type="int" required="true" display="false"/>
+            <param name="Selected Feature" type="string" required="true" display="false"/>
+            <param name="Selected Predictor" type="string" required="true" display="false"/>
+            <param name="Train Split" type="float" required="true" display="false"/>
+            <param name="Test Split" type="float" required="true" display="false"/>
+            <param name="Validation Split" type="float" required="true" display="false"/>
+        </parameters>
+    </node>
+
+    <node>
         <name>Linear</name>
         <feature>Fully connected layer</feature>
         <library>torch.nn</library>

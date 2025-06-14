@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import ModelInputModal from './ModelInputModal';
 
 export const Toolbar = ({
   onRun,

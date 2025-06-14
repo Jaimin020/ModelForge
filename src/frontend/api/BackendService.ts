@@ -10,4 +10,7 @@ export const backendService = {
   async loadModel(modelPath: string) {
     return await ipcRenderer.invoke('load-model', modelPath);
   },
+  async analyseFolder(folderPath: string) {
+    return await ipcRenderer.invoke('analyse-folder', folderPath);
+  },
 };

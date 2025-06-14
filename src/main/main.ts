@@ -245,11 +245,20 @@ ipcMain.handle('writeFile', async (event, filePath, data) => {
   return fs.promises.writeFile(filePath, data);
 });
 
-ipcMain.handle('select-file', async (event, fileFomrate) => {
-  const result = await dialog.showOpenDialog(mainWindow!, {
-    properties: ['openFile'],
-    filters: [fileFomrate],
-  });
+ipcMain.handle('select-file', async (event, fileFomrate, isFolderType) => {
+  var result;
+  if(true)
+  {
+    result = await dialog.showOpenDialog(mainWindow!, {
+      properties: ['openDirectory'],
+    });
+  }
+  else{
+    result = await dialog.showOpenDialog(mainWindow!, {
+      properties: ['openFile'],
+      filters: [fileFomrate],
+    });
+  }
 
   return result.canceled ? null : result.filePaths[0];
 });

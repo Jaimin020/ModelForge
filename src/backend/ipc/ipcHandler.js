@@ -1,5 +1,6 @@
 import { ipcMain } from 'electron';
 import { ModelController } from '../controllers/ModelController';
+import { FileManager } from '../Core/FileManager';
 
 export function setupIpcHandlers() {
   ipcMain.handle('train-model', async (event, modelGraph) => {
@@ -15,5 +16,10 @@ export function setupIpcHandlers() {
   ipcMain.handle('load-model', async (event, modelPath) => {
     const modelController = new ModelController();
     return await modelController.loadModel(modelPath);
+  });
+
+  ipcMain.handle('analyse-folder', async (event, folderPath) => {
+    const fileMngr = FileManager.getInstance();
+    return await fileMngr.analyzeImageDatasetFolder(folderPath);
   });
 }
