@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <nodes>
     <node>
-        <name>Input Layer</name>
-        <feature>Input Layer</feature>
+        <name>Tabular Input Layer</name>
+        <feature>Tabular Input Layer</feature>
         <library>torch.nn</library>
         <codeId>input_layer</codeId>
         <inport>0</inport>

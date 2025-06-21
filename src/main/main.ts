@@ -246,8 +246,8 @@ ipcMain.handle('writeFile', async (event, filePath, data) => {
 });
 
 ipcMain.handle('select-file', async (event, fileFomrate, isFolderType) => {
-  var result;
-  if(true)
+  var result = null;
+  if(isFolderType)
   {
     result = await dialog.showOpenDialog(mainWindow!, {
       properties: ['openDirectory'],

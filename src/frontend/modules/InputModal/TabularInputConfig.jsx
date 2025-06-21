@@ -80,10 +80,7 @@ export const TabularInputConfig = ({ onSaveReady, selectedNode }) => {
   }, [onSaveReady, selectedFeatures, selectedPredictor, inputParams, columns]);
 
   const handleFileSelect = async () => {
-    const filePath = await window.dialog.filePicker({
-      name: 'Select_File',
-      extensions: ['csv', 'xlsx'],
-    });
+    const filePath = await window.dialog.filePicker(['csv', 'xlsx'],false);
     if (filePath) {
       const spreadsheet = SpreadsheetOps.getInstance();
       const loaded = await spreadsheet.loadFile(filePath);

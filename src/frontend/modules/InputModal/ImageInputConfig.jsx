@@ -72,10 +72,7 @@ export const ImageInputConfig = ({ onSaveReady, selectedNode }) => {
   }, [onSaveReady, selectedClasses, inputParams, detectedClasses, classStats]);
 
   const handleFolderSelect = async () => {
-    const folderPath = await window.dialog.filePicker({
-        fileFormate: [],
-        isFolder: true
-    });
+    const folderPath = await window.dialog.filePicker([],true);
     
     if (folderPath) {
       try {
