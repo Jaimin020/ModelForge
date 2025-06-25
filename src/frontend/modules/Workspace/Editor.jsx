@@ -379,6 +379,7 @@ const DesignApp = () => {
     await saveSetup();
     if (pathToSaveRef.current === null) {
       await onSaveAs();
+      return;
     }
     await saveModelThroughBackend();
   };
