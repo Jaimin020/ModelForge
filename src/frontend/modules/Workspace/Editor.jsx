@@ -273,7 +273,7 @@ const DesignApp = () => {
 
   const executePythonScript = async () => {
     if (isRunning) {
-      appendToOutput(editorWarns.PROCESS_ALREADY_RUNNING,'error');
+      appendToOutput(editorWarns.PROCESS_ALREADY_RUNNING, 'error');
       return;
     }
     graphManager.setNodes(nodes);
@@ -290,7 +290,7 @@ const DesignApp = () => {
       appendToOutput(editorMessages.MODEL_EXECUTION_INITIATED, 'info');
       await window.api.runPython(TEST_PY_FILE);
     } catch (error) {
-      appendToOutput(error,'error');
+      appendToOutput(error, 'error');
     } finally {
       setIsRunning(false);
     }
@@ -309,7 +309,7 @@ const DesignApp = () => {
     }
     appendToOutput(editorMessages.MODEL_COMPILATION_INITIATED, 'info');
     if (result.isValid) {
-      appendToOutput(editorSuccessMsgs.ALL_CHECKS_PASSED, 'success')
+      appendToOutput(editorSuccessMsgs.ALL_CHECKS_PASSED, 'success');
       executePythonScript();
     } else {
       appendToOutput(result.errors.join('\n--> '), 'error');
@@ -346,6 +346,18 @@ const DesignApp = () => {
     });
   };
 
+  const saveSetup = async () => {
+    if (isRunning) {
+      appendToOutput(editorErrors.STOP_TRAINING_BEFORE_SAVE, 'error');
+      return;
+    }
+    setLoadingMessage(loaderMessages.SAVING);
+    // Update node positions before saving
+    updateNodePositions();
+    graphManager.setNodes(nodes);
+    graphManager.setEdges(edges);
+  };
+
   const saveModelThroughBackend = async () => {
     try {
       await window.backend.saveModel(
@@ -353,68 +365,39 @@ const DesignApp = () => {
         pathToSaveRef.current,
       );
       setLoadingMessage(loaderMessages.EMPTY);
-      appendToOutput(editorSuccessMsgs.MODEL_SAVED_SUCCESS(pathToSaveRef.current), 'success');
+      appendToOutput(
+        editorSuccessMsgs.MODEL_SAVED_SUCCESS(pathToSaveRef.current),
+        'success',
+      );
     } catch (error) {
       console.error(editorErrors.ERROR_SAVING_MODEL(error));
-      appendToOutput(editorErrors.ERROR_SAVING_MODEL(error.message),'error');
-    }
-  }
-
-  const onSave = async () => {
-    if (!isRunning) {
-      setLoadingMessage(loaderMessages.SAVING);
-
-      // Update node positions before saving
-      updateNodePositions();
-      graphManager.setNodes(nodes);
-      graphManager.setEdges(edges);
-
-      if (pathToSaveRef.current === null) {
-        pathToSaveRef.current = await window.dialog.saveFilePathPicker({
-          defaultName: 'model.mff',
-          extensions: ['mff'],
-        });
-
-        if (pathToSaveRef.current === null) {
-          setLoadingMessage(loaderMessages.EMPTY);
-          appendToOutput(editorWarns.SAVE_CANCELLED, 'warn');
-          return;
-        }
-      }
-      await saveModelThroughBackend();
-    } else {
-      appendToOutput(editorErrors.STOP_TRAINING_BEFORE_SAVE, 'error');
+      appendToOutput(editorErrors.ERROR_SAVING_MODEL(error.message), 'error');
     }
   };
 
+  const onSave = async () => {
+    await saveSetup();
+    if (pathToSaveRef.current === null) {
+      await onSaveAs();
+    }
+    await saveModelThroughBackend();
+  };
+
   const onSaveAs = async () => {
-    if(isRunning) {
-      appendToOutput( editorErrors.STOP_TRAINING_BEFORE_SAVE, 'error');
+    saveSetup();
+    let prevPath = pathToSaveRef.current;
+    pathToSaveRef.current = await window.dialog.saveFilePathPicker({
+      defaultName: 'model.mff',
+      extensions: ['mff'],
+    });
+
+    if (pathToSaveRef.current === null) {
+      pathToSaveRef.current = prevPath;
+      setLoadingMessage(loaderMessages.EMPTY);
+      appendToOutput(editorWarns.SAVE_CANCELLED, 'warn');
+      return;
     }
-    if (!isRunning) {
-      setLoadingMessage(loaderMessages.SAVING);
-
-      // Update node positions before saving
-      updateNodePositions();
-      graphManager.setNodes(nodes);
-      graphManager.setEdges(edges);
-
-      let prevPath = pathToSaveRef.current;
-      pathToSaveRef.current = await window.dialog.saveFilePathPicker({
-        defaultName: 'model.mff',
-        extensions: ['mff'],
-      });
-
-      if (pathToSaveRef.current === null) {
-        pathToSaveRef.current = prevPath;
-        setLoadingMessage(loaderMessages.EMPTY);
-        appendToOutput(editorWarns.SAVE_CANCELLED, 'warn');
-        return;
-      }
-      await saveModelThroughBackend();
-    } else {
-      
-    }
+    await saveModelThroughBackend();
   };
 
   const onOpen = async () => {
@@ -472,12 +455,12 @@ const DesignApp = () => {
         pathToSaveRef.current = pathToload;
         appendToOutput(editorSuccessMsgs.MODEL_LOADED_SUCCESS, 'success');
       } else {
-        appendToOutput(editorErrors.LOAD_FAILED_INVALID_MODEL,'error');
+        appendToOutput(editorErrors.LOAD_FAILED_INVALID_MODEL, 'error');
       }
       setLoadingMessage(loaderMessages.EMPTY);
     } catch (error) {
       console.error(editorErrors.ERROR_LOADING_MODEL(error));
-      appendToOutput(editorErrors.ERROR_LOADING_MODEL(error.message),'error');
+      appendToOutput(editorErrors.ERROR_LOADING_MODEL(error.message), 'error');
     }
   };
 
