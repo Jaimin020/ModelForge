@@ -31,6 +31,9 @@ import { loaderMessages } from '../../utils/strings/loaderStrings.js';
 
 import { appendDiagnostic } from '../../utils/DiagnosticViewer/diagnosticUtil.ts';
 
+// For saving models
+import * as ModelSaveHandler from './ModelSaveHandler/ModelSaveHandler.jsx';
+
 const DesignApp = () => {
   const leftPanelRef = useRef();
   const rightPanelRef = useRef();
@@ -267,15 +270,13 @@ const DesignApp = () => {
     }
   };
 
+  const appendToOutput = (message, type = 'none') => {
+    setOutput((prevOutput) => appendDiagnostic(prevOutput, message, type));
+  };
+
   const executePythonScript = async () => {
     if (isRunning) {
-      setOutput((prevOutput) =>
-        appendDiagnostic(
-          prevOutput,
-          editorWarns.PROCESS_ALREADY_RUNNING,
-          'error',
-        ),
-      );
+      appendToOutput(editorWarns.PROCESS_ALREADY_RUNNING, 'error');
       return;
     }
     graphManager.setNodes(nodes);
@@ -287,20 +288,12 @@ const DesignApp = () => {
     try {
       await window.dialog.onDialogUpdate((message) => {
         const htmlOutput = convert.toHtml(message);
-        setOutput((prevOutput) =>
-          appendDiagnostic(prevOutput, htmlOutput, 'none'),
-        );
+        appendToOutput(htmlOutput, 'none');
       });
-      setOutput((prevOutput) =>
-        appendDiagnostic(
-          prevOutput,
-          editorMessages.MODEL_EXECUTION_INITIATED,
-          'info',
-        ),
-      );
+      appendToOutput(editorMessages.MODEL_EXECUTION_INITIATED, 'info');
       await window.api.runPython(TEST_PY_FILE);
     } catch (error) {
-      setOutput((prevOutput) => appendDiagnostic(prevOutput, error, 'error'));
+      appendToOutput(error, 'error');
     } finally {
       setIsRunning(false);
     }
@@ -314,31 +307,15 @@ const DesignApp = () => {
     const result = graphAnalyzer.validateGraph(currentEdges);
     const hyperParam = graphManager.getHyperparameters();
     if (!hyperParam) {
-      setOutput((prevOutput) =>
-        appendDiagnostic(prevOutput, editorErrors.SET_HYPERPARAMETERS, 'error'),
-      );
+      appendToOutput(editorErrors.SET_HYPERPARAMETERS, 'error');
       return;
     }
-    setOutput((prevOutput) =>
-      appendDiagnostic(
-        prevOutput,
-        editorMessages.MODEL_COMPILATION_INITIATED,
-        'info',
-      ),
-    );
+    appendToOutput(editorMessages.MODEL_COMPILATION_INITIATED, 'info');
     if (result.isValid) {
-      setOutput((prevOutput) =>
-        appendDiagnostic(
-          prevOutput,
-          editorSuccessMsgs.ALL_CHECKS_PASSED,
-          'success',
-        ),
-      );
+      appendToOutput(editorSuccessMsgs.ALL_CHECKS_PASSED, 'success');
       executePythonScript();
     } else {
-      setOutput((prevOutput) =>
-        appendDiagnostic(prevOutput, result.errors.join('\n--> '), 'error'),
-      );
+      appendToOutput(result.errors.join('\n--> '), 'error');
     }
   };
 
@@ -346,9 +323,7 @@ const DesignApp = () => {
     if (isRunning) {
       await window.api.stopPython();
       setIsRunning(false);
-      setOutput((prevOutput) =>
-        appendDiagnostic(prevOutput, editorErrors.USER_STOPPED, 'error'),
-      );
+      appendToOutput(editorErrors.USER_STOPPED, 'error');
     }
   };
 
@@ -375,61 +350,29 @@ const DesignApp = () => {
   };
 
   const onSave = async () => {
-    if (!isRunning) {
-      setLoadingMessage(loaderMessages.SAVING);
+    await ModelSaveHandler.saveModel({
+      isRunning,
+      nodes,
+      edges,
+      graphManager,
+      pathToSaveRef,
+      setLoadingMessage,
+      appendToOutput,
+      updateNodePositions,
+    });
+  };
 
-      // Update node positions before saving
-      updateNodePositions();
-      graphManager.setNodes(nodes);
-      graphManager.setEdges(edges);
-
-      if (pathToSaveRef.current === null) {
-        pathToSaveRef.current = await window.dialog.saveFilePathPicker({
-          defaultName: 'model.mff',
-          extensions: ['mff'],
-        });
-
-        if (pathToSaveRef.current === null) {
-          setLoadingMessage(loaderMessages.EMPTY);
-          setOutput((prevOutput) =>
-            appendDiagnostic(prevOutput, editorWarns.SAVE_CANCELLED, 'warn'),
-          );
-          return;
-        }
-      }
-
-      try {
-        await window.backend.saveModel(
-          graphManager.getGraphDataAsJson(),
-          pathToSaveRef.current,
-        );
-        setLoadingMessage(loaderMessages.EMPTY);
-        setOutput((prevOutput) =>
-          appendDiagnostic(
-            prevOutput,
-            editorSuccessMsgs.MODEL_SAVED_SUCCESS(pathToSaveRef.current),
-            'success',
-          ),
-        );
-      } catch (error) {
-        console.error(editorErrors.ERROR_SAVING_MODEL(error));
-        setOutput((prevOutput) =>
-          appendDiagnostic(
-            prevOutput,
-            editorErrors.ERROR_SAVING_MODEL(error.message),
-            'error',
-          ),
-        );
-      }
-    } else {
-      setOutput((prevOutput) =>
-        appendDiagnostic(
-          prevOutput,
-          editorErrors.STOP_TRAINING_BEFORE_SAVE,
-          'error',
-        ),
-      );
-    }
+  const onSaveAs = async () => {
+    await ModelSaveHandler.saveModelAs({
+      isRunning,
+      nodes,
+      edges,
+      graphManager,
+      pathToSaveRef,
+      setLoadingMessage,
+      appendToOutput,
+      updateNodePositions,
+    });
   };
 
   const onOpen = async () => {
@@ -485,33 +428,14 @@ const DesignApp = () => {
         }
 
         pathToSaveRef.current = pathToload;
-
-        setOutput((prevOutput) =>
-          appendDiagnostic(
-            prevOutput,
-            editorSuccessMsgs.MODEL_LOADED_SUCCESS,
-            'success',
-          ),
-        );
+        appendToOutput(editorSuccessMsgs.MODEL_LOADED_SUCCESS, 'success');
       } else {
-        setOutput((prevOutput) =>
-          appendDiagnostic(
-            prevOutput,
-            editorErrors.LOAD_FAILED_INVALID_MODEL,
-            'error',
-          ),
-        );
+        appendToOutput(editorErrors.LOAD_FAILED_INVALID_MODEL, 'error');
       }
       setLoadingMessage(loaderMessages.EMPTY);
     } catch (error) {
       console.error(editorErrors.ERROR_LOADING_MODEL(error));
-      setOutput((prevOutput) =>
-        appendDiagnostic(
-          prevOutput,
-          editorErrors.ERROR_LOADING_MODEL(error.message),
-          'error',
-        ),
-      );
+      appendToOutput(editorErrors.ERROR_LOADING_MODEL(error.message), 'error');
     }
   };
 
@@ -526,6 +450,7 @@ const DesignApp = () => {
         onInputConfig={() => setIsInputModalOpen(true)}
         onHyperParam={() => setIsHyperParamModalOpen(true)}
         onSave={onSave}
+        onSaveAs={onSaveAs}
         onOpen={onOpen}
       />
       <ModelInputModal
