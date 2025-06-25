@@ -384,7 +384,7 @@ const DesignApp = () => {
   };
 
   const onSaveAs = async () => {
-    saveSetup();
+    await saveSetup();
     let prevPath = pathToSaveRef.current;
     pathToSaveRef.current = await window.dialog.saveFilePathPicker({
       defaultName: 'model.mff',
