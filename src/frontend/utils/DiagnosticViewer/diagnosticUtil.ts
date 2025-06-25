@@ -8,7 +8,7 @@ export interface DiagnosticEntry {
 // Function to create a diagnostic entry
 export const createDiagnosticEntry = (
   message: string,
-  type: DiagnosticType = 'info',
+  type: DiagnosticType = 'none',
 ): DiagnosticEntry => ({
   message,
   type,
@@ -18,7 +18,7 @@ export const createDiagnosticEntry = (
 export const appendDiagnostic = (
   currentLogs: DiagnosticEntry[],
   message: string,
-  type: DiagnosticType = 'info',
+  type: DiagnosticType = 'none',
 ): DiagnosticEntry[] => {
   const newEntry = createDiagnosticEntry(message, type);
   return [...currentLogs, newEntry];
