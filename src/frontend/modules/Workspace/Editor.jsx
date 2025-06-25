@@ -31,6 +31,9 @@ import { loaderMessages } from '../../utils/strings/loaderStrings.js';
 
 import { appendDiagnostic } from '../../utils/DiagnosticViewer/diagnosticUtil.ts';
 
+// For saving models
+import * as ModelSaveHandler from './ModelSaveHandler/ModelSaveHandler.jsx';
+
 const DesignApp = () => {
   const leftPanelRef = useRef();
   const rightPanelRef = useRef();
@@ -346,59 +349,30 @@ const DesignApp = () => {
     });
   };
 
-  const saveSetup = async () => {
-    if (isRunning) {
-      appendToOutput(editorErrors.STOP_TRAINING_BEFORE_SAVE, 'error');
-      return;
-    }
-    setLoadingMessage(loaderMessages.SAVING);
-    // Update node positions before saving
-    updateNodePositions();
-    graphManager.setNodes(nodes);
-    graphManager.setEdges(edges);
-  };
-
-  const saveModelThroughBackend = async () => {
-    try {
-      await window.backend.saveModel(
-        graphManager.getGraphDataAsJson(),
-        pathToSaveRef.current,
-      );
-      setLoadingMessage(loaderMessages.EMPTY);
-      appendToOutput(
-        editorSuccessMsgs.MODEL_SAVED_SUCCESS(pathToSaveRef.current),
-        'success',
-      );
-    } catch (error) {
-      console.error(editorErrors.ERROR_SAVING_MODEL(error));
-      appendToOutput(editorErrors.ERROR_SAVING_MODEL(error.message), 'error');
-    }
-  };
-
   const onSave = async () => {
-    await saveSetup();
-    if (pathToSaveRef.current === null) {
-      await onSaveAs();
-      return;
-    }
-    await saveModelThroughBackend();
+    await ModelSaveHandler.saveModel({
+      isRunning,
+      nodes,
+      edges,
+      graphManager,
+      pathToSaveRef,
+      setLoadingMessage,
+      appendToOutput,
+      updateNodePositions,
+    });
   };
 
   const onSaveAs = async () => {
-    await saveSetup();
-    let prevPath = pathToSaveRef.current;
-    pathToSaveRef.current = await window.dialog.saveFilePathPicker({
-      defaultName: 'model.mff',
-      extensions: ['mff'],
+    await ModelSaveHandler.saveModelAs({
+      isRunning,
+      nodes,
+      edges,
+      graphManager,
+      pathToSaveRef,
+      setLoadingMessage,
+      appendToOutput,
+      updateNodePositions,
     });
-
-    if (pathToSaveRef.current === null) {
-      pathToSaveRef.current = prevPath;
-      setLoadingMessage(loaderMessages.EMPTY);
-      appendToOutput(editorWarns.SAVE_CANCELLED, 'warn');
-      return;
-    }
-    await saveModelThroughBackend();
   };
 
   const onOpen = async () => {
