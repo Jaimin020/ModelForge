@@ -1,15 +1,10 @@
 // For error and message strings
-import {
-  editorMessages,
-  editorErrors,
-  editorWarns,
-  editorSuccessMsgs,
-} from '../../../utils/strings/editorStrings.js';
+import * as editorStrings from '../../../utils/strings/editorStrings.js';
 import { loaderMessages } from '../../../utils/strings/loaderStrings.js';
 
 const saveSetup = async (params) => {
   if (params.isRunning) {
-    params.appendToOutput(editorErrors.STOP_TRAINING_BEFORE_SAVE, 'error');
+    params.appendToOutput(editorStrings.errors.STOP_TRAINING_BEFORE_SAVE, 'error');
     return;
   }
   params.setLoadingMessage(loaderMessages.SAVING);
@@ -32,9 +27,9 @@ const saveModelThroughBackend = async (params) => {
     );
   } catch (error) {
     params.setLoadingMessage(loaderMessages.EMPTY);
-    console.error(editorErrors.ERROR_SAVING_MODEL(error));
+    console.error(editorStrings.errors.ERROR_SAVING_MODEL(error));
     params.appendToOutput(
-      editorErrors.ERROR_SAVING_MODEL(error.message),
+      editorStrings.errors.ERROR_SAVING_MODEL(error.message),
       'error',
     );
   }
@@ -60,7 +55,7 @@ export const saveModelAs = async (params) => {
   if (params.pathToSaveRef.current === null) {
     params.pathToSaveRef.current = prevPath;
     params.setLoadingMessage(loaderMessages.EMPTY);
-    params.appendToOutput(editorWarns.SAVE_CANCELLED, 'warn');
+    params.appendToOutput(editorStrings.warns.SAVE_CANCELLED, 'warn');
     return;
   }
   await saveModelThroughBackend(params);

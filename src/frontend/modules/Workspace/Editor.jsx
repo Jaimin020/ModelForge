@@ -20,12 +20,7 @@ import { TEST_PY_FILE } from '../../../envPath.js';
 import Convert from 'ansi-to-html';
 import './style.css';
 // For error and message strings
-import {
-  editorMessages,
-  editorErrors,
-  editorWarns,
-  editorSuccessMsgs,
-} from '../../utils/strings/editorStrings.js';
+import * as editorStrings from '../../utils/strings/editorStrings.js';
 import { separators } from '../../utils/strings/constants.js';
 import { loaderMessages } from '../../utils/strings/loaderStrings.js';
 
@@ -266,7 +261,7 @@ const DesignApp = () => {
     });
 
     if (windowId) {
-      console.log(editorMessages.NEW_WINDOW_OPENED(windowId));
+      console.log(editorStrings.messages.NEW_WINDOW_OPENED(windowId));
     }
   };
 
@@ -276,7 +271,7 @@ const DesignApp = () => {
 
   const executePythonScript = async () => {
     if (isRunning) {
-      appendToOutput(editorWarns.PROCESS_ALREADY_RUNNING, 'error');
+      appendToOutput(editorStrings.warns.PROCESS_ALREADY_RUNNING, 'error');
       return;
     }
     graphManager.setNodes(nodes);
@@ -290,7 +285,7 @@ const DesignApp = () => {
         const htmlOutput = convert.toHtml(message);
         appendToOutput(htmlOutput, 'none');
       });
-      appendToOutput(editorMessages.MODEL_EXECUTION_INITIATED, 'info');
+      appendToOutput(editorStrings.messages.MODEL_EXECUTION_INITIATED, 'info');
       await window.api.runPython(TEST_PY_FILE);
     } catch (error) {
       appendToOutput(error, 'error');
@@ -307,12 +302,12 @@ const DesignApp = () => {
     const result = graphAnalyzer.validateGraph(currentEdges);
     const hyperParam = graphManager.getHyperparameters();
     if (!hyperParam) {
-      appendToOutput(editorErrors.SET_HYPERPARAMETERS, 'error');
+      appendToOutput(editorStrings.errors.SET_HYPERPARAMETERS, 'error');
       return;
     }
-    appendToOutput(editorMessages.MODEL_COMPILATION_INITIATED, 'info');
+    appendToOutput(editorStrings.messages.MODEL_COMPILATION_INITIATED, 'info');
     if (result.isValid) {
-      appendToOutput(editorSuccessMsgs.ALL_CHECKS_PASSED, 'success');
+      appendToOutput(editorStrings.success.ALL_CHECKS_PASSED, 'success');
       executePythonScript();
     } else {
       appendToOutput(result.errors.join('\n--> '), 'error');
@@ -323,7 +318,7 @@ const DesignApp = () => {
     if (isRunning) {
       await window.api.stopPython();
       setIsRunning(false);
-      appendToOutput(editorErrors.USER_STOPPED, 'error');
+      appendToOutput(editorStrings.errors.USER_STOPPED, 'error');
     }
   };
 
@@ -381,6 +376,11 @@ const DesignApp = () => {
       name: 'Load_File',
       extensions: ['mff'],
     });
+    if (!pathToload) {
+      setLoadingMessage(loaderMessages.EMPTY);
+      appendToOutput(editorStrings.warns.LOAD_CANCELLED, 'warn');
+      return;
+    }
     setLoadingMessage(loaderMessages.EMPTY);
     try {
       setLoadingMessage(loaderMessages.LOADING);
@@ -428,14 +428,14 @@ const DesignApp = () => {
         }
 
         pathToSaveRef.current = pathToload;
-        appendToOutput(editorSuccessMsgs.MODEL_LOADED_SUCCESS, 'success');
+        appendToOutput(editorStrings.success.MODEL_LOADED_SUCCESS, 'success');
       } else {
-        appendToOutput(editorErrors.LOAD_FAILED_INVALID_MODEL, 'error');
+        appendToOutput(editorStrings.errors.LOAD_FAILED_INVALID_MODEL, 'error');
       }
       setLoadingMessage(loaderMessages.EMPTY);
     } catch (error) {
-      console.error(editorErrors.ERROR_LOADING_MODEL(error));
-      appendToOutput(editorErrors.ERROR_LOADING_MODEL(error.message), 'error');
+      console.error(editorStrings.errors.ERROR_LOADING_MODEL(error));
+      appendToOutput(editorStrings.errors.ERROR_LOADING_MODEL(error.message), 'error');
     }
   };
 
