@@ -4,7 +4,10 @@ import { loaderMessages } from '../../../utils/strings/loaderStrings.js';
 
 const saveSetup = async (params) => {
   if (params.isRunning) {
-    params.appendToOutput(editorStrings.errors.STOP_TRAINING_BEFORE_SAVE, 'error');
+    params.appendToOutput(
+      editorStrings.errors.STOP_TRAINING_BEFORE_SAVE,
+      'error',
+    );
     return;
   }
   params.setLoadingMessage(loaderMessages.SAVING);

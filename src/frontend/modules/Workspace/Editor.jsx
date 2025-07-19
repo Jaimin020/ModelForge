@@ -386,7 +386,7 @@ const DesignApp = () => {
       setLoadingMessage(loaderMessages.LOADING);
       const result = await window.backend.loadModel(pathToload);
 
-      if(!(result && result.nodes && result.edges)) {
+      if (!(result && result.nodes && result.edges)) {
         setLoadingMessage(loaderMessages.EMPTY);
         appendToOutput(editorStrings.errors.LOAD_FAILED_INVALID_MODEL, 'error');
         return;
@@ -438,7 +438,10 @@ const DesignApp = () => {
       setLoadingMessage(loaderMessages.EMPTY);
     } catch (error) {
       console.error(editorStrings.errors.ERROR_LOADING_MODEL(error));
-      appendToOutput(editorStrings.errors.ERROR_LOADING_MODEL(error.message), 'error');
+      appendToOutput(
+        editorStrings.errors.ERROR_LOADING_MODEL(error.message),
+        'error',
+      );
     }
   };
 
@@ -477,18 +480,10 @@ const DesignApp = () => {
             height: '100%',
           }}
         >
-          <div
-            style={{
-              height: `${layerSelectionHeight}px`,
-              overflow: 'auto',
-              minHeight: '100px',
-              maxHeight: `calc(100% - 150px)`,
-              display: 'flex', // Add flex display
-              flexDirection: 'column', // Stack children vertically
-            }}
-          >
-            <LayerSelectionPanel onDragStart={handleDragStart} />
-          </div>
+          <LayerSelectionPanel
+            onDragStart={handleDragStart}
+            layerSelectionHeight={layerSelectionHeight}
+          />
 
           <div
             className="horizontal-divider"
@@ -496,15 +491,8 @@ const DesignApp = () => {
             style={{ cursor: 'row-resize' }}
           />
 
-          <div
-            style={{
-              flex: 1,
-              minHeight: '150px', // Minimum height for parameter viewer
-              overflow: 'auto',
-            }}
-          >
-            <ParameterViewer selectedNode={selectedNode} height="100%" />
-          </div>
+          
+          <ParameterViewer selectedNode={selectedNode} height="100%" />
           <FooterLine isRunning={isRunning} framework={activeFramework} />
         </div>
 

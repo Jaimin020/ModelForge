@@ -255,49 +255,57 @@ export const ParameterViewer = ({ selectedNode, height }) => {
 
   return (
     <div
-      className="parameter-viewer"
       style={{
-        border: '1px solid #ccc',
-        borderRadius: '0px',
-        padding: '5px',
-        margin: '5px',
-        height: height || '190px', // Use provided height or default
+        flex: 1,
+        minHeight: '150px', // Minimum height for parameter viewer
+        overflow: 'auto',
       }}
     >
       <div
+        className="parameter-viewer"
         style={{
-          fontSize: '12px',
-          backgroundColor: 'white',
-          padding: '3px',
-          borderBottom: '1px solid #ddd',
-          marginBottom: '3px',
-        }}
-      >
-        Parameter Viewer
-      </div>
-      <div
-        style={{
-          backgroundColor: '#f5f5f5',
-          padding: '8px',
-          border: '1px solid #ddd',
+          border: '1px solid #ccc',
           borderRadius: '0px',
-          height: `calc(100% - 30px)`, // Adjust content height based on container
-          overflowY: 'scroll',
-          fontSize: '12px',
+          padding: '5px',
+          margin: '5px',
+          height: height || '190px', // Use provided height or default
         }}
       >
-        {selectedNode ? (
-          <div className="parameter-content">
-            <div className="parameter-item">
-              <label>Layer Name:</label>
-              <span>{selectedNode.label}</span>
+        <div
+          style={{
+            fontSize: '12px',
+            backgroundColor: 'white',
+            padding: '3px',
+            borderBottom: '1px solid #ddd',
+            marginBottom: '3px',
+          }}
+        >
+          Parameter Viewer
+        </div>
+        <div
+          style={{
+            backgroundColor: '#f5f5f5',
+            padding: '8px',
+            border: '1px solid #ddd',
+            borderRadius: '0px',
+            height: `calc(100% - 30px)`, // Adjust content height based on container
+            overflowY: 'scroll',
+            fontSize: '12px',
+          }}
+        >
+          {selectedNode ? (
+            <div className="parameter-content">
+              <div className="parameter-item">
+                <label>Layer Name:</label>
+                <span>{selectedNode.label}</span>
+              </div>
+              <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
+              {renderParameters()}
             </div>
-            <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
-            {renderParameters()}
-          </div>
-        ) : (
-          <span>Select a layer to view parameters</span>
-        )}
+          ) : (
+            <span>Select a layer to view parameters</span>
+          )}
+        </div>
       </div>
     </div>
   );
