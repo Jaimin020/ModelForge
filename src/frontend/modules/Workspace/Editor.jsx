@@ -385,53 +385,56 @@ const DesignApp = () => {
     try {
       setLoadingMessage(loaderMessages.LOADING);
       const result = await window.backend.loadModel(pathToload);
-      if (result && result.nodes && result.edges) {
-        // Clear existing nodes and edges
-        nodes.current.clear();
-        edges.current.clear();
-        graphManager.clearAllNodesAndEdges();
 
-        // Add the loaded nodes to the network
-        nodes.current.add(result.nodes);
-
-        // Add the loaded edges to the network
-        edges.current.add(result.edges);
-
-        // Add hyperparameters if they exist
-        if (result.hyperparameters) {
-          graphManager.setHyperparameters(result.hyperparameters);
-        }
-        // Restore the model nodes in the ModelNodeManager
-        const nodeManager = ModelNodeManager.getInstance();
-        result.nodes.forEach((node) => {
-          nodeManager.createNode(node.id, {
-            name: node.name,
-            feature: node.feature,
-            library: node.library,
-            framework: node.framework,
-            codeId: node.codeId,
-            inport: node.inport,
-            outport: node.outport,
-            parameters: node.parameters,
-            code: node.code,
-          });
-        });
-
-        // Set hyperparameters if they exist
-        if (result.hyperparameters) {
-          graphManager.setHyperparameters(result.hyperparameters);
-        }
-
-        // Fit the network to show all nodes
-        if (networkInstance.current) {
-          networkInstance.current.fit();
-        }
-
-        pathToSaveRef.current = pathToload;
-        appendToOutput(editorStrings.success.MODEL_LOADED_SUCCESS, 'success');
-      } else {
+      if(!(result && result.nodes && result.edges)) {
+        setLoadingMessage(loaderMessages.EMPTY);
         appendToOutput(editorStrings.errors.LOAD_FAILED_INVALID_MODEL, 'error');
+        return;
       }
+
+      // Clear existing nodes and edges
+      nodes.current.clear();
+      edges.current.clear();
+      graphManager.clearAllNodesAndEdges();
+
+      // Add the loaded nodes to the network
+      nodes.current.add(result.nodes);
+
+      // Add the loaded edges to the network
+      edges.current.add(result.edges);
+
+      // Add hyperparameters if they exist
+      if (result.hyperparameters) {
+        graphManager.setHyperparameters(result.hyperparameters);
+      }
+      // Restore the model nodes in the ModelNodeManager
+      const nodeManager = ModelNodeManager.getInstance();
+      result.nodes.forEach((node) => {
+        nodeManager.createNode(node.id, {
+          name: node.name,
+          feature: node.feature,
+          library: node.library,
+          framework: node.framework,
+          codeId: node.codeId,
+          inport: node.inport,
+          outport: node.outport,
+          parameters: node.parameters,
+          code: node.code,
+        });
+      });
+
+      // Set hyperparameters if they exist
+      if (result.hyperparameters) {
+        graphManager.setHyperparameters(result.hyperparameters);
+      }
+
+      // Fit the network to show all nodes
+      if (networkInstance.current) {
+        networkInstance.current.fit();
+      }
+
+      pathToSaveRef.current = pathToload;
+      appendToOutput(editorStrings.success.MODEL_LOADED_SUCCESS, 'success');
       setLoadingMessage(loaderMessages.EMPTY);
     } catch (error) {
       console.error(editorStrings.errors.ERROR_LOADING_MODEL(error));
