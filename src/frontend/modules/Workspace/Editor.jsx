@@ -4,9 +4,9 @@ import {
   DataSet,
 } from 'vis-network/standalone/umd/vis-network.min.js';
 import { Toolbar } from '../../components/Toolbar.jsx';
-import { DiagnosticViewer } from '../../components/DiagnosticViewer.jsx';
-import { ParameterViewer } from '../../components/ParameterViewer.jsx';
-import { LayerSelectionPanel } from '../LayerSelectionPanel/LayerSelectionPanel.jsx';
+import LeftPanel from '../EditorPanels/LeftPanel.jsx';
+import RightPanel from '../EditorPanels/RightPanel.jsx';
+import Divider from '../EditorPanels/Divider.jsx';
 import { getNodeByName } from '../../utils/nodeOps/getNodeByName.jsx';
 import { ModelNodeManager } from '../../utils/graphMngr/ModelNodeManager.ts';
 import { GraphAnalyzer } from '../../utils/graphMngr/GraphAnalyzer.ts';
@@ -27,18 +27,12 @@ import { loaderMessages } from '../../utils/strings/loaderStrings.js';
 import { appendDiagnostic } from '../../utils/DiagnosticViewer/diagnosticUtil.ts';
 
 // For saving models
-import * as ModelSaveHandler from './ModelSaveHandler/ModelSaveHandler.jsx';
+import * as ModelPersistanceHandler from '../../utils/Editor/ModelPersistance.js';
 
 const DesignApp = () => {
-  const leftPanelRef = useRef();
-  const rightPanelRef = useRef();
-  const dividerRef = useRef();
   const networkRef = useRef();
-  const containerRef = useRef();
-  const [draggedShape, setDraggedShape] = useState(null);
-  const [leftPanelWidth, setLeftPanelWidth] = useState(250); // Default left panel width
-  const [layerSelectionHeight, setLayerSelectionHeight] = useState(300); // Default height
-  const isDragging = useRef(false); // Track whether the divider is being dragged
+  const draggedShapeRef = useRef(null);
+  const [leftPanelWidth, setLeftPanelWidth] = useState(250);
 
   const nodes = useRef(new DataSet([]));
   const edges = useRef(new DataSet([]));
@@ -160,11 +154,6 @@ const DesignApp = () => {
     };
   }, []);
 
-  // 🛠️ Handle drag start to store the dragged shape
-  const handleDragStart = (e) => {
-    setDraggedShape(e.target.getAttribute('data-shape'));
-  };
-
   // 🛠️ Handle drop event on the vis-network container
   const handleDrop = async (e) => {
     e.preventDefault();
@@ -177,7 +166,7 @@ const DesignApp = () => {
       id: Math.random() * 1e7,
       x: canvasPosition.x,
       y: canvasPosition.y,
-      label: draggedShape || 'New Node',
+      label: draggedShapeRef.current || 'New Node',
     };
     const data = await getNodeByName(defaultData.label);
     nodeManager.createNode(defaultData.id, {
@@ -195,62 +184,6 @@ const DesignApp = () => {
 
     //set Node param valeues
     //setNodeParamValues(defaultData.id, defaultData.label);
-  };
-
-  // 🛠️ Start dragging the divider
-  const handleMouseDown = (e) => {
-    isDragging.current = true;
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  };
-
-  // 🛠️ Move the divider and adjust panel sizes
-  const handleMouseMove = (e) => {
-    if (!isDragging.current) return;
-
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const minWidth = 100; // Minimum width for left panel
-    const maxWidth = containerRect.width - minWidth; // Prevent right panel from getting too small
-
-    let newWidth = e.clientX - containerRect.left;
-    if (newWidth < minWidth) newWidth = minWidth;
-    if (newWidth > maxWidth) newWidth = maxWidth;
-
-    setLeftPanelWidth(newWidth);
-  };
-
-  const handleVerticalDividerMouseDown = (e) => {
-    const startY = e.clientY;
-    const startHeight = layerSelectionHeight;
-
-    const minHeight = 150; // Minimum height for layer selection
-    const maxHeight = window.innerHeight - 350; // Maximum height, leaving space for parameter viewer
-
-    const handleMouseMove = (e) => {
-      const deltaY = e.clientY - startY;
-      const newHeight = Math.max(
-        100,
-        Math.min(startHeight + deltaY, window.innerHeight - 200),
-      );
-      if (newHeight >= minHeight && newHeight <= maxHeight) {
-        setLayerSelectionHeight(newHeight);
-      }
-    };
-
-    const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  };
-
-  // 🛠️ End dragging the divider
-  const handleMouseUp = () => {
-    isDragging.current = false;
-    document.removeEventListener('mousemove', handleMouseMove);
-    document.removeEventListener('mouseup', handleMouseUp);
   };
 
   const handleOpenNewWindow = async () => {
@@ -345,7 +278,7 @@ const DesignApp = () => {
   };
 
   const onSave = async () => {
-    await ModelSaveHandler.saveModel({
+    await ModelPersistanceHandler.saveModel({
       isRunning,
       nodes,
       edges,
@@ -358,7 +291,7 @@ const DesignApp = () => {
   };
 
   const onSaveAs = async () => {
-    await ModelSaveHandler.saveModelAs({
+    await ModelPersistanceHandler.saveModelAs({
       isRunning,
       nodes,
       edges,
@@ -446,7 +379,7 @@ const DesignApp = () => {
   };
 
   return (
-    <div className="container" ref={containerRef}>
+    <div className="container">
       <LoadingOverlay isVisible={!!loadingMessage} message={loadingMessage} />
       <Toolbar
         onRun={handleRun}
@@ -469,58 +402,19 @@ const DesignApp = () => {
         onClose={() => setIsHyperParamModalOpen(false)}
       />
       <div className="main-content">
-        {/* Left Panel */}
-        <div
-          className="left-panel"
-          ref={leftPanelRef}
-          style={{
-            width: `${leftPanelWidth}px`,
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100%',
-          }}
-        >
-          <LayerSelectionPanel
-            onDragStart={handleDragStart}
-            layerSelectionHeight={layerSelectionHeight}
-          />
-
-          <div
-            className="horizontal-divider"
-            onMouseDown={handleVerticalDividerMouseDown}
-            style={{ cursor: 'row-resize' }}
-          />
-
-          
-          <ParameterViewer selectedNode={selectedNode} height="100%" />
-          <FooterLine isRunning={isRunning} framework={activeFramework} />
-        </div>
-
-        {/* Divider for resizing columns */}
-        <div
-          className="divider"
-          ref={dividerRef}
-          onMouseDown={handleMouseDown}
-        ></div>
-
-        {/* Right side container */}
-        <div
-          className="right-side"
-          style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
-        >
-          {/* Right Panel */}
-          <div className="right-panel" ref={rightPanelRef}>
-            <div
-              id="mynetwork"
-              ref={networkRef}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={handleDrop}
-            ></div>
-          </div>
-
-          {/* Diagnostic Viewer below */}
-          <DiagnosticViewer output={output} clearOutput={() => setOutput([])} />
-        </div>
+        <LeftPanel
+          leftPanelWidth={leftPanelWidth}
+          selectedNode={selectedNode}
+          isRunning={isRunning}
+          activeFramework={activeFramework}
+          draggedShapeRef={draggedShapeRef}
+        />
+        <Divider setLeftPanelWidth={setLeftPanelWidth}/>
+        <RightPanel
+          networkRef={networkRef}
+          handleDrop={handleDrop}
+          output={output}
+        />
       </div>
     </div>
   );

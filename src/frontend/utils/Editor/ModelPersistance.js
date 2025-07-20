@@ -1,6 +1,6 @@
 // For error and message strings
-import * as editorStrings from '../../../utils/strings/editorStrings.js';
-import { loaderMessages } from '../../../utils/strings/loaderStrings.js';
+import * as editorStrings from '../strings/editorStrings.js';
+import { loaderMessages } from '../strings/loaderStrings.js';
 
 const saveSetup = async (params) => {
   if (params.isRunning) {
@@ -25,7 +25,7 @@ const saveModelThroughBackend = async (params) => {
     );
     params.setLoadingMessage(loaderMessages.EMPTY);
     params.appendToOutput(
-      editorSuccessMsgs.MODEL_SAVED_SUCCESS(params.pathToSaveRef.current),
+      editorStrings.success.MODEL_SAVED_SUCCESS(params.pathToSaveRef.current),
       'success',
     );
   } catch (error) {
