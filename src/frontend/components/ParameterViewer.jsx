@@ -3,6 +3,8 @@ import { getNodeFeatureMap } from '../utils/nodeOps/nodeFetMap';
 import { ModelNodeManager } from '../utils/graphMngr/ModelNodeManager.ts';
 import { PYTORCH_NODE_PATH } from '../../envPath';
 
+import './ParameterViewer.css';
+
 export const ParameterViewer = ({ selectedNode, height }) => {
   const [nodeParams, setNodeParams] = useState({});
   const [tempValues, setTempValues] = useState({});
@@ -264,42 +266,18 @@ export const ParameterViewer = ({ selectedNode, height }) => {
       <div
         className="parameter-viewer"
         style={{
-          border: '1px solid #ccc',
-          borderRadius: '0px',
-          padding: '5px',
-          margin: '5px',
           height: height || '190px', // Use provided height or default
         }}
       >
-        <div
-          style={{
-            fontSize: '12px',
-            backgroundColor: 'white',
-            padding: '3px',
-            borderBottom: '1px solid #ddd',
-            marginBottom: '3px',
-          }}
-        >
-          Parameter Viewer
-        </div>
-        <div
-          style={{
-            backgroundColor: '#f5f5f5',
-            padding: '8px',
-            border: '1px solid #ddd',
-            borderRadius: '0px',
-            height: `calc(100% - 30px)`, // Adjust content height based on container
-            overflowY: 'scroll',
-            fontSize: '12px',
-          }}
-        >
+        <div className="parameter-viewer-header">Parameter Viewer</div>
+        <div className="parameter-viewer-content">
           {selectedNode ? (
             <div className="parameter-content">
               <div className="parameter-item">
                 <label>Layer Name:</label>
                 <span>{selectedNode.label}</span>
               </div>
-              <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
+              <hr className="parameter-viewer-hr" />
               {renderParameters()}
             </div>
           ) : (
