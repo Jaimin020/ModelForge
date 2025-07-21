@@ -39,6 +39,7 @@ const DesignApp = () => {
   const networkInstance = useRef(null);
   const resizeObserver = useRef(null);
 
+  // TODO: output should be in DiagnosticViewer (yjain)
   const [output, setOutput] = useState([]);
   const [isRunning, setIsRunning] = useState(false);
 
@@ -263,6 +264,7 @@ const DesignApp = () => {
     });
   };
 
+  // TODO: Check if these can be moved to Toolbar completely
   const onSave = async () => {
     await ModelPersistanceHandler.saveModel({
       isRunning,

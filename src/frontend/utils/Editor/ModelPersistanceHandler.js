@@ -3,8 +3,7 @@ import * as editorStrings from '../strings/editorStrings.js';
 import { loaderMessages } from '../strings/loaderStrings.js';
 import { ModelNodeManager } from '../graphMngr/ModelNodeManager.ts';
 
-
-// TODO: Make it a class
+// TODO: Make it a class (yjain)
 
 let pathToSave = null;
 
