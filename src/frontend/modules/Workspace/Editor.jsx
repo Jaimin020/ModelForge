@@ -9,7 +9,6 @@ import RightPanel from '../EditorPanels/RightPanel.jsx';
 import Divider from '../EditorPanels/Divider.jsx';
 import { getNodeByName } from '../../utils/nodeOps/getNodeByName.jsx';
 import { ModelNodeManager } from '../../utils/graphMngr/ModelNodeManager.ts';
-import { GraphAnalyzer } from '../../utils/graphMngr/GraphAnalyzer.ts';
 import { ModelInputModal } from '../../components/ModelInputModal.jsx';
 import { HyperparameterModal } from '../../components/HyperparameterModal';
 import { GraphDataManager } from '../../utils/graphUtils/GraphDataManager.ts';
@@ -27,7 +26,8 @@ import { loaderMessages } from '../../utils/strings/loaderStrings.js';
 import { appendDiagnostic } from '../../utils/DiagnosticViewer/diagnosticUtil.ts';
 
 // For saving models
-import * as ModelPersistanceHandler from '../../utils/Editor/ModelPersistance.js';
+import * as ModelPersistanceHandler from '../../utils/Editor/ModelPersistanceHandler.js';
+import * as ModelExecutionHandler from '../../utils/Editor/ModelExecutionHandler.js';
 
 const DesignApp = () => {
   const networkRef = useRef();
@@ -41,9 +41,6 @@ const DesignApp = () => {
 
   const [output, setOutput] = useState([]);
   const [isRunning, setIsRunning] = useState(false);
-
-  // Save Path
-  const pathToSaveRef = useRef(null);
 
   // Add state for selected node
   const [selectedNode, setSelectedNode] = useState(null);
@@ -227,32 +224,21 @@ const DesignApp = () => {
     }
   };
 
-  // Update handleRun
   const handleRun = () => {
-    //check for graph.
-    const currentEdges = edges.current.get();
-    const graphAnalyzer = new GraphAnalyzer();
-    const result = graphAnalyzer.validateGraph(currentEdges);
-    const hyperParam = graphManager.getHyperparameters();
-    if (!hyperParam) {
-      appendToOutput(editorStrings.errors.SET_HYPERPARAMETERS, 'error');
-      return;
-    }
-    appendToOutput(editorStrings.messages.MODEL_COMPILATION_INITIATED, 'info');
-    if (result.isValid) {
-      appendToOutput(editorStrings.success.ALL_CHECKS_PASSED, 'success');
-      executePythonScript();
-    } else {
-      appendToOutput(result.errors.join('\n--> '), 'error');
-    }
+    ModelExecutionHandler.handleRun({
+      edges,
+      graphManager,
+      appendToOutput,
+      executePythonScript,
+    });
   };
 
   const handleStop = async () => {
-    if (isRunning) {
-      await window.api.stopPython();
-      setIsRunning(false);
-      appendToOutput(editorStrings.errors.USER_STOPPED, 'error');
-    }
+    ModelExecutionHandler.handleStop({
+      isRunning,
+      setIsRunning,
+      appendToOutput,
+    });
   };
 
   // Add this function inside the DesignApp component
@@ -283,7 +269,6 @@ const DesignApp = () => {
       nodes,
       edges,
       graphManager,
-      pathToSaveRef,
       setLoadingMessage,
       appendToOutput,
       updateNodePositions,
@@ -296,7 +281,6 @@ const DesignApp = () => {
       nodes,
       edges,
       graphManager,
-      pathToSaveRef,
       setLoadingMessage,
       appendToOutput,
       updateNodePositions,
@@ -304,78 +288,15 @@ const DesignApp = () => {
   };
 
   const onOpen = async () => {
-    setLoadingMessage(loaderMessages.OPENING);
-    const pathToload = await window.dialog.filePicker({
-      name: 'Load_File',
-      extensions: ['mff'],
+    await ModelPersistanceHandler.onOpen({
+      nodes,
+      edges,
+      graphManager,
+      networkInstance,
+      setLoadingMessage,
+      appendToOutput,
+      updateNodePositions,
     });
-    if (!pathToload) {
-      setLoadingMessage(loaderMessages.EMPTY);
-      appendToOutput(editorStrings.warns.LOAD_CANCELLED, 'warn');
-      return;
-    }
-    setLoadingMessage(loaderMessages.EMPTY);
-    try {
-      setLoadingMessage(loaderMessages.LOADING);
-      const result = await window.backend.loadModel(pathToload);
-
-      if (!(result && result.nodes && result.edges)) {
-        setLoadingMessage(loaderMessages.EMPTY);
-        appendToOutput(editorStrings.errors.LOAD_FAILED_INVALID_MODEL, 'error');
-        return;
-      }
-
-      // Clear existing nodes and edges
-      nodes.current.clear();
-      edges.current.clear();
-      graphManager.clearAllNodesAndEdges();
-
-      // Add the loaded nodes to the network
-      nodes.current.add(result.nodes);
-
-      // Add the loaded edges to the network
-      edges.current.add(result.edges);
-
-      // Add hyperparameters if they exist
-      if (result.hyperparameters) {
-        graphManager.setHyperparameters(result.hyperparameters);
-      }
-      // Restore the model nodes in the ModelNodeManager
-      const nodeManager = ModelNodeManager.getInstance();
-      result.nodes.forEach((node) => {
-        nodeManager.createNode(node.id, {
-          name: node.name,
-          feature: node.feature,
-          library: node.library,
-          framework: node.framework,
-          codeId: node.codeId,
-          inport: node.inport,
-          outport: node.outport,
-          parameters: node.parameters,
-          code: node.code,
-        });
-      });
-
-      // Set hyperparameters if they exist
-      if (result.hyperparameters) {
-        graphManager.setHyperparameters(result.hyperparameters);
-      }
-
-      // Fit the network to show all nodes
-      if (networkInstance.current) {
-        networkInstance.current.fit();
-      }
-
-      pathToSaveRef.current = pathToload;
-      appendToOutput(editorStrings.success.MODEL_LOADED_SUCCESS, 'success');
-      setLoadingMessage(loaderMessages.EMPTY);
-    } catch (error) {
-      console.error(editorStrings.errors.ERROR_LOADING_MODEL(error));
-      appendToOutput(
-        editorStrings.errors.ERROR_LOADING_MODEL(error.message),
-        'error',
-      );
-    }
   };
 
   return (
@@ -409,7 +330,7 @@ const DesignApp = () => {
           activeFramework={activeFramework}
           draggedShapeRef={draggedShapeRef}
         />
-        <Divider setLeftPanelWidth={setLeftPanelWidth}/>
+        <Divider setLeftPanelWidth={setLeftPanelWidth} />
         <RightPanel
           networkRef={networkRef}
           handleDrop={handleDrop}
