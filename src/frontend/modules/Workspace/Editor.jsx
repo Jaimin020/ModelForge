@@ -5,12 +5,11 @@ import {
 } from 'vis-network/standalone/umd/vis-network.min.js';
 import Convert from 'ansi-to-html';
 import { Toolbar } from '../../components/Toolbar.jsx';
-import { DiagnosticViewer } from '../../components/DiagnosticViewer.jsx';
-import { ParameterViewer } from '../../components/ParameterViewer.jsx';
-import { LayerSelectionPanel } from '../LayerSelectionPanel/LayerSelectionPanel.jsx';
+import LeftPanel from '../EditorPanels/LeftPanel.jsx';
+import RightPanel from '../EditorPanels/RightPanel.jsx';
+import Divider from '../EditorPanels/Divider.jsx';
 import { getNodeByName } from '../../utils/nodeOps/getNodeByName.jsx';
 import { ModelNodeManager } from '../../utils/graphMngr/ModelNodeManager.ts';
-import { GraphAnalyzer } from '../../utils/graphMngr/GraphAnalyzer.ts';
 import { HyperparameterModal } from '../../components/HyperparameterModal';
 import { GraphDataManager } from '../../utils/graphUtils/GraphDataManager.ts';
 import { LoadingOverlay } from '../Loading/LoadingModal.jsx';
@@ -20,39 +19,28 @@ import { TEST_PY_FILE } from '../../../envPath.js';
 import { ModelInputModal } from '../InputModal/ModelInputModal.jsx';
 import './style.css';
 // For error and message strings
-import {
-  editorMessages,
-  editorErrors,
-  editorWarns,
-  editorSuccessMsgs,
-} from '../../utils/strings/editorStrings.js';
+import * as editorStrings from '../../utils/strings/editorStrings.js';
 import { separators } from '../../utils/strings/constants.js';
 import { loaderMessages } from '../../utils/strings/loaderStrings.js';
 
 import { appendDiagnostic } from '../../utils/DiagnosticViewer/diagnosticUtil.ts';
-import * as ModelSaveHandler from './ModelSaveHandler/ModelSaveHandler.jsx';
+// For saving models
+import * as ModelPersistanceHandler from '../../utils/Editor/ModelPersistanceHandler.js';
+import * as ModelExecutionHandler from '../../utils/Editor/ModelExecutionHandler.js';
 
 const DesignApp = () => {
-  const leftPanelRef = useRef();
-  const rightPanelRef = useRef();
-  const dividerRef = useRef();
   const networkRef = useRef();
-  const containerRef = useRef();
-  const [draggedShape, setDraggedShape] = useState(null);
-  const [leftPanelWidth, setLeftPanelWidth] = useState(250); // Default left panel width
-  const [layerSelectionHeight, setLayerSelectionHeight] = useState(300); // Default height
-  const isDragging = useRef(false); // Track whether the divider is being dragged
+  const draggedShapeRef = useRef(null);
+  const [leftPanelWidth, setLeftPanelWidth] = useState(250);
 
   const nodes = useRef(new DataSet([]));
   const edges = useRef(new DataSet([]));
   const networkInstance = useRef(null);
   const resizeObserver = useRef(null);
 
+  // TODO: output should be in DiagnosticViewer (yjain)
   const [output, setOutput] = useState([]);
   const [isRunning, setIsRunning] = useState(false);
-
-  // Save Path
-  const pathToSaveRef = useRef(null);
 
   // Add state for selected node
   const [selectedNode, setSelectedNode] = useState(null);
@@ -163,11 +151,6 @@ const DesignApp = () => {
     };
   }, []);
 
-  // 🛠️ Handle drag start to store the dragged shape
-  const handleDragStart = (e) => {
-    setDraggedShape(e.target.getAttribute('data-shape'));
-  };
-
   // 🛠️ Handle drop event on the vis-network container
   const handleDrop = async (e) => {
     e.preventDefault();
@@ -180,7 +163,7 @@ const DesignApp = () => {
       id: Math.random() * 1e7,
       x: canvasPosition.x,
       y: canvasPosition.y,
-      label: draggedShape || 'New Node',
+      label: draggedShapeRef.current || 'New Node',
     };
     const data = await getNodeByName(defaultData.label);
     nodeManager.createNode(defaultData.id, {
@@ -200,62 +183,6 @@ const DesignApp = () => {
     // setNodeParamValues(defaultData.id, defaultData.label);
   };
 
-  // 🛠️ Start dragging the divider
-  const handleMouseDown = (e) => {
-    isDragging.current = true;
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  };
-
-  // 🛠️ Move the divider and adjust panel sizes
-  const handleMouseMove = (e) => {
-    if (!isDragging.current) return;
-
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const minWidth = 100; // Minimum width for left panel
-    const maxWidth = containerRect.width - minWidth; // Prevent right panel from getting too small
-
-    let newWidth = e.clientX - containerRect.left;
-    if (newWidth < minWidth) newWidth = minWidth;
-    if (newWidth > maxWidth) newWidth = maxWidth;
-
-    setLeftPanelWidth(newWidth);
-  };
-
-  const handleVerticalDividerMouseDown = (e) => {
-    const startY = e.clientY;
-    const startHeight = layerSelectionHeight;
-
-    const minHeight = 150; // Minimum height for layer selection
-    const maxHeight = window.innerHeight - 350; // Maximum height, leaving space for parameter viewer
-
-    const handleMouseMove = (e) => {
-      const deltaY = e.clientY - startY;
-      const newHeight = Math.max(
-        100,
-        Math.min(startHeight + deltaY, window.innerHeight - 200),
-      );
-      if (newHeight >= minHeight && newHeight <= maxHeight) {
-        setLayerSelectionHeight(newHeight);
-      }
-    };
-
-    const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  };
-
-  // 🛠️ End dragging the divider
-  const handleMouseUp = () => {
-    isDragging.current = false;
-    document.removeEventListener('mousemove', handleMouseMove);
-    document.removeEventListener('mouseup', handleMouseUp);
-  };
-
   const handleOpenNewWindow = async () => {
     const windowId = await openNewWindow({
       width: 800,
@@ -264,7 +191,7 @@ const DesignApp = () => {
     });
 
     if (windowId) {
-      console.log(editorMessages.NEW_WINDOW_OPENED(windowId));
+      console.log(editorStrings.messages.NEW_WINDOW_OPENED(windowId));
     }
   };
 
@@ -274,7 +201,7 @@ const DesignApp = () => {
 
   const executePythonScript = async () => {
     if (isRunning) {
-      appendToOutput(editorWarns.PROCESS_ALREADY_RUNNING, 'error');
+      appendToOutput(editorStrings.warns.PROCESS_ALREADY_RUNNING, 'error');
       return;
     }
     graphManager.setNodes(nodes);
@@ -288,7 +215,7 @@ const DesignApp = () => {
         const htmlOutput = convert.toHtml(message);
         appendToOutput(htmlOutput, 'none');
       });
-      appendToOutput(editorMessages.MODEL_EXECUTION_INITIATED, 'info');
+      appendToOutput(editorStrings.messages.MODEL_EXECUTION_INITIATED, 'info');
       await window.api.runPython(TEST_PY_FILE);
     } catch (error) {
       appendToOutput(error, 'error');
@@ -297,32 +224,21 @@ const DesignApp = () => {
     }
   };
 
-  // Update handleRun
   const handleRun = () => {
-    // check for graph.
-    const currentEdges = edges.current.get();
-    const graphAnalyzer = new GraphAnalyzer();
-    const result = graphAnalyzer.validateGraph(currentEdges);
-    const hyperParam = graphManager.getHyperparameters();
-    if (!hyperParam) {
-      appendToOutput(editorErrors.SET_HYPERPARAMETERS, 'error');
-      return;
-    }
-    appendToOutput(editorMessages.MODEL_COMPILATION_INITIATED, 'info');
-    if (result.isValid) {
-      appendToOutput(editorSuccessMsgs.ALL_CHECKS_PASSED, 'success');
-      executePythonScript();
-    } else {
-      appendToOutput(result.errors.join('\n--> '), 'error');
-    }
+    ModelExecutionHandler.handleRun({
+      edges,
+      graphManager,
+      appendToOutput,
+      executePythonScript,
+    });
   };
 
   const handleStop = async () => {
-    if (isRunning) {
-      await window.api.stopPython();
-      setIsRunning(false);
-      appendToOutput(editorErrors.USER_STOPPED, 'error');
-    }
+    ModelExecutionHandler.handleStop({
+      isRunning,
+      setIsRunning,
+      appendToOutput,
+    });
   };
 
   // Add this function inside the DesignApp component
@@ -347,13 +263,13 @@ const DesignApp = () => {
     });
   };
 
+  // TODO: Check if these can be moved to Toolbar completely
   const onSave = async () => {
-    await ModelSaveHandler.saveModel({
+    await ModelPersistanceHandler.saveModel({
       isRunning,
       nodes,
       edges,
       graphManager,
-      pathToSaveRef,
       setLoadingMessage,
       appendToOutput,
       updateNodePositions,
@@ -361,12 +277,11 @@ const DesignApp = () => {
   };
 
   const onSaveAs = async () => {
-    await ModelSaveHandler.saveModelAs({
+    await ModelPersistanceHandler.saveModelAs({
       isRunning,
       nodes,
       edges,
       graphManager,
-      pathToSaveRef,
       setLoadingMessage,
       appendToOutput,
       updateNodePositions,
@@ -374,71 +289,19 @@ const DesignApp = () => {
   };
 
   const onOpen = async () => {
-    setLoadingMessage(loaderMessages.OPENING);
-    const pathToload = await window.dialog.filePicker({
-      name: 'Load_File',
-      extensions: ['mff'],
+    await ModelPersistanceHandler.onOpen({
+      nodes,
+      edges,
+      graphManager,
+      networkInstance,
+      setLoadingMessage,
+      appendToOutput,
+      updateNodePositions,
     });
-    setLoadingMessage(loaderMessages.EMPTY);
-    try {
-      setLoadingMessage(loaderMessages.LOADING);
-      const result = await window.backend.loadModel(pathToload);
-      if (result && result.nodes && result.edges) {
-        // Clear existing nodes and edges
-        nodes.current.clear();
-        edges.current.clear();
-        graphManager.clearAllNodesAndEdges();
-
-        // Add the loaded nodes to the network
-        nodes.current.add(result.nodes);
-
-        // Add the loaded edges to the network
-        edges.current.add(result.edges);
-
-        // Add hyperparameters if they exist
-        if (result.hyperparameters) {
-          graphManager.setHyperparameters(result.hyperparameters);
-        }
-        // Restore the model nodes in the ModelNodeManager
-        const nodeManager = ModelNodeManager.getInstance();
-        result.nodes.forEach((node) => {
-          nodeManager.createNode(node.id, {
-            name: node.name,
-            feature: node.feature,
-            library: node.library,
-            framework: node.framework,
-            codeId: node.codeId,
-            inport: node.inport,
-            outport: node.outport,
-            parameters: node.parameters,
-            code: node.code,
-          });
-        });
-
-        // Set hyperparameters if they exist
-        if (result.hyperparameters) {
-          graphManager.setHyperparameters(result.hyperparameters);
-        }
-
-        // Fit the network to show all nodes
-        if (networkInstance.current) {
-          networkInstance.current.fit();
-        }
-
-        pathToSaveRef.current = pathToload;
-        appendToOutput(editorSuccessMsgs.MODEL_LOADED_SUCCESS, 'success');
-      } else {
-        appendToOutput(editorErrors.LOAD_FAILED_INVALID_MODEL, 'error');
-      }
-      setLoadingMessage(loaderMessages.EMPTY);
-    } catch (error) {
-      console.error(editorErrors.ERROR_LOADING_MODEL(error));
-      appendToOutput(editorErrors.ERROR_LOADING_MODEL(error.message), 'error');
-    }
   };
 
   return (
-    <div className="container" ref={containerRef}>
+    <div className="container">
       <LoadingOverlay isVisible={!!loadingMessage} message={loadingMessage} />
       <Toolbar
         onRun={handleRun}
@@ -461,73 +324,19 @@ const DesignApp = () => {
         onClose={() => setIsHyperParamModalOpen(false)}
       />
       <div className="main-content">
-        {/* Left Panel */}
-        <div
-          className="left-panel"
-          ref={leftPanelRef}
-          style={{
-            width: `${leftPanelWidth}px`,
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100%',
-          }}
-        >
-          <div
-            style={{
-              height: `${layerSelectionHeight}px`,
-              overflow: 'auto',
-              minHeight: '100px',
-              maxHeight: `calc(100% - 150px)`,
-              display: 'flex', // Add flex display
-              flexDirection: 'column', // Stack children vertically
-            }}
-          >
-            <LayerSelectionPanel onDragStart={handleDragStart} />
-          </div>
-
-          <div
-            className="horizontal-divider"
-            onMouseDown={handleVerticalDividerMouseDown}
-            style={{ cursor: 'row-resize' }}
-          />
-
-          <div
-            style={{
-              flex: 1,
-              minHeight: '150px', // Minimum height for parameter viewer
-              overflow: 'auto',
-            }}
-          >
-            <ParameterViewer selectedNode={selectedNode} height="100%" />
-          </div>
-          <FooterLine isRunning={isRunning} framework={activeFramework} />
-        </div>
-
-        {/* Divider for resizing columns */}
-        <div
-          className="divider"
-          ref={dividerRef}
-          onMouseDown={handleMouseDown}
+        <LeftPanel
+          leftPanelWidth={leftPanelWidth}
+          selectedNode={selectedNode}
+          isRunning={isRunning}
+          activeFramework={activeFramework}
+          draggedShapeRef={draggedShapeRef}
         />
-
-        {/* Right side container */}
-        <div
-          className="right-side"
-          style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
-        >
-          {/* Right Panel */}
-          <div className="right-panel" ref={rightPanelRef}>
-            <div
-              id="mynetwork"
-              ref={networkRef}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={handleDrop}
-            />
-          </div>
-
-          {/* Diagnostic Viewer below */}
-          <DiagnosticViewer output={output} clearOutput={() => setOutput([])} />
-        </div>
+        <Divider setLeftPanelWidth={setLeftPanelWidth} />
+        <RightPanel
+          networkRef={networkRef}
+          handleDrop={handleDrop}
+          output={output}
+        />
       </div>
     </div>
   );

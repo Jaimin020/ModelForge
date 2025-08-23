@@ -1,10 +1,10 @@
-export const editorMessages = {
+export const messages = {
   NEW_WINDOW_OPENED: (id) => `New window opened with ID: ${windowId}`,
   MODEL_EXECUTION_INITIATED: 'Model Execution Initiated',
   MODEL_COMPILATION_INITIATED: 'Model Compilation Initiated',
 };
 
-export const editorErrors = {
+export const errors = {
   SET_HYPERPARAMETERS: 'Please set hyperparameters.',
   USER_STOPPED: 'Process stopped by user.',
   ERROR_SAVING_MODEL: (err) => `Error saving model: ${err}`,
@@ -13,12 +13,13 @@ export const editorErrors = {
   ERROR_LOADING_MODEL: (err) => `Error loading model: ${err}`,
 };
 
-export const editorWarns = {
+export const warns = {
   PROCESS_ALREADY_RUNNING: 'Process already running. Please wait.',
   SAVE_CANCELLED: 'Save Cancelled!',
+  LOAD_CANCELLED: 'Load Cancelled!',
 };
 
-export const editorSuccessMsgs = {
+export const success = {
   ALL_CHECKS_PASSED: 'All Checks Passed',
   MODEL_SAVED_SUCCESS: (path) => `Model saved successfully at: ${path}`,
   MODEL_LOADED_SUCCESS: 'Model Loaded Successfully',
