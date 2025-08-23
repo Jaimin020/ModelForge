@@ -2,31 +2,88 @@ import React, { useEffect, useState } from 'react';
 import { SpreadsheetOps } from '../../utils/fileOpsUtils/SpreadsheetOps';
 import { ModelNodeManager } from '../../utils/graphMngr/ModelNodeManager';
 
-export function TabularInputConfig({ onSaveReady, selectedNode }) {
+export function TabularInputConfig({ onSaveReady, selectedNode, properties }) {
   const [inputParams, setInputParams] = useState({
-    File: '',
-    'Number of Features': '',
-    'Number of Predictor': '',
+    File: properties?.File || '',
+    'Number of Features': properties?.['Number of Features'] || '',
+    'Number of Predictor': properties?.['Number of Predictor'] || '',
   });
   const [columns, setColumns] = useState([]);
   const [totalRows, setTotalRows] = useState([]);
   const [selectedFeatures, setSelectedFeatures] = useState(new Set());
   const [selectedPredictor, setSelectedPredictor] = useState(null);
 
-  // Initialize selections when columns are loaded
+  const restoreFileConfiguration = async () => {
+    const nodeManager = ModelNodeManager.getInstance();
+    const nodePrams = nodeManager.getNode(selectedNode?.id);
+    const filePath = nodePrams?.parameters?.find(
+      (p) => p.name === 'File',
+    )?.value;
+    if (filePath && filePath.trim() !== '') {
+      try {
+        const spreadsheet = SpreadsheetOps.getInstance();
+        const loaded = await spreadsheet.loadFile(filePath);
+        if (loaded) {
+          const stats = spreadsheet.getFileStats();
+          setTotalRows(stats.rowCount);
+          setColumns(stats.columnNames);
+
+          // Restore selected features if available
+          const savedFeatures = properties?.['Selected Feature'];
+          if (savedFeatures && Array.isArray(savedFeatures)) {
+            const featureIndices = new Set();
+            savedFeatures.forEach((featureName) => {
+              const index = stats.columnNames.indexOf(featureName);
+              if (index !== -1) {
+                featureIndices.add(index);
+              }
+            });
+            setSelectedFeatures(featureIndices);
+          }
+
+          // Restore selected predictor if available
+          const savedPredictor = properties?.['Selected Predictor'];
+          if (savedPredictor) {
+            const predictorIndex = stats.columnNames.indexOf(savedPredictor);
+            if (predictorIndex !== -1) {
+              setSelectedPredictor(predictorIndex);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error restoring tabular file configuration:', error);
+      }
+    }
+  };
+
+  // Restore file configuration if file is already selected
+  useEffect(() => {
+    restoreFileConfiguration();
+  }, []);
+
+  // Initialize selections when columns are loaded (only if no saved configuration)
   useEffect(() => {
     if (columns.length > 0) {
-      // Default: select all columns except last as features
-      const defaultFeatures = new Set(
-        columns.slice(0, -1).map((_, index) => index),
-      );
-      setSelectedFeatures(defaultFeatures);
-      // Default: select last column as predictor
-      setSelectedPredictor(columns.length - 1);
-    }
-  }, [columns]);
+      // Only set defaults if no saved configuration exists
+      const savedFeatures = properties?.['Selected Feature'];
+      const savedPredictor = properties?.['Selected Predictor'];
 
-  const handleSave = () => {
+      if (!savedFeatures || savedFeatures.length === 0) {
+        // Default: select all columns except last as features
+        const defaultFeatures = new Set(
+          columns.slice(0, -1).map((_, index) => index),
+        );
+        setSelectedFeatures(defaultFeatures);
+      }
+
+      if (!savedPredictor) {
+        // Default: select last column as predictor
+        setSelectedPredictor(columns.length - 1);
+      }
+    }
+  }, [columns, selectedNode]);
+
+  const handleSave = async () => {
     const selectedFeatureNames = Array.from(selectedFeatures).map(
       (index) => columns[index],
     );
@@ -66,6 +123,7 @@ export function TabularInputConfig({ onSaveReady, selectedNode }) {
       },
     ];
 
+    await restoreFileConfiguration();
     const nodeManager = ModelNodeManager.getInstance();
     nodeManager.updateMultipleNodeParameters(selectedNode.id, updatedNode);
   };
