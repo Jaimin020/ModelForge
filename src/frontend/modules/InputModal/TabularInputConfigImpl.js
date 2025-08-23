@@ -30,9 +30,9 @@ export class TabularInputConfigImpl extends AbstractInputConfig {
   getProperties(selectedNode) {
     const nodeManager = ModelNodeManager.getInstance();
     const nodePrams = nodeManager.getNode(selectedNode?.id);
-    
+
     const properties = {};
-    nodePrams.parameters.forEach(param => {
+    nodePrams.parameters.forEach((param) => {
       properties[param.name] = param.value || '';
     });
 
@@ -41,7 +41,7 @@ export class TabularInputConfigImpl extends AbstractInputConfig {
       'Number of Features': properties['Number of Features'] || '',
       'Number of Predictor': properties['Number of Predictor'] || '',
       'Selected Feature': properties['Selected Feature'] || [],
-      'Selected Predictor': properties['Selected Predictor'] || ''
+      'Selected Predictor': properties['Selected Predictor'] || '',
     };
   }
 }

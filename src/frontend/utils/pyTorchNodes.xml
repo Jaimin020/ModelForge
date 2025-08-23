@@ -114,4 +114,18 @@
         <code>torch.nn.CrossEntropyLoss(weight={weight}, size_average={size_average}, ignore_index={ignore_index}, reduce={reduce}, reduction='{reduction}', label_smoothing={label_smoothing})</code>
     </node>
 
+    <node>
+        <name>Flatten</name>
+        <feature>Flattens tensor dimensions</feature>
+        <library>torch.nn</library>
+        <codeId>flatten_layer</codeId>
+        <inport>1</inport>
+        <outport>1</outport>
+        <parameters>
+            <param name="start_dim" type="int" required="false" default="1" display="true"/>
+            <param name="end_dim" type="int" required="false" default="-1" display="true"/>
+        </parameters>
+        <code>torch.nn.Flatten(start_dim={start_dim}, end_dim={end_dim})</code>
+    </node>
+
 </nodes>

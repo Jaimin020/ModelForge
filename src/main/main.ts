@@ -247,13 +247,11 @@ ipcMain.handle('writeFile', async (event, filePath, data) => {
 
 ipcMain.handle('select-file', async (event, fileFomrate, isFolderType) => {
   var result = null;
-  if(isFolderType)
-  {
+  if (isFolderType) {
     result = await dialog.showOpenDialog(mainWindow!, {
       properties: ['openDirectory'],
     });
-  }
-  else{
+  } else {
     result = await dialog.showOpenDialog(mainWindow!, {
       properties: ['openFile'],
       filters: [fileFomrate],
