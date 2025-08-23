@@ -531,6 +531,6 @@ const DesignApp = () => {
       </div>
     </div>
   );
-}
+};
 
 export default DesignApp;
