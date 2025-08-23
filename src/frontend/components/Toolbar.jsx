@@ -8,6 +8,7 @@ export function Toolbar({
   onInputConfig,
   onHyperParam,
   onSave,
+  onSaveAs,
   onOpen,
 }) {
   const [isInputModalOpen, setIsInputModalOpen] = useState(false);
@@ -191,6 +192,27 @@ export function Toolbar({
           <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v4.5h2a.5.5 0 0 1 .354.854l-2.5 2.5a.5.5 0 0 1-.708 0l-2.5-2.5A.5.5 0 0 1 5.5 6.5h2V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z" />
         </svg>
         Save
+      </button>
+
+      <button
+        style={saveButtonStyle}
+        onClick={onSaveAs}
+        title="Save Model As"
+        onMouseOver={(e) => {
+          e.currentTarget.style.backgroundColor = '#0b7dda';
+          e.currentTarget.style.transform = 'translateY(-1px)';
+          e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.backgroundColor = '#2196F3';
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+        }}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v4.5h2a.5.5 0 0 1 .354.854l-2.5 2.5a.5.5 0 0 1-.708 0l-2.5-2.5A.5.5 0 0 1 5.5 6.5h2V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z" />
+        </svg>
+        Save As
       </button>
       {/* First vertical divider */}
       <div style={dividerStyle} />

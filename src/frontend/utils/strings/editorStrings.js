@@ -15,7 +15,7 @@ export const editorErrors = {
 
 export const editorWarns = {
   PROCESS_ALREADY_RUNNING: 'Process already running. Please wait.',
-  SAVE_CANCELLED: 'Save cancelled!',
+  SAVE_CANCELLED: 'Save Cancelled!',
 };
 
 export const editorSuccessMsgs = {
