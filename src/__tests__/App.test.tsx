@@ -37,7 +37,7 @@ global.ResizeObserver = class ResizeObserver {
 global.requestAnimationFrame = (callback) => setTimeout(callback, 0);
 
 // Mock components with async operations
-jest.mock('../frontend/modules/LayerSelectionPanel/LayerSelectionPanel.jsx', () => {
+jest.mock('../frontend/modules/EditorPanels/LayerSelectionPanel.jsx', () => {
   return {
     __esModule: true,
     default: () => <div data-testid="mocked-layer-panel">Layer Panel</div>
