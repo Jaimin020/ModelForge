@@ -3,7 +3,7 @@ import { getNodeFeatureMap } from '../utils/nodeOps/nodeFetMap';
 import { ModelNodeManager } from '../utils/graphMngr/ModelNodeManager.ts';
 import { PYTORCH_NODE_PATH } from '../../envPath';
 
-export const ParameterViewer = ({ selectedNode, height }) => {
+export function ParameterViewer({ selectedNode, height }) {
   const [nodeParams, setNodeParams] = useState({});
   const [tempValues, setTempValues] = useState({});
   const nodeManager = ModelNodeManager.getInstance();
@@ -79,14 +79,14 @@ export const ParameterViewer = ({ selectedNode, height }) => {
   const renderParameters = () => {
     if (!selectedNode || !nodeParams.get(selectedNode.label)) return null;
 
-    var nodeConfig;
+    let nodeConfig;
     if (selectedNode.id) {
       nodeConfig = nodeManager.getNode(selectedNode.id);
     } else {
       nodeConfig = nodeParams.get(selectedNode.label);
     }
 
-    let displayableParams = nodeConfig.parameters.filter(
+    const displayableParams = nodeConfig.parameters.filter(
       (param) => param.display === true,
     );
     return (
@@ -301,6 +301,6 @@ export const ParameterViewer = ({ selectedNode, height }) => {
       </div>
     </div>
   );
-};
+}
 
 export default ParameterViewer;

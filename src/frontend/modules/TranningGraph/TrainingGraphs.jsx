@@ -22,7 +22,7 @@ ChartJS.register(
   Legend,
 );
 
-const TrainingGraphs = ({ trainingData, isTraining = false }) => {
+function TrainingGraphs({ trainingData, isTraining = false }) {
   const [epochs, setEpochs] = useState([]);
   const [trainLoss, setTrainLoss] = useState([]);
   const [trainAccuracy, setTrainAccuracy] = useState([]);
@@ -239,6 +239,6 @@ const TrainingGraphs = ({ trainingData, isTraining = false }) => {
       `}</style>
     </div>
   );
-};
+}
 
 export default TrainingGraphs;

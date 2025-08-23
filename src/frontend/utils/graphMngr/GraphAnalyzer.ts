@@ -1,5 +1,5 @@
 import { CycleDetector } from '../graphUtils/CycleDetector';
-import { ModelNodeManager } from '../graphMngr/ModelNodeManager';
+import { ModelNodeManager } from './ModelNodeManager';
 
 export class GraphAnalyzer {
   private modelNodeManager: ModelNodeManager;

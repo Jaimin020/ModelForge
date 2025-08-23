@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 
-export const ModalTemplate = ({
+export function ModalTemplate({
   title = 'Title',
   body = 'Body',
   footer = 'Footer',
-}) => {
+}) {
   return (
     <div
       style={{
@@ -83,4 +83,4 @@ export const ModalTemplate = ({
       </div>
     </div>
   );
-};
+}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ModelNodeManager } from '../../utils/graphMngr/ModelNodeManager';
 
-export const CommonConfig = ({ selectedNode, onSaveReady }) => {
+export function CommonConfig({ selectedNode, onSaveReady }) {
   const handleSave = () => {
     const updatedNode = [
       {
@@ -35,7 +35,7 @@ export const CommonConfig = ({ selectedNode, onSaveReady }) => {
   });
   return (
     <div style={{ flex: 1 }}>
-      <div className="parameter-item"></div>
+      <div className="parameter-item" />
       <hr style={{ margin: '10px 0' }} />
 
       <div className="parameter-item">
@@ -84,4 +84,4 @@ export const CommonConfig = ({ selectedNode, onSaveReady }) => {
       </div>
     </div>
   );
-};
+}

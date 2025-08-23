@@ -1,12 +1,13 @@
+import * as ejs from 'ejs';
 import {
   importTemplate,
   inputTemplate,
   hyperparameterTemplate,
   modelTemplate,
   trainingLoopTemplate,
+  imageInputTemplate,
 } from './PyCode.js';
 import { AbstractCodeGenerator } from '../AbstractCodeGenerator';
-import * as ejs from 'ejs';
 
 export class PyTorchCodeGenerator extends AbstractCodeGenerator {
   getImports(): string {
@@ -14,7 +15,10 @@ export class PyTorchCodeGenerator extends AbstractCodeGenerator {
   }
 
   getInput(): string {
-    return ejs.render(inputTemplate, this.inputData);
+    if (this.inputData.type === 'image') {
+      return ejs.render(imageInputTemplate, this.inputData.data);
+    }
+    return ejs.render(inputTemplate, this.inputData.data);
   }
 
   getModel(): string {

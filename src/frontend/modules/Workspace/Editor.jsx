@@ -3,6 +3,7 @@ import {
   Network,
   DataSet,
 } from 'vis-network/standalone/umd/vis-network.min.js';
+import Convert from 'ansi-to-html';
 import { Toolbar } from '../../components/Toolbar.jsx';
 import { DiagnosticViewer } from '../../components/DiagnosticViewer.jsx';
 import { ParameterViewer } from '../../components/ParameterViewer.jsx';
@@ -17,7 +18,6 @@ import { FooterLine } from '../Footer/FooterLine.jsx';
 import { openNewWindow } from '../../utils/windowUtils/windowUtils';
 import { TEST_PY_FILE } from '../../../envPath.js';
 import { ModelInputModal } from '../InputModal/ModelInputModal.jsx';
-import Convert from 'ansi-to-html';
 import './style.css';
 // For error and message strings
 import {
@@ -31,7 +31,7 @@ import { loaderMessages } from '../../utils/strings/loaderStrings.js';
 
 import { appendDiagnostic } from '../../utils/DiagnosticViewer/diagnosticUtil.ts';
 
-const DesignApp = () => {
+function DesignApp() {
   const leftPanelRef = useRef();
   const rightPanelRef = useRef();
   const dividerRef = useRef();
@@ -66,10 +66,10 @@ const DesignApp = () => {
   // Add at the top of component
   const convert = new Convert({ newline: true });
 
-  //Loaing overlay message
+  // Loaing overlay message
   const [loadingMessage, setLoadingMessage] = useState('');
 
-  //FrameWork Info
+  // FrameWork Info
   const [activeFramework, setActiveFramework] = useState('PyTorch');
 
   // 🛠️ Initialize the vis-network once (like componentDidMount)
@@ -94,7 +94,7 @@ const DesignApp = () => {
         enabled: true,
         initiallyActive: true,
         addNode: false,
-        //addEdge: true,
+        // addEdge: true,
         editEdge: true,
         deleteNode: (data, callback) => {
           setSelectedNode(null);
@@ -195,8 +195,8 @@ const DesignApp = () => {
     });
     nodes.current.add(defaultData);
 
-    //set Node param valeues
-    //setNodeParamValues(defaultData.id, defaultData.label);
+    // set Node param valeues
+    // setNodeParamValues(defaultData.id, defaultData.label);
   };
 
   // 🛠️ Start dragging the divider
@@ -281,7 +281,7 @@ const DesignApp = () => {
     graphManager.setNodes(nodes);
     graphManager.setEdges(edges);
     setIsRunning(true);
-    //handleOpenNewWindow();
+    // handleOpenNewWindow();
     window.backend.trainModel(graphManager.getGraphDataAsJson());
 
     try {
@@ -308,7 +308,7 @@ const DesignApp = () => {
 
   // Update handleRun
   const handleRun = () => {
-    //check for graph.
+    // check for graph.
     const currentEdges = edges.current.get();
     const graphAnalyzer = new GraphAnalyzer();
     const result = graphAnalyzer.validateGraph(currentEdges);
@@ -366,7 +366,7 @@ const DesignApp = () => {
     nodeIds.forEach((id) => {
       if (positions[id]) {
         nodes.current.update({
-          id: id,
+          id,
           x: positions[id].x,
           y: positions[id].y,
         });
@@ -585,7 +585,7 @@ const DesignApp = () => {
           className="divider"
           ref={dividerRef}
           onMouseDown={handleMouseDown}
-        ></div>
+        />
 
         {/* Right side container */}
         <div
@@ -599,7 +599,7 @@ const DesignApp = () => {
               ref={networkRef}
               onDragOver={(e) => e.preventDefault()}
               onDrop={handleDrop}
-            ></div>
+            />
           </div>
 
           {/* Diagnostic Viewer below */}
@@ -608,6 +608,6 @@ const DesignApp = () => {
       </div>
     </div>
   );
-};
+}
 
 export default DesignApp;

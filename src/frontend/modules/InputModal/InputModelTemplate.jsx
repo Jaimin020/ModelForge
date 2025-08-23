@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { ModalTemplate } from '../../components/ModalTemplate';
-export const InputModalTemplate = ({
+
+export function InputModalTemplate({
   onClose,
   title = 'Input Configuration',
   leftPanel,
   rightPanel,
   footer,
-}) => {
+}) {
   const modalBody = (
     <div style={{ gap: '20px' }}>
       {leftPanel}
@@ -14,4 +15,4 @@ export const InputModalTemplate = ({
     </div>
   );
   return <ModalTemplate title={title} body={modalBody} footer={footer} />;
-};
+}

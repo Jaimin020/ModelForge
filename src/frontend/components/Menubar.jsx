@@ -7,7 +7,7 @@ import {
   MenuPopover,
 } from '@fluentui/react-components';
 
-const Menubar = () => {
+function Menubar() {
   return (
     <div
       style={{ display: 'flex', backgroundColor: '#f0f0f0', padding: '4px' }}
@@ -68,6 +68,6 @@ const Menubar = () => {
       </Menu>
     </div>
   );
-};
+}
 
 export default Menubar;

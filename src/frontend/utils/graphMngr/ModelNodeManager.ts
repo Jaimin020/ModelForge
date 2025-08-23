@@ -2,6 +2,7 @@ import { ModelNode } from '../../../interface/NodeInterface.js';
 
 export class ModelNodeManager {
   private nodes: Map<number, ModelNode>;
+
   private static instance: ModelNodeManager;
 
   private constructor() {

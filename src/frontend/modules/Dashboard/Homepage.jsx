@@ -1,9 +1,14 @@
 import React from 'react';
-import { Card, CardHeader, CardFooter } from '@fluentui/react-components';
-import { Button, Text } from '@fluentui/react-components';
+import {
+  Card,
+  CardHeader,
+  CardFooter,
+  Button,
+  Text,
+} from '@fluentui/react-components';
 import './Homepage.css';
 
-const Homepage = () => {
+function Homepage() {
   // Dummy data for recently opened files
   const recentFiles = [
     'Project1.dl',
@@ -60,6 +65,6 @@ const Homepage = () => {
       </div>
     </div>
   );
-};
+}
 
 export default Homepage;

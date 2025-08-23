@@ -6,7 +6,7 @@ import { ImageInputConfig } from './ImageInputConfig';
 import { InputModalTemplate } from './InputModelTemplate';
 import { InputConfigFactory } from './InputConfigFactory';
 
-export const ModelInputModal = ({ isOpen, onClose, selectedNode }) => {
+export function ModelInputModal({ isOpen, onClose, selectedNode }) {
   if (!isOpen) {
     return null;
   }
@@ -19,11 +19,13 @@ export const ModelInputModal = ({ isOpen, onClose, selectedNode }) => {
     }));
   }, []);
 
-
   // Create the appropriate input config based on selected node
   const inputConfig = useMemo(() => {
     try {
-      return InputConfigFactory.createInputConfig(selectedNode, handleSaveReady);
+      return InputConfigFactory.createInputConfig(
+        selectedNode,
+        handleSaveReady,
+      );
     } catch (error) {
       console.error('Error creating input config:', error);
       return null;
@@ -74,4 +76,4 @@ export const ModelInputModal = ({ isOpen, onClose, selectedNode }) => {
       footer={<CommonFooter onSave={handleSave} onClose={onClose} />}
     />
   );
-};
+}

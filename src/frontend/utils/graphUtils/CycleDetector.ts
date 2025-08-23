@@ -10,8 +10,8 @@ export class CycleDetector {
 
     // Build adjacency list from edges
     edges.forEach((edge: any) => {
-      const from = edge.from;
-      const to = edge.to;
+      const { from } = edge;
+      const { to } = edge;
 
       if (!this.adjacencyList.has(from)) {
         this.adjacencyList.set(from, []);

@@ -3,7 +3,7 @@ import { getNodeNames } from '../../utils/nodeOps/nodeName';
 import { PYTORCH_NODE_PATH } from '../../../envPath';
 import '../Workspace/style.css';
 
-export const LayerSelectionPanel = ({ onDragStart }) => {
+export function LayerSelectionPanel({ onDragStart }) {
   const [nodeNames, setNodeNames] = useState([]);
 
   useEffect(() => {
@@ -79,6 +79,6 @@ export const LayerSelectionPanel = ({ onDragStart }) => {
       </div>
     </div>
   );
-};
+}
 
 export default LayerSelectionPanel;

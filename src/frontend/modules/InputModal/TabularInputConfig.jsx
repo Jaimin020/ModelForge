@@ -2,13 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { SpreadsheetOps } from '../../utils/fileOpsUtils/SpreadsheetOps';
 import { ModelNodeManager } from '../../utils/graphMngr/ModelNodeManager';
 
-export const TabularInputConfig = ({ onSaveReady, selectedNode }) => {
+export function TabularInputConfig({ onSaveReady, selectedNode }) {
   const [inputParams, setInputParams] = useState({
-    File: selectedNode?.parameters?.['File'] || '',
-    'Number of Features':
-      selectedNode?.parameters?.['Number of Features'] || '',
-    'Number of Predictor':
-      selectedNode?.parameters?.['Number of Predictor'] || '',
+    File: '',
+    'Number of Features': '',
+    'Number of Predictor': '',
   });
   const [columns, setColumns] = useState([]);
   const [totalRows, setTotalRows] = useState([]);
@@ -80,7 +78,7 @@ export const TabularInputConfig = ({ onSaveReady, selectedNode }) => {
   }, [onSaveReady, selectedFeatures, selectedPredictor, inputParams, columns]);
 
   const handleFileSelect = async () => {
-    const filePath = await window.dialog.filePicker(['csv', 'xlsx'],false);
+    const filePath = await window.dialog.filePicker(['csv', 'xlsx'], false);
     if (filePath) {
       const spreadsheet = SpreadsheetOps.getInstance();
       const loaded = await spreadsheet.loadFile(filePath);
@@ -181,4 +179,4 @@ export const TabularInputConfig = ({ onSaveReady, selectedNode }) => {
       </div>
     </div>
   );
-};
+}

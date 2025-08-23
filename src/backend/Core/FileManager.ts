@@ -93,36 +93,48 @@ export class FileManager {
       }
 
       // Read the contents of the main folder
-      const items = await fs.promises.readdir(folderPath, { withFileTypes: true });
-      
+      const items = await fs.promises.readdir(folderPath, {
+        withFileTypes: true,
+      });
+
       // Filter only directories (subfolders)
-      const subfolders = items.filter(item => item.isDirectory());
-      
+      const subfolders = items.filter((item) => item.isDirectory());
+
       const folders: { folderName: string; imageCount: number }[] = [];
       let totalImages = 0;
-      
+
       // Common image file extensions
-      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.tif', '.webp', '.svg'];
-      
+      const imageExtensions = [
+        '.jpg',
+        '.jpeg',
+        '.png',
+        '.gif',
+        '.bmp',
+        '.tiff',
+        '.tif',
+        '.webp',
+        '.svg',
+      ];
+
       // Process each subfolder
       for (const subfolder of subfolders) {
         const subfolderPath = path.join(folderPath, subfolder.name);
-        
+
         try {
           // Read contents of the subfolder
           const subfolderItems = await fs.promises.readdir(subfolderPath);
-          
+
           // Count image files in the subfolder
-          const imageCount = subfolderItems.filter(item => {
+          const imageCount = subfolderItems.filter((item) => {
             const extension = path.extname(item).toLowerCase();
             return imageExtensions.includes(extension);
           }).length;
-          
+
           folders.push({
             folderName: subfolder.name,
-            imageCount: imageCount
+            imageCount,
           });
-          
+
           // Add to total count
           totalImages += imageCount;
         } catch (error) {
@@ -130,17 +142,17 @@ export class FileManager {
           // Add the folder with 0 count if there's an error reading it
           folders.push({
             folderName: subfolder.name,
-            imageCount: 0
+            imageCount: 0,
           });
         }
       }
-      
+
       // Sort by folder name for consistent output
       folders.sort((a, b) => a.folderName.localeCompare(b.folderName));
-      
+
       return {
         folders,
-        totalImages
+        totalImages,
       };
     } catch (error) {
       console.error('Error analyzing image dataset folder:', error);

@@ -68,6 +68,154 @@ print(f"Feature dimension: {X_train.shape[1]}")
 print("-" * 50)
 `;
 
+export const imageInputTemplate = `# Load and preprocess image data
+import torchvision.transforms as transforms
+from torchvision.datasets import ImageFolder
+from PIL import Image
+import os
+
+folder_path = r'<%= folder_path %>'
+num_classes = <%= num_classes %>
+total_images = <%= total_images %>
+selected_classes = <%- JSON.stringify(selected_classes) %>
+train_split = <%= train_split %>
+test_split = <%= test_split %>
+
+# Print dataset metadata
+print("Image Dataset Info:")
+print("-" * 50)
+print(f"Dataset folder: {folder_path}")
+print(f"Number of classes: {num_classes}")
+print(f"Total images: {total_images}")
+print(f"Selected classes: {selected_classes}")
+print(f"Train split: {train_split}")
+print(f"Test split: {test_split}")
+
+# Define image transformations
+transform_train = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.RandomHorizontalFlip(p=0.5),
+    transforms.RandomRotation(10),
+    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+])
+
+transform_test = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+])
+
+# Custom dataset class to filter selected classes
+class FilteredImageFolder(ImageFolder):
+    def __init__(self, root, transform=None, selected_classes=None):
+        super().__init__(root, transform)
+        if selected_classes:
+            # Filter samples to include only selected classes
+            self.selected_class_indices = [self.class_to_idx[cls] for cls in selected_classes if cls in self.class_to_idx]
+            self.samples = [(path, target) for path, target in self.samples if target in self.selected_class_indices]
+            self.targets = [target for target in self.targets if target in self.selected_class_indices]
+            
+            # Update class mappings
+            self.classes = selected_classes
+            self.class_to_idx = {cls: idx for idx, cls in enumerate(selected_classes)}
+            
+            # Remap target indices to be sequential (0, 1, 2, ...)
+            old_to_new_idx = {old_idx: new_idx for new_idx, old_idx in enumerate(self.selected_class_indices)}
+            self.samples = [(path, old_to_new_idx[target]) for path, target in self.samples]
+            self.targets = [old_to_new_idx[target] for target in self.targets]
+
+# Load the full dataset with selected classes only
+full_dataset = FilteredImageFolder(
+    root=folder_path, 
+    transform=transform_train,
+    selected_classes=selected_classes if selected_classes else None
+)
+
+# Print class information
+print("\\nClass Information:")
+print("-" * 50)
+print(f"Classes found: {full_dataset.classes}")
+print(f"Class to index mapping: {full_dataset.class_to_idx}")
+print(f"Number of samples per class:")
+
+# Count samples per class
+class_counts = {}
+for _, target in full_dataset.samples:
+    class_name = full_dataset.classes[target]
+    class_counts[class_name] = class_counts.get(class_name, 0) + 1
+
+for class_name, count in class_counts.items():
+    print(f"  {class_name}: {count} samples")
+
+# Calculate dataset split sizes
+dataset_size = len(full_dataset)
+train_size = int(train_split * dataset_size)
+test_size = dataset_size - train_size
+
+print(f"\\nDataset Split:")
+print("-" * 50)
+print(f"Total dataset size: {dataset_size}")
+print(f"Training size: {train_size}")
+print(f"Testing size: {test_size}")
+
+# Split the dataset
+train_dataset, test_dataset = torch.utils.data.random_split(
+    full_dataset, 
+    [train_size, test_size],
+    generator=torch.Generator().manual_seed(42)
+)
+
+# Create test dataset with different transforms
+test_dataset_with_transform = FilteredImageFolder(
+    root=folder_path, 
+    transform=transform_test,
+    selected_classes=selected_classes if selected_classes else None
+)
+
+# Apply the same split to test dataset
+_, test_dataset = torch.utils.data.random_split(
+    test_dataset_with_transform, 
+    [train_size, test_size],
+    generator=torch.Generator().manual_seed(42)
+)
+
+# Create data loaders with num_workers=0 to avoid multiprocessing issues
+batch_size = <%- batch_size %>
+train_loader = DataLoader(
+    train_dataset, 
+    batch_size=batch_size, 
+    shuffle=True,
+    num_workers=0,  # Set to 0 to avoid multiprocessing issues
+    pin_memory=False
+)
+
+test_loader = DataLoader(
+    test_dataset, 
+    batch_size=batch_size, 
+    shuffle=False,
+    num_workers=0,  # Set to 0 to avoid multiprocessing issues
+    pin_memory=False
+)
+
+print("\\nData Loading Complete:")
+print("-" * 50)
+print(f"Training batches: {len(train_loader)}")
+print(f"Testing batches: {len(test_loader)}")
+print(f"Batch size: {batch_size}")
+
+# Get image shape safely
+try:
+    sample_batch = next(iter(train_loader))
+    print(f"Image shape: {sample_batch[0].shape}")
+    print(f"Label shape: {sample_batch[1].shape}")
+except Exception as e:
+    print(f"Could not get sample batch: {e}")
+
+print("-" * 50)
+`;
+
 export const hyperparameterTemplate = `# Initialize hyperparameters
 num_epochs = <%= epochs || 10 %>
 learning_rate = <%= learning_rate || 0.001 %>

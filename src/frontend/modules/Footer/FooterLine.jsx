@@ -1,7 +1,7 @@
 import React from 'react';
 import './style.css';
 
-export const FooterLine = ({ isRunning = true, framework = 'PyTorch' }) => {
+export function FooterLine({ isRunning = true, framework = 'PyTorch' }) {
   return (
     <div className="framework-footer">
       <div className="framework-info">
@@ -9,9 +9,9 @@ export const FooterLine = ({ isRunning = true, framework = 'PyTorch' }) => {
         <div className="loading-container-footer">
           {isRunning ? (
             <div className="lds-facebook">
-              <div></div>
-              <div></div>
-              <div></div>
+              <div />
+              <div />
+              <div />
             </div>
           ) : (
             <span className="status-text">Ready</span>
@@ -23,6 +23,6 @@ export const FooterLine = ({ isRunning = true, framework = 'PyTorch' }) => {
       </div>
     </div>
   );
-};
+}
 
 export default FooterLine;

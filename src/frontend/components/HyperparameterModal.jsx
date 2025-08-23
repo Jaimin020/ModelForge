@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import HyperparametersMngr from '../utils/graphMngr/HyperparametersMngr.ts';
 import { GraphDataManager } from '../utils/graphUtils/GraphDataManager.ts';
 
-export const HyperparameterModal = ({ isOpen, onClose }) => {
+export function HyperparameterModal({ isOpen, onClose }) {
   const [hyperparameters, setHyperparameters] = useState({
     learning_rate: 0.001,
     epochs: 100,
@@ -275,6 +275,6 @@ export const HyperparameterModal = ({ isOpen, onClose }) => {
       </div>
     </div>
   );
-};
+}
 
 export default HyperparameterModal;

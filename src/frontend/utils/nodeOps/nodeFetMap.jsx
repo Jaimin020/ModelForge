@@ -34,7 +34,7 @@ export const getNodeFeatureMap = async (xmlFileName) => {
         codeId: node.codeId,
         inport: node.inport,
         outport: node.outport,
-        parameters: parameters,
+        parameters,
         code: node.code,
       };
       nodeFeatureMap.set(node.name, nodeInfo);

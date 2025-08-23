@@ -1,7 +1,7 @@
 import React from 'react';
 import { Stack, Text } from '@fluentui/react';
 
-const Header = () => {
+function Header() {
   const headerStyles = {
     root: {
       width: '100%',
@@ -34,6 +34,6 @@ const Header = () => {
       </Text>
     </Stack>
   );
-};
+}
 
 export default Header;

@@ -1,4 +1,4 @@
-export const CommonFooter = ({ onSave, onClose }) => {
+export function CommonFooter({ onSave, onClose }) {
   const handleSave = () => {
     if (onSave) {
       onSave();
@@ -33,4 +33,4 @@ export const CommonFooter = ({ onSave, onClose }) => {
       </button>
     </>
   );
-};
+}

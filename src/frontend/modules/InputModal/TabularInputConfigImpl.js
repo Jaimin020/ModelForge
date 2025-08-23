@@ -20,7 +20,7 @@ export class TabularInputConfigImpl extends AbstractInputConfig {
     // Add specific validation logic for tabular input
     return {
       isValid: true,
-      errors: []
+      errors: [],
     };
   }
 }
