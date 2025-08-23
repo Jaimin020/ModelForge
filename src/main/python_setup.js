@@ -1,9 +1,9 @@
-import { paths } from './config';
 import { exec } from 'child_process';
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import sudo from 'sudo-prompt';
+import { paths } from './config';
 
 const baseDir = paths.base;
 const pythonInstallPath = path.join(baseDir, 'src/main/installed-python');

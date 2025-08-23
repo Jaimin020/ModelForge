@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import ModelInputModal from './ModelInputModal';
 
-export const Toolbar = ({
+export function Toolbar({
   onRun,
   onStop,
   isRunning,
@@ -11,7 +10,7 @@ export const Toolbar = ({
   onSave,
   onSaveAs,
   onOpen,
-}) => {
+}) {
   const [isInputModalOpen, setIsInputModalOpen] = useState(false);
   // Function to handle training button click
   const handleTrainClick = () => {
@@ -216,7 +215,7 @@ export const Toolbar = ({
         Save As
       </button>
       {/* First vertical divider */}
-      <div style={dividerStyle}></div>
+      <div style={dividerStyle} />
 
       <button
         style={runButtonStyle}
@@ -260,7 +259,7 @@ export const Toolbar = ({
         Stop
       </button>
 
-      <div style={dividerStyle}></div>
+      <div style={dividerStyle} />
 
       <button
         style={hyperParamButtonStyle}
@@ -307,6 +306,6 @@ export const Toolbar = ({
       )}
     </div>
   );
-};
+}
 
 export default Toolbar;

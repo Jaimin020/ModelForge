@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import TrainingGraphs from './TrainingGraphs';
 
-const TrainingPage = () => {
+function TrainingPage() {
   const [trainingData, setTrainingData] = useState([]);
   const [isTraining, setIsTraining] = useState(false);
   const [modelInfo, setModelInfo] = useState({
@@ -201,6 +201,6 @@ const TrainingPage = () => {
       `}</style>
     </div>
   );
-};
+}
 
 export default TrainingPage;

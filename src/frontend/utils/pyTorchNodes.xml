@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <nodes>
     <node>
-        <name>Input Layer</name>
-        <feature>Input Layer</feature>
+        <name>Tabular Input Layer</name>
+        <feature>Tabular Input Layer</feature>
         <library>torch.nn</library>
         <codeId>input_layer</codeId>
         <inport>0</inport>
@@ -13,6 +13,25 @@
             <param name="Number of Predictor" type="int" required="true" display="false"/>
             <param name="Selected Feature" type="string" required="true" display="false"/>
             <param name="Selected Predictor" type="string" required="true" display="false"/>
+            <param name="Train Split" type="float" required="true" display="false"/>
+            <param name="Test Split" type="float" required="true" display="false"/>
+            <param name="Validation Split" type="float" required="true" display="false"/>
+        </parameters>
+    </node>
+
+    <node>
+        <name>Image Input Layer</name>
+        <feature>Image Input Layer</feature>
+        <library>torch.nn</library>
+        <codeId>input_layer</codeId>
+        <inport>0</inport>
+        <outport>1</outport>
+        <parameters>
+            <param name="Folder" type="file" required="true" display="true"/>
+            <param name="Number of Classes" type="int" required="true" display="false"/>
+            <param name="Total Images" type="int" required="true" display="false"/>
+            <param name="Selected Classes" type="string" required="true" display="true"/>
+            <param name="Class Statistics" type="string" required="true" display="false"/>
             <param name="Train Split" type="float" required="true" display="false"/>
             <param name="Test Split" type="float" required="true" display="false"/>
             <param name="Validation Split" type="float" required="true" display="false"/>
@@ -76,6 +95,37 @@
         <param name="ignore_index" type="int" required="false" value="false" display="false"/>
     </parameters>
     <code>torch.nn.MSELoss(weight={weight}, reduction='{reduction}', ignore_index={ignore_index})</code>
-</node>
+    </node>
+    <node>
+        <name>CrossEntropy Loss</name>
+        <feature>Cross Entropy Loss for Classification</feature>
+        <library>torch.nn</library>
+        <codeId>CrossEntropyLoss</codeId>
+        <inport>1</inport>
+        <outport>0</outport>
+        <parameters>
+            <param name="weight" type="Tensor" required="false" default="None" display="false"/>
+            <param name="size_average" type="bool" required="false" default="None" display="false"/>
+            <param name="ignore_index" type="int" required="false" default="-100" display="false"/>
+            <param name="reduce" type="bool" required="false" default="None" display="false"/>
+            <param name="reduction" type="string" required="false" default="mean" display="true"/>
+            <param name="label_smoothing" type="float" required="false" default="0.0" display="false"/>
+        </parameters>
+        <code>torch.nn.CrossEntropyLoss(weight={weight}, size_average={size_average}, ignore_index={ignore_index}, reduce={reduce}, reduction='{reduction}', label_smoothing={label_smoothing})</code>
+    </node>
+
+    <node>
+        <name>Flatten</name>
+        <feature>Flattens tensor dimensions</feature>
+        <library>torch.nn</library>
+        <codeId>flatten_layer</codeId>
+        <inport>1</inport>
+        <outport>1</outport>
+        <parameters>
+            <param name="start_dim" type="int" required="false" default="1" display="true"/>
+            <param name="end_dim" type="int" required="false" default="-1" display="true"/>
+        </parameters>
+        <code>torch.nn.Flatten(start_dim={start_dim}, end_dim={end_dim})</code>
+    </node>
 
 </nodes>

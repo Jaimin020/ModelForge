@@ -1,8 +1,19 @@
+import { InputDataService } from '../../services/InputDataService';
+
 export class ModelData {
   private inputData: any;
+
   private layersData: any;
+
   private hyperparameters: any;
+
   private lossFunction: any;
+
+  private inputDataService: InputDataService;
+
+  constructor() {
+    this.inputDataService = InputDataService.getInstance();
+  }
 
   private formatLayerData(layers: any[]) {
     return layers.map((layer) => {
@@ -32,35 +43,17 @@ export class ModelData {
     this.hyperparameters = hyperparameters;
   }
 
+  /**
+   * Processes and retrieves the input data using the InputDataService.
+   *
+   * @returns {any} The processed input data based on the current input and hyperparameters.
+   */
   getInputData() {
-    const selectedFeatures =
-      this.inputData.parameters.find((p: any) => p.name === 'Selected Feature')
-        ?.value || [];
-    return {
-      file_name:
-        this.inputData.parameters.find((p: any) => p.name === 'File')?.value ||
-        'dataset.csv',
-      train_split:
-        this.inputData.parameters.find((p: any) => p.name === 'Train Split')
-          ?.value || 0.8,
-      test_split:
-        this.inputData.parameters.find((p: any) => p.name === 'Train Split')
-          ?.value || 0.2,
-      features: Array.isArray(selectedFeatures)
-        ? selectedFeatures.map((f) =>
-            decodeURIComponent(f).replace(/&#34;/g, '"').replace(/['"]/g, ''),
-          )
-        : [
-            decodeURIComponent(selectedFeatures)
-              .replace(/&#34;/g, '"')
-              .replace(/['"]/g, ''),
-          ],
-      predictor:
-        this.inputData.parameters.find(
-          (p: any) => p.name === 'Selected Predictor',
-        )?.value || [],
-      batch_size: Number(this.hyperparameters.batch_size || 32),
-    };
+    const processedData = this.inputDataService.processInputData(
+      this.inputData,
+      this.hyperparameters,
+    );
+    return processedData;
   }
 
   getLayersData() {

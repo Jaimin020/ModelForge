@@ -2,8 +2,11 @@ import { ModelNode, GraphData, Edge } from '../../interface/NodeInterface';
 
 export class GraphService {
   private static instance: GraphService;
+
   private nodes: Map<number, ModelNode>;
+
   private edges: Edge[];
+
   private hyperparameters: any;
 
   private constructor() {

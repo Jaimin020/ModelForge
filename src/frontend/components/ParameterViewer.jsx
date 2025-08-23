@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getNodeFeatureMap } from '../utils/nodeOps/nodeFetMap';
 import { ModelNodeManager } from '../utils/graphMngr/ModelNodeManager.ts';
 import { PYTORCH_NODE_PATH } from '../../envPath';
+import './ParameterViewer.css';
 
 export const ParameterViewer = ({ selectedNode, height }) => {
   const [nodeParams, setNodeParams] = useState({});
@@ -79,14 +80,14 @@ export const ParameterViewer = ({ selectedNode, height }) => {
   const renderParameters = () => {
     if (!selectedNode || !nodeParams.get(selectedNode.label)) return null;
 
-    var nodeConfig;
+    let nodeConfig;
     if (selectedNode.id) {
       nodeConfig = nodeManager.getNode(selectedNode.id);
     } else {
       nodeConfig = nodeParams.get(selectedNode.label);
     }
 
-    let displayableParams = nodeConfig.parameters.filter(
+    const displayableParams = nodeConfig.parameters.filter(
       (param) => param.display === true,
     );
     return (
@@ -255,49 +256,33 @@ export const ParameterViewer = ({ selectedNode, height }) => {
 
   return (
     <div
-      className="parameter-viewer"
       style={{
-        border: '1px solid #ccc',
-        borderRadius: '0px',
-        padding: '5px',
-        margin: '5px',
-        height: height || '190px', // Use provided height or default
+        flex: 1,
+        minHeight: '150px', // Minimum height for parameter viewer
+        overflow: 'auto',
       }}
     >
       <div
+        className="parameter-viewer"
         style={{
-          fontSize: '12px',
-          backgroundColor: 'white',
-          padding: '3px',
-          borderBottom: '1px solid #ddd',
-          marginBottom: '3px',
+          height: height || '190px', // Use provided height or default
         }}
       >
-        Parameter Viewer
-      </div>
-      <div
-        style={{
-          backgroundColor: '#f5f5f5',
-          padding: '8px',
-          border: '1px solid #ddd',
-          borderRadius: '0px',
-          height: `calc(100% - 30px)`, // Adjust content height based on container
-          overflowY: 'scroll',
-          fontSize: '12px',
-        }}
-      >
-        {selectedNode ? (
-          <div className="parameter-content">
-            <div className="parameter-item">
-              <label>Layer Name:</label>
-              <span>{selectedNode.label}</span>
+        <div className="parameter-viewer-header">Parameter Viewer</div>
+        <div className="parameter-viewer-content">
+          {selectedNode ? (
+            <div className="parameter-content">
+              <div className="parameter-item">
+                <label>Layer Name:</label>
+                <span>{selectedNode.label}</span>
+              </div>
+              <hr className="parameter-viewer-hr" />
+              {renderParameters()}
             </div>
-            <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
-            {renderParameters()}
-          </div>
-        ) : (
-          <span>Select a layer to view parameters</span>
-        )}
+          ) : (
+            <span>Select a layer to view parameters</span>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -15,8 +15,8 @@ const dialogHandler = {
       callback(message);
     });
   },
-  filePicker: (fileFormate: string) =>
-    ipcRenderer.invoke('select-file', fileFormate),
+  filePicker: (fileFormate: string, isFolderType: boolean) =>
+    ipcRenderer.invoke('select-file', fileFormate, isFolderType),
 
   saveFilePathPicker: (fileFormate: string) =>
     ipcRenderer.invoke('save-file-dialog', fileFormate),

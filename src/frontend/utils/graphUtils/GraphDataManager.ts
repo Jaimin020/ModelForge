@@ -3,8 +3,11 @@ import HyperparametersMngr from '../graphMngr/HyperparametersMngr';
 
 export class GraphDataManager {
   private static instance: GraphDataManager;
+
   private nodes: any;
+
   private edges: any;
+
   private hyperparameters: any;
 
   private constructor() {}

@@ -4,6 +4,7 @@ import { AbstractCodeGenerator } from './CodeGen/AbstractCodeGenerator';
 
 export class Engine {
   modelDataObj = new ModelData();
+
   private codeGenerator: AbstractCodeGenerator;
 
   constructor(rawLayersData: any, hyperparameters: any) {

@@ -97,7 +97,7 @@ html {
 }
 
 /* Right Panel (70% initially) */
-.right-panel {
+.network-canvas {
   background-color: #ffffff;
   flex-grow: 1;
   padding: 5px;
@@ -162,7 +162,7 @@ canvas {
   border: 1px solid lightgray;
 }
 
-.right-side {
+.right-panel {
   flex: 1;
   display: flex;
   flex-direction: column;

@@ -1,7 +1,10 @@
 export abstract class AbstractCodeGenerator {
   protected inputData: any;
+
   protected modelData: any;
+
   protected hyperparameters: any;
+
   protected lossFunction: any;
 
   constructor(
@@ -17,10 +20,15 @@ export abstract class AbstractCodeGenerator {
   }
 
   abstract getImports(): string;
+
   abstract getInput(): string;
+
   abstract getModel(): string;
+
   abstract getHyperparameters(): string;
+
   abstract getTrainingLoop(): string;
+
   abstract getSaveModel(): string;
 
   generateCode(): string {

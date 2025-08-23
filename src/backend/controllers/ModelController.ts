@@ -5,6 +5,7 @@ import { TEST_PY_FILE, TEST_DIR } from '../../envPath';
 
 export class ModelController {
   graphController = new GraphController();
+
   fileMngr = FileManager.getInstance();
 
   trainModel(modelGraph: any) {

@@ -10,7 +10,9 @@ declare global {
 
 export class SpreadsheetOps {
   private static instance: SpreadsheetOps;
+
   private fileData: any = null;
+
   private currentFilePath: string = '';
 
   private constructor() {}

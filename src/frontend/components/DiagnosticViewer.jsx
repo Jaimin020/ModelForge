@@ -1,8 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { AlertTriangle, Info, XCircle, CheckCircle } from 'lucide-react';
-import { BrushCleaning } from 'lucide-react';
+import {
+  AlertTriangle,
+  Info,
+  XCircle,
+  CheckCircle,
+  BrushCleaning,
+} from 'lucide-react';
 
-export const DiagnosticViewer = ({ output, clearOutput }) => {
+export function DiagnosticViewer({ output, clearOutput }) {
   const viewerRef = useRef(null);
   const containerRef = useRef(null);
   const isDragging = useRef(false);
@@ -174,6 +179,6 @@ export const DiagnosticViewer = ({ output, clearOutput }) => {
       </div>
     </div>
   );
-};
+}
 
 export default DiagnosticViewer;

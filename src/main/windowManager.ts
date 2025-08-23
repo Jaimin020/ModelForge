@@ -1,6 +1,6 @@
 import { BrowserWindow, app } from 'electron';
-import { resolveHtmlPath } from './util';
 import path from 'path';
+import { resolveHtmlPath } from './util';
 
 export function createNewWindow(options = {}) {
   const newWindow = new BrowserWindow({

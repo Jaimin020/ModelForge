@@ -2,6 +2,7 @@ import { Hyperparameter } from '../../../interface/HyperparameterInterface';
 
 export default class HyperparametersMngr {
   private static instance: HyperparametersMngr;
+
   private hyperparameters: Map<string, Hyperparameter>;
 
   private constructor() {
