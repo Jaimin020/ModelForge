@@ -5,17 +5,17 @@ import { ParameterViewer } from '../ParameterViewer';
 
 // Mock dependencies
 jest.mock('../../utils/nodeOps/nodeFetMap', () => ({
-  getNodeFeatureMap: jest.fn()
+  getNodeFeatureMap: jest.fn(),
 }));
 
 jest.mock('../../utils/graphMngr/ModelNodeManager.ts', () => ({
   ModelNodeManager: {
-    getInstance: jest.fn()
-  }
+    getInstance: jest.fn(),
+  },
 }));
 
 jest.mock('../../../envPath', () => ({
-  PYTORCH_NODE_PATH: '/mock/pytorch/path'
+  PYTORCH_NODE_PATH: '/mock/pytorch/path',
 }));
 
 import { getNodeFeatureMap } from '../../utils/nodeOps/nodeFetMap';
@@ -29,81 +29,96 @@ describe('ParameterViewer Component', () => {
     // Mock ModelNodeManager instance
     mockNodeManager = {
       getNode: jest.fn(),
-      updateNodeParameter: jest.fn()
+      updateNodeParameter: jest.fn(),
     };
     ModelNodeManager.getInstance.mockReturnValue(mockNodeManager);
 
     // Mock node feature map data
     mockNodeFeatureMap = new Map([
-      ['Conv2d', {
-        name: 'Conv2d',
-        feature: 'Convolution 2D',
-        library: 'torch.nn',
-        codeId: 'conv2d_001',
-        parameters: [
-          {
-            name: 'in_channels',
-            type: 'int',
-            value: 3,
-            required: true,
-            display: true
-          },
-          {
-            name: 'out_channels',
-            type: 'int',
-            value: 64,
-            required: true,
-            display: true
-          },
-          {
-            name: 'bias',
-            type: 'bool',
-            value: true,
-            required: false,
-            display: true
-          },
-          {
-            name: 'padding',
-            type: 'string',
-            value: 'same',
-            required: false,
-            display: true
-          },
-          {
-            name: 'model_file',
-            type: 'file',
-            value: '/path/to/model.pth',
-            required: false,
-            display: true
-          },
-          {
-            name: 'hidden_param',
-            type: 'int',
-            value: 10,
-            required: false,
-            display: false
-          }
-        ],
-        code: 'nn.Conv2d(in_channels=3, out_channels=64, bias=True)'
-      }],
-      ['Test', {
-        name: 'Test',
-        feature: 'Test Node',
-        library: 'test.lib',
-        codeId: 'test_001',
-        parameters: [],
-        code: 'test()'
-      }],
-      ['FullNode', {
-        name: 'FullNode',
-        feature: 'Full Node',
-        library: 'test.lib',
-        codeId: 'full_001',
-        parameters: [
-          { name: 'test_param', type: 'int', value: 42, required: true, display: true }
-        ],
-        code: 'full_node_code()'
-      }]
+      [
+        'Conv2d',
+        {
+          name: 'Conv2d',
+          feature: 'Convolution 2D',
+          library: 'torch.nn',
+          codeId: 'conv2d_001',
+          parameters: [
+            {
+              name: 'in_channels',
+              type: 'int',
+              value: 3,
+              required: true,
+              display: true,
+            },
+            {
+              name: 'out_channels',
+              type: 'int',
+              value: 64,
+              required: true,
+              display: true,
+            },
+            {
+              name: 'bias',
+              type: 'bool',
+              value: true,
+              required: false,
+              display: true,
+            },
+            {
+              name: 'padding',
+              type: 'string',
+              value: 'same',
+              required: false,
+              display: true,
+            },
+            {
+              name: 'model_file',
+              type: 'file',
+              value: '/path/to/model.pth',
+              required: false,
+              display: true,
+            },
+            {
+              name: 'hidden_param',
+              type: 'int',
+              value: 10,
+              required: false,
+              display: false,
+            },
+          ],
+          code: 'nn.Conv2d(in_channels=3, out_channels=64, bias=True)',
+        },
+      ],
+      [
+        'Test',
+        {
+          name: 'Test',
+          feature: 'Test Node',
+          library: 'test.lib',
+          codeId: 'test_001',
+          parameters: [],
+          code: 'test()',
+        },
+      ],
+      [
+        'FullNode',
+        {
+          name: 'FullNode',
+          feature: 'Full Node',
+          library: 'test.lib',
+          codeId: 'full_001',
+          parameters: [
+            {
+              name: 'test_param',
+              type: 'int',
+              value: 42,
+              required: true,
+              display: true,
+            },
+          ],
+          code: 'full_node_code()',
+        },
+      ],
     ]);
 
     getNodeFeatureMap.mockResolvedValue(mockNodeFeatureMap);
@@ -116,10 +131,12 @@ describe('ParameterViewer Component', () => {
   describe('Component Rendering', () => {
     it('renders parameter viewer with no selected node', async () => {
       render(<ParameterViewer selectedNode={null} />);
-      
+
       expect(screen.getByText('Parameter Viewer')).toBeInTheDocument();
-      expect(screen.getByText('Select a layer to view parameters')).toBeInTheDocument();
-      
+      expect(
+        screen.getByText('Select a layer to view parameters'),
+      ).toBeInTheDocument();
+
       // Wait for the async data loading to complete
       await waitFor(() => {
         expect(getNodeFeatureMap).toHaveBeenCalledWith('/mock/pytorch/path');
@@ -128,12 +145,12 @@ describe('ParameterViewer Component', () => {
 
     it('renders with custom height prop', async () => {
       const { container } = render(
-        <ParameterViewer selectedNode={null} height="300px" />
+        <ParameterViewer selectedNode={null} height="300px" />,
       );
-      
+
       const parameterViewer = container.querySelector('.parameter-viewer');
       expect(parameterViewer).toHaveStyle({ height: '300px' });
-      
+
       await waitFor(() => {
         expect(getNodeFeatureMap).toHaveBeenCalled();
       });
@@ -141,10 +158,10 @@ describe('ParameterViewer Component', () => {
 
     it('uses default height when no height prop provided', async () => {
       const { container } = render(<ParameterViewer selectedNode={null} />);
-      
+
       const parameterViewer = container.querySelector('.parameter-viewer');
       expect(parameterViewer).toHaveStyle({ height: '190px' });
-      
+
       await waitFor(() => {
         expect(getNodeFeatureMap).toHaveBeenCalled();
       });
@@ -154,7 +171,7 @@ describe('ParameterViewer Component', () => {
   describe('Node Selection and Display', () => {
     const mockSelectedNode = {
       id: 1,
-      label: 'Conv2d'
+      label: 'Conv2d',
     };
 
     it('displays node information when node is selected', async () => {
@@ -164,8 +181,14 @@ describe('ParameterViewer Component', () => {
         codeId: 'conv2d_001',
         code: 'nn.Conv2d(in_channels=3, out_channels=64, bias=True)',
         parameters: [
-          { name: 'in_channels', type: 'int', value: 3, required: true, display: true }
-        ]
+          {
+            name: 'in_channels',
+            type: 'int',
+            value: 3,
+            required: true,
+            display: true,
+          },
+        ],
       });
 
       render(<ParameterViewer selectedNode={mockSelectedNode} />);
@@ -181,7 +204,7 @@ describe('ParameterViewer Component', () => {
 
     it('handles node without id (uses feature map)', async () => {
       const nodeWithoutId = { label: 'Conv2d' };
-      
+
       render(<ParameterViewer selectedNode={nodeWithoutId} />);
 
       await waitFor(() => {
@@ -200,7 +223,7 @@ describe('ParameterViewer Component', () => {
         library: 'torch.nn',
         codeId: 'conv2d_001',
         code: 'nn.Conv2d()',
-        parameters: mockNodeFeatureMap.get('Conv2d').parameters
+        parameters: mockNodeFeatureMap.get('Conv2d').parameters,
       });
     });
 
@@ -272,9 +295,21 @@ describe('ParameterViewer Component', () => {
         codeId: 'conv2d_001',
         code: 'nn.Conv2d()',
         parameters: [
-          { name: 'in_channels', type: 'int', value: 3, required: true, display: true },
-          { name: 'bias', type: 'bool', value: true, required: false, display: true }
-        ]
+          {
+            name: 'in_channels',
+            type: 'int',
+            value: 3,
+            required: true,
+            display: true,
+          },
+          {
+            name: 'bias',
+            type: 'bool',
+            value: true,
+            required: false,
+            display: true,
+          },
+        ],
       });
     });
 
@@ -284,11 +319,15 @@ describe('ParameterViewer Component', () => {
       await waitFor(() => {
         const input = screen.getByDisplayValue('3');
         fireEvent.change(input, { target: { value: '64' } });
-        
+
         const updateButtons = screen.getAllByText('Update');
         fireEvent.click(updateButtons[0]);
 
-        expect(mockNodeManager.updateNodeParameter).toHaveBeenCalledWith(1, 'in_channels', 64);
+        expect(mockNodeManager.updateNodeParameter).toHaveBeenCalledWith(
+          1,
+          'in_channels',
+          64,
+        );
       });
     });
 
@@ -298,11 +337,15 @@ describe('ParameterViewer Component', () => {
       await waitFor(() => {
         const select = screen.getByDisplayValue('true');
         fireEvent.change(select, { target: { value: 'False' } });
-        
+
         const updateButtons = screen.getAllByText('Update');
         fireEvent.click(updateButtons[1]);
 
-        expect(mockNodeManager.updateNodeParameter).toHaveBeenCalledWith(1, 'bias', 'False');
+        expect(mockNodeManager.updateNodeParameter).toHaveBeenCalledWith(
+          1,
+          'bias',
+          'False',
+        );
       });
     });
 
@@ -313,7 +356,11 @@ describe('ParameterViewer Component', () => {
         const resetButtons = screen.getAllByText('Reset');
         fireEvent.click(resetButtons[0]);
 
-        expect(mockNodeManager.updateNodeParameter).toHaveBeenCalledWith(1, 'in_channels', 1);
+        expect(mockNodeManager.updateNodeParameter).toHaveBeenCalledWith(
+          1,
+          'in_channels',
+          1,
+        );
       });
     });
 
@@ -324,7 +371,11 @@ describe('ParameterViewer Component', () => {
         const resetButtons = screen.getAllByText('Reset');
         fireEvent.click(resetButtons[1]);
 
-        expect(mockNodeManager.updateNodeParameter).toHaveBeenCalledWith(1, 'bias', true);
+        expect(mockNodeManager.updateNodeParameter).toHaveBeenCalledWith(
+          1,
+          'bias',
+          true,
+        );
       });
     });
   });
@@ -336,7 +387,7 @@ describe('ParameterViewer Component', () => {
         library: 'test',
         codeId: 'test_001',
         code: 'test()',
-        parameters: []
+        parameters: [],
       };
       mockNodeManager.getNode.mockReturnValue(nodeWithoutParams);
 
@@ -363,8 +414,10 @@ describe('ParameterViewer Component', () => {
 
     it('handles getNodeFeatureMap failure', async () => {
       // Mock console.error to prevent error output during test
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      
+      const consoleSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+
       getNodeFeatureMap.mockRejectedValue(new Error('Failed to load'));
 
       render(<ParameterViewer selectedNode={{ label: 'Test' }} />);
@@ -372,12 +425,15 @@ describe('ParameterViewer Component', () => {
       // Should not crash and should handle the error gracefully
       expect(screen.getByText('Parameter Viewer')).toBeInTheDocument();
       expect(screen.getByText('Test')).toBeInTheDocument();
-      
+
       // Wait for the error handling to complete
       await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalledWith('Failed to load node feature map:', expect.any(Error));
+        expect(consoleSpy).toHaveBeenCalledWith(
+          'Failed to load node feature map:',
+          expect.any(Error),
+        );
       });
-      
+
       consoleSpy.mockRestore();
     });
 
@@ -388,8 +444,14 @@ describe('ParameterViewer Component', () => {
         codeId: 'test_001',
         code: 'test()',
         parameters: [
-          { name: 'number_param', type: 'int', value: 5, required: true, display: true }
-        ]
+          {
+            name: 'number_param',
+            type: 'int',
+            value: 5,
+            required: true,
+            display: true,
+          },
+        ],
       };
       mockNodeManager.getNode.mockReturnValue(nodeWithIntParam);
 
@@ -402,14 +464,18 @@ describe('ParameterViewer Component', () => {
 
       // Find input by type and container, since display value might be empty initially
       const input = screen.getByRole('spinbutton'); // number inputs have role spinbutton
-      
+
       fireEvent.change(input, { target: { value: 'invalid' } });
-      
+
       const updateButton = screen.getByText('Update');
       fireEvent.click(updateButton);
 
       // Should handle invalid input gracefully, converting to 0
-      expect(mockNodeManager.updateNodeParameter).toHaveBeenCalledWith(1, 'number_param', "");
+      expect(mockNodeManager.updateNodeParameter).toHaveBeenCalledWith(
+        1,
+        'number_param',
+        '',
+      );
     });
 
     it('handles empty file parameter', async () => {
@@ -419,8 +485,14 @@ describe('ParameterViewer Component', () => {
         codeId: 'test_001',
         code: 'test()',
         parameters: [
-          { name: 'empty_file', type: 'file', value: '', required: false, display: true }
-        ]
+          {
+            name: 'empty_file',
+            type: 'file',
+            value: '',
+            required: false,
+            display: true,
+          },
+        ],
       };
       mockNodeManager.getNode.mockReturnValue(nodeWithEmptyFile);
 
@@ -445,9 +517,7 @@ describe('ParameterViewer Component', () => {
       const { rerender } = render(<ParameterViewer selectedNode={null} />);
 
       const nodeWithParams = {
-        parameters: [
-          { name: 'test_param', value: 'test_value' }
-        ]
+        parameters: [{ name: 'test_param', value: 'test_value' }],
       };
       mockNodeManager.getNode.mockReturnValue(nodeWithParams);
 
@@ -464,7 +534,7 @@ describe('ParameterViewer Component', () => {
 
     it('clears temp values when selectedNode becomes null', async () => {
       const { rerender } = render(
-        <ParameterViewer selectedNode={{ id: 1, label: 'Test' }} />
+        <ParameterViewer selectedNode={{ id: 1, label: 'Test' }} />,
       );
 
       await waitFor(() => {
@@ -474,7 +544,9 @@ describe('ParameterViewer Component', () => {
       rerender(<ParameterViewer selectedNode={null} />);
 
       await waitFor(() => {
-        expect(screen.getByText('Select a layer to view parameters')).toBeInTheDocument();
+        expect(
+          screen.getByText('Select a layer to view parameters'),
+        ).toBeInTheDocument();
       });
     });
   });
@@ -500,11 +572,11 @@ describe('ParameterViewer Component', () => {
 
     it('handles component cleanup properly', async () => {
       const { unmount } = render(<ParameterViewer selectedNode={null} />);
-      
+
       await waitFor(() => {
         expect(getNodeFeatureMap).toHaveBeenCalled();
       });
-      
+
       expect(() => unmount()).not.toThrow();
     });
 
@@ -515,8 +587,14 @@ describe('ParameterViewer Component', () => {
         codeId: 'test_001',
         code: 'test()',
         parameters: [
-          { name: 'text_param', type: 'string', value: 'initial', required: false, display: true }
-        ]
+          {
+            name: 'text_param',
+            type: 'string',
+            value: 'initial',
+            required: false,
+            display: true,
+          },
+        ],
       };
       mockNodeManager.getNode.mockReturnValue(nodeWithTextParam);
 

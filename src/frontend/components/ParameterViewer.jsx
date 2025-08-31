@@ -83,7 +83,8 @@ export const ParameterViewer = ({ selectedNode, height }) => {
   }, [selectedNode]);
 
   const renderParameters = () => {
-    if (!selectedNode || !nodeParams.get || !nodeParams.get(selectedNode.label)) return null;
+    if (!selectedNode || !nodeParams.get || !nodeParams.get(selectedNode.label))
+      return null;
 
     let nodeConfig;
     if (selectedNode.id) {
@@ -92,9 +93,8 @@ export const ParameterViewer = ({ selectedNode, height }) => {
       nodeConfig = nodeParams.get(selectedNode.label);
     }
 
-    const displayableParams = nodeConfig?.parameters?.filter(
-      (param) => param.display === true,
-    ) || [];
+    const displayableParams =
+      nodeConfig?.parameters?.filter((param) => param.display === true) || [];
     return (
       <>
         {displayableParams.length > 0 && (
@@ -172,21 +172,23 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                       }}
                     >
                       <input
-                      type="number"
-                      value={
-                      tempValues[param.name] !== undefined
-                      ? tempValues[param.name]
-                      : param.value || ''
-                      }
-                      required={param.required}
-                      placeholder={param.required ? 'Required' : 'Optional'}
-                      style={{ width: '100px' }}
-                      onChange={(e) =>
-                      handleParameterChange(
-                      param.name,
-                      e.target.value === '' ? '' : parseInt(e.target.value) || 0,
-                      )
-                      }
+                        type="number"
+                        value={
+                          tempValues[param.name] !== undefined
+                            ? tempValues[param.name]
+                            : param.value || ''
+                        }
+                        required={param.required}
+                        placeholder={param.required ? 'Required' : 'Optional'}
+                        style={{ width: '100px' }}
+                        onChange={(e) =>
+                          handleParameterChange(
+                            param.name,
+                            e.target.value === ''
+                              ? ''
+                              : parseInt(e.target.value) || 0,
+                          )
+                        }
                       />
                       <div style={{ display: 'flex', gap: '5px' }}>
                         <button
