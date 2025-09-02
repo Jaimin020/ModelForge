@@ -223,12 +223,12 @@ export function Toolbar({
         onClick={onClear}
         title="Clear Model"
         onMouseOver={(e) => {
-          e.currentTarget.style.backgroundColor = '#d32f2f';
+          e.currentTarget.style.backgroundColor = '#e65100';
           e.currentTarget.style.transform = 'translateY(-1px)';
           e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
         }}
         onMouseOut={(e) => {
-          e.currentTarget.style.backgroundColor = '#f44336';
+          e.currentTarget.style.backgroundColor = '#ff7043';
           e.currentTarget.style.transform = 'translateY(0)';
           e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
         }}
