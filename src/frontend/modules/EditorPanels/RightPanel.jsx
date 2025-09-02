@@ -1,7 +1,7 @@
 import NetworkCanvas from './NetworkCanvas';
 import DiagnosticViewer from '../../components/DiagnosticViewer.jsx';
 
-const RightPanel = ({ networkRef, handleDrop, output }) => {
+const RightPanel = ({ networkRef, handleDrop, output, setOutput }) => {
   return (
     <div className="right-panel">
       <NetworkCanvas networkRef={networkRef} handleDrop={handleDrop} />

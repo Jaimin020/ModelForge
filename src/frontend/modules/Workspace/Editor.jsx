@@ -336,6 +336,7 @@ const DesignApp = () => {
           networkRef={networkRef}
           handleDrop={handleDrop}
           output={output}
+          setOutput={setOutput}
         />
       </div>
     </div>
