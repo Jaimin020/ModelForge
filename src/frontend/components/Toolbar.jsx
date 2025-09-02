@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { BrushCleaning } from 'lucide-react';
 
 export function Toolbar({
   onRun,
@@ -10,6 +11,7 @@ export function Toolbar({
   onSave,
   onSaveAs,
   onOpen,
+  onClear,
 }) {
   const [isInputModalOpen, setIsInputModalOpen] = useState(false);
   // Function to handle training button click
@@ -94,6 +96,7 @@ export function Toolbar({
       transform: 'translateY(0)',
       boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
     },
+    whiteSpace: 'nowrap',
   };
 
   const runButtonStyle = {
@@ -214,6 +217,29 @@ export function Toolbar({
         </svg>
         Save As
       </button>
+
+      <button
+        style={saveButtonStyle}
+        onClick={onClear}
+        title="Clear Model"
+        onMouseOver={(e) => {
+          e.currentTarget.style.backgroundColor = '#d32f2f';
+          e.currentTarget.style.transform = 'translateY(-1px)';
+          e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.backgroundColor = '#f44336';
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+        }}
+      >
+        <BrushCleaning
+          style={{ marginRight: '3px', position: 'relative', top: '1px' }}
+          size={16}
+        />
+        Clear
+      </button>
+
       {/* First vertical divider */}
       <div style={dividerStyle} />
 

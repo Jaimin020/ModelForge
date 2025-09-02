@@ -288,6 +288,19 @@ const DesignApp = () => {
     });
   };
 
+  const onClear = async () => {
+    if (isRunning) {
+      appendToOutput(editorErrors.STOP_TRAINING_BEFORE_CLEAR, 'error');
+      return;
+    }
+    nodes.current.clear();
+    edges.current.clear();
+    graphManager.clearAllNodesAndEdges();
+    setSelectedNode(null);
+    setOutput([]);
+    setLoadingMessage(loaderMessages.EMPTY);
+  };
+
   const onOpen = async () => {
     await ModelPersistanceHandler.onOpen({
       nodes,
@@ -313,6 +326,7 @@ const DesignApp = () => {
         onSave={onSave}
         onSaveAs={onSaveAs}
         onOpen={onOpen}
+        onClear={onClear}
       />
       <ModelInputModal
         isOpen={isInputModalOpen}
