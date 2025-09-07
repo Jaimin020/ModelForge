@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getNodeFeatureMap } from '../utils/nodeOps/nodeFetMap';
 import { ModelNodeManager } from '../utils/graphMngr/ModelNodeManager.ts';
 import { PYTORCH_NODE_PATH } from '../../envPath';
-import './ParameterViewer.css';
+import './styles/ParameterViewer.css';
 
 export const ParameterViewer = ({ selectedNode, height }) => {
   const [nodeParams, setNodeParams] = useState({});

@@ -8,13 +8,14 @@ import {
 } from '@fluentui/react-components';
 
 function Menubar() {
+  menuTriggerStyle = { padding: '0 12px', cursor: 'pointer' };
   return (
     <div
       style={{ display: 'flex', backgroundColor: '#f0f0f0', padding: '4px' }}
     >
       <Menu>
         <MenuTrigger>
-          <div style={{ padding: '0 12px', cursor: 'pointer' }}>File</div>
+          <div style={menuTriggerStyle}>File</div>
         </MenuTrigger>
         <MenuPopover>
           <MenuList>
@@ -28,7 +29,7 @@ function Menubar() {
 
       <Menu>
         <MenuTrigger>
-          <div style={{ padding: '0 12px', cursor: 'pointer' }}>Edit</div>
+          <div style={menuTriggerStyle}>Edit</div>
         </MenuTrigger>
         <MenuPopover>
           <MenuList>
@@ -42,7 +43,7 @@ function Menubar() {
 
       <Menu>
         <MenuTrigger>
-          <div style={{ padding: '0 12px', cursor: 'pointer' }}>View</div>
+          <div style={menuTriggerStyle}>View</div>
         </MenuTrigger>
         <MenuPopover>
           <MenuList>
@@ -56,7 +57,7 @@ function Menubar() {
 
       <Menu>
         <MenuTrigger>
-          <div style={{ padding: '0 12px', cursor: 'pointer' }}>Help</div>
+          <div style={menuTriggerStyle}>Help</div>
         </MenuTrigger>
         <MenuPopover>
           <MenuList>

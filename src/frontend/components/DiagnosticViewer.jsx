@@ -7,6 +7,8 @@ import {
   BrushCleaning,
 } from 'lucide-react';
 
+import './styles/DiagnosticViewer.css';
+
 export function DiagnosticViewer({ output, clearOutput }) {
   const viewerRef = useRef(null);
   const containerRef = useRef(null);
@@ -49,50 +51,10 @@ export function DiagnosticViewer({ output, clearOutput }) {
   };
 
   const iconMap = {
-    info: (
-      <Info
-        style={{
-          color: '#3B82F6',
-          marginRight: '4px',
-          position: 'relative',
-          top: '2px',
-        }}
-        size={14}
-      />
-    ),
-    warn: (
-      <AlertTriangle
-        style={{
-          color: '#E69700',
-          marginRight: '4px',
-          position: 'relative',
-          top: '2px',
-        }}
-        size={14}
-      />
-    ),
-    error: (
-      <XCircle
-        style={{
-          color: '#EF4444',
-          marginRight: '4px',
-          position: 'relative',
-          top: '2px',
-        }}
-        size={14}
-      />
-    ),
-    success: (
-      <CheckCircle
-        style={{
-          color: '#10B981',
-          marginRight: '4px',
-          position: 'relative',
-          top: '2px',
-        }}
-        size={14}
-      />
-    ),
+    info: <Info className="diag-icon info" />,
+    warn: <AlertTriangle className="diag-icon warn" />,
+    error: <XCircle className="diag-icon error" />,
+    success: <CheckCircle className="diag-icon success" />,
   };
 
   return (
@@ -100,14 +62,7 @@ export function DiagnosticViewer({ output, clearOutput }) {
       {/* Drag handle above border */}
       <div
         onMouseDown={startDragging}
-        style={{
-          height: '2px',
-          cursor: 'row-resize',
-          backgroundColor: '#ccc',
-          marginBottom: '2px',
-          borderTopLeftRadius: '4px',
-          borderTopRightRadius: '4px',
-        }}
+        className="drag-handle"
         title="Drag to resize"
       />
 
@@ -115,56 +70,24 @@ export function DiagnosticViewer({ output, clearOutput }) {
       <div
         className="diagnostic-viewer"
         ref={containerRef}
-        style={{
-          border: '1px solid #ccc',
-          borderRadius: '0px',
-          padding: '5px',
-        }}
+        className="diag-container"
       >
-        <div
-          style={{
-            fontSize: '12px',
-            backgroundColor: 'white',
-            padding: '3px',
-            borderBottom: '1px solid #ddd',
-            marginBottom: '3px',
-            paddingBottom: '8px',
-          }}
-        >
+        <div className="diag-title-bar">
           <span>Diagnostic Viewer</span>
-          <button
-            onClick={clearOutput}
-            style={{
-              fontSize: '11px',
-              color: 'black',
-              border: '1px solid grey',
-              padding: '2px 6px',
-              cursor: 'pointer',
-              borderRadius: '3px',
-              float: 'right',
-              position: 'relative',
-              top: '-4px',
-            }}
-          >
-            <span style={{ position: 'relative', top: '-2px' }}>Clear</span>
+          <button onClick={clearOutput} className="clear-button">
             <BrushCleaning
-              style={{ marginLeft: '4px', position: 'relative', top: '1px' }}
+              style={{ marginRight: '4px', position: 'relative', top: '1px' }}
               size={14}
             />
+            <span style={{ position: 'relative', top: '-2px' }}>Clear</span>
           </button>
         </div>
 
         <div
           ref={viewerRef}
+          className="diag-output"
           style={{
-            backgroundColor: '#f5f5f5',
-            padding: '8px',
-            border: '1px solid #ddd',
-            borderRadius: '0px',
             height: `${height}px`,
-            overflowY: 'scroll',
-            fontSize: '14px',
-            margin: 0,
           }}
         >
           {output.map((entry, idx) => (
