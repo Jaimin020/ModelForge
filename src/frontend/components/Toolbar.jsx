@@ -12,6 +12,7 @@ export function Toolbar({
   onSaveAs,
   onOpen,
   onClear,
+  onSettings,
 }) {
   const [isInputModalOpen, setIsInputModalOpen] = useState(false);
   // Function to handle training button click
@@ -146,6 +147,17 @@ export function Toolbar({
     color: 'white',
     '&:hover': {
       backgroundColor: '#7B1FA2',
+      transform: 'translateY(-1px)',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+    },
+  };
+
+  const settingsButtonStyle = {
+    ...buttonStyle,
+    backgroundColor: '#607D8B',
+    color: 'white',
+    '&:hover': {
+      backgroundColor: '#455A64',
       transform: 'translateY(-1px)',
       boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
     },
