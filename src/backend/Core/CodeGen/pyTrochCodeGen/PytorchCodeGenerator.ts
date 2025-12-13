@@ -45,6 +45,8 @@ export class PyTorchCodeGenerator extends AbstractCodeGenerator {
   }
 
   getSaveModel(): string {
-    return ejs.render(saveONNXModelAndWeightsTemplate,{ weights_path: TEST_MODEL_WEIGHT });
+    return ejs.render(saveONNXModelAndWeightsTemplate, {
+      weights_path: TEST_MODEL_WEIGHT,
+    });
   }
 }

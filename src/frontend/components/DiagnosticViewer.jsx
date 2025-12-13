@@ -150,7 +150,11 @@ export function DiagnosticViewer({ output, clearOutput }) {
               style={{ position: 'relative', top: '1px' }}
               size={14}
             />
-            <span style={{ marginLeft: '4px', position: 'relative', top: '-2px' }}>Clear</span>
+            <span
+              style={{ marginLeft: '4px', position: 'relative', top: '-2px' }}
+            >
+              Clear
+            </span>
           </button>
         </div>
 

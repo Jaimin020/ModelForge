@@ -1,6 +1,6 @@
 /**
  * ONNX Model Verification Utility
- * 
+ *
  * This utility provides functions to verify ONNX models created by ModelForge.
  * It can be integrated into the backend inference pipeline.
  */
@@ -104,7 +104,7 @@ class ONNXModelVerifier {
     }
 
     // Check for common protobuf field markers
-    const hasFieldMarkers = buffer[0] > 0 && buffer[0] < 0xFF;
+    const hasFieldMarkers = buffer[0] > 0 && buffer[0] < 0xff;
     const hasLengthData = buffer.length > 1;
 
     return hasFieldMarkers && hasLengthData;
@@ -193,7 +193,8 @@ class ONNXModelVerifier {
       return {
         valid: false,
         error: verification.error,
-        recommendation: 'Model file could not be read. Check file path and permissions.',
+        recommendation:
+          'Model file could not be read. Check file path and permissions.',
       };
     }
 
@@ -363,7 +364,8 @@ if (require.main === module) {
   // Example 2: Verify all ONNX models in a directory
   console.log('\n\nExample 2: Verify all ONNX models in directory');
   console.log('─'.repeat(60));
-  const directoryResult = ONNXModelVerifier.verifyONNXModelsInDirectory(testDir);
+  const directoryResult =
+    ONNXModelVerifier.verifyONNXModelsInDirectory(testDir);
   console.log(JSON.stringify(directoryResult, null, 2));
 
   console.log('\n' + '═'.repeat(60) + '\n');

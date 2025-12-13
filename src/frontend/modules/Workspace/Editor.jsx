@@ -371,16 +371,14 @@ const DesignApp = () => {
             output={output}
             setOutput={setOutput}
           />
-          <RightStripe 
+          <RightStripe
             activePane={activePane}
             onPaneChange={handlePaneChange}
           />
           {activePane === 'inference' && (
             <InferencePanel width={rightPanelWidth} />
           )}
-          {activePane === 'copilot' && (
-            <CopilotPanel width={rightPanelWidth} />
-          )}
+          {activePane === 'copilot' && <CopilotPanel width={rightPanelWidth} />}
         </div>
       </div>
     </div>

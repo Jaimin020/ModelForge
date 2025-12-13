@@ -16,8 +16,8 @@ const RightStripe = ({ activePane, onPaneChange }) => {
     transition: 'all 0.2s ease',
     position: 'relative',
     '&:hover': {
-      background: '#f0f0f0'
-    }
+      background: '#f0f0f0',
+    },
   });
 
   const textStyle = {
@@ -28,24 +28,27 @@ const RightStripe = ({ activePane, onPaneChange }) => {
     fontSize: '12px',
     fontWeight: 800,
     color: '#666',
-    marginTop: '8px'
+    marginTop: '8px',
   };
 
   const iconStyle = {
     fontSize: '18px',
-    color: '#444'
+    color: '#444',
   };
 
   return (
-    <div className="right-stripe" style={{ 
-      width: '30px', 
-      backgroundColor: '#f5f5f5', 
-      borderLeft: '1px solid #ddd',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '8px',
-      paddingTop: '12px'
-    }}>
+    <div
+      className="right-stripe"
+      style={{
+        width: '30px',
+        backgroundColor: '#f5f5f5',
+        borderLeft: '1px solid #ddd',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+        paddingTop: '12px',
+      }}
+    >
       <style>
         {`
           .stripe-button {

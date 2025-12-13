@@ -38,7 +38,7 @@ export abstract class AbstractCodeGenerator {
       this.getHyperparameters(),
       this.getModel(),
       this.getTrainingLoop(),
-      this.getSaveModel()
+      this.getSaveModel(),
     ].join('\n\n');
   }
 }

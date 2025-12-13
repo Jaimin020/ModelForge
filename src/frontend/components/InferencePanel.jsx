@@ -34,7 +34,9 @@ const InferencePanel = ({ width }) => {
       await new Promise((r) => setTimeout(r, 700));
       setInferenceResult({
         status: 'placeholder',
-        message: selectedFile ? `Would send file: ${selectedFile.name}` : 'Would send text input',
+        message: selectedFile
+          ? `Would send file: ${selectedFile.name}`
+          : 'Would send text input',
         // add structure that backend should return here
       });
     } catch (err) {
@@ -61,7 +63,9 @@ const InferencePanel = ({ width }) => {
                 data-testid="inference-file-input"
               />
               <div className="file-info">
-                {selectedFile ? selectedFile.name : 'No file selected (optional)'}
+                {selectedFile
+                  ? selectedFile.name
+                  : 'No file selected (optional)'}
               </div>
             </div>
 
@@ -90,7 +94,9 @@ const InferencePanel = ({ width }) => {
           {inferenceResult && (
             <div className="inference-result">
               <div className="inference-section-header">Results</div>
-              <pre className="result-pre">{JSON.stringify(inferenceResult, null, 2)}</pre>
+              <pre className="result-pre">
+                {JSON.stringify(inferenceResult, null, 2)}
+              </pre>
             </div>
           )}
         </div>

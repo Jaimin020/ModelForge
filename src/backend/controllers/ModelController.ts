@@ -30,7 +30,5 @@ export class ModelController {
     return modelGraph;
   }
 
-  async setupModelForInference(filePath: string) {
-    
-  }
+  async setupModelForInference(filePath: string) {}
 }
