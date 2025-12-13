@@ -27,6 +27,9 @@ import { appendDiagnostic } from '../../utils/DiagnosticViewer/diagnosticUtil.ts
 // For saving models
 import * as ModelPersistanceHandler from '../../utils/Editor/ModelPersistanceHandler.js';
 import * as ModelExecutionHandler from '../../utils/Editor/ModelExecutionHandler.js';
+import RightStripe from '../../components/RightStripe.jsx';
+import InferencePanel from '../../components/InferencePanel.jsx';
+import CopilotPanel from '../../components/CopilotPanel.jsx';
 
 const DesignApp = () => {
   const networkRef = useRef();
@@ -60,6 +63,20 @@ const DesignApp = () => {
 
   // FrameWork Info
   const [activeFramework, setActiveFramework] = useState('PyTorch');
+
+  const [inferenceOpen, setInferenceOpen] = useState(false);
+  const [inferencePanelWidth] = useState(300);
+
+  const [activePane, setActivePane] = useState(null);
+  const [rightPanelWidth] = useState(300);
+
+  const handlePaneChange = (pane) => {
+    if (activePane === pane) {
+      setActivePane(null); // Close the pane if it's already open
+    } else {
+      setActivePane(pane); // Open the selected pane
+    }
+  };
 
   // 🛠️ Initialize the vis-network once (like componentDidMount)
   useEffect(() => {
@@ -217,6 +234,7 @@ const DesignApp = () => {
       });
       appendToOutput(editorStrings.messages.MODEL_EXECUTION_INITIATED, 'info');
       await window.api.runPython(TEST_PY_FILE);
+      setActivePane('inference');
     } catch (error) {
       appendToOutput(error, 'error');
     } finally {
@@ -337,7 +355,7 @@ const DesignApp = () => {
         isOpen={isHyperParamModalOpen}
         onClose={() => setIsHyperParamModalOpen(false)}
       />
-      <div className="main-content">
+      <div className="main-content" style={{ display: 'flex', height: '100%' }}>
         <LeftPanel
           leftPanelWidth={leftPanelWidth}
           selectedNode={selectedNode}
@@ -346,12 +364,24 @@ const DesignApp = () => {
           draggedShapeRef={draggedShapeRef}
         />
         <Divider setLeftPanelWidth={setLeftPanelWidth} />
-        <RightPanel
-          networkRef={networkRef}
-          handleDrop={handleDrop}
-          output={output}
-          setOutput={setOutput}
-        />
+        <div style={{ display: 'flex', flex: 1 }}>
+          <RightPanel
+            networkRef={networkRef}
+            handleDrop={handleDrop}
+            output={output}
+            setOutput={setOutput}
+          />
+          <RightStripe 
+            activePane={activePane}
+            onPaneChange={handlePaneChange}
+          />
+          {activePane === 'inference' && (
+            <InferencePanel width={rightPanelWidth} />
+          )}
+          {activePane === 'copilot' && (
+            <CopilotPanel width={rightPanelWidth} />
+          )}
+        </div>
       </div>
     </div>
   );

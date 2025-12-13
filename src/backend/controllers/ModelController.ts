@@ -29,4 +29,8 @@ export class ModelController {
     const modelGraph = JSON.parse(content?.toString() || '{}');
     return modelGraph;
   }
+
+  async setupModelForInference(filePath: string) {
+    
+  }
 }

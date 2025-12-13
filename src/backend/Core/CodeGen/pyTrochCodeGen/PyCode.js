@@ -7,6 +7,10 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 import os
+import onnx
+import zipfile
+from io import BytesIO
+import torch.onnx
 `;
 
 export const inputTemplate = `# Load and preprocess data
@@ -337,3 +341,72 @@ for epoch in range(num_epochs):
 
 print("-" * 50)
 print("Training complete!")`;
+
+export const saveONNXModelAndWeightsTemplate = `# Save model weights and ONNX model
+try:
+    save_path = r'<%= weights_path %>'
+    base_path = os.path.dirname(save_path)
+    base_name = os.path.splitext(os.path.basename(save_path))[0]
+    
+    # Create directory if it doesn't exist
+    os.makedirs(base_path, exist_ok=True)
+    
+    # Save the PyTorch weights
+    weights_file = f"{base_name}_weights.pth"
+    weights_path = os.path.join(base_path, weights_file)
+    torch.save(model.state_dict(), weights_path)
+    
+    # Export to ONNX format
+    dummy_input = next(iter(train_loader))[0]  # Get a sample input
+    onnx_file = f"{base_name}.onnx"
+    onnx_path = os.path.join(base_path, onnx_file)
+    
+    # Export the model to ONNX
+    torch.onnx.export(
+        model,                     # model being run
+        dummy_input,              # model input (or a tuple for multiple inputs)
+        onnx_path,               # where to save the model
+        export_params=True,      # store the trained parameter weights inside the model file
+        opset_version=14,        # the ONNX version to export the model to
+        do_constant_folding=True # whether to execute constant folding for optimization
+    )
+    
+    # Verify the ONNX model
+    try:
+        onnx_model = onnx.load(onnx_path)
+        onnx.checker.check_model(onnx_model)
+        print("ONNX model verification successful")
+    except Exception as onnx_error:
+        print(f"Warning: ONNX model verification failed: {str(onnx_error)}")
+        print("The model will still be saved but may need verification")
+    
+    # Create a zip file containing both the weights and ONNX model
+    zip_path = f"{save_path}"
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        zipf.write(weights_path, weights_file)
+        zipf.write(onnx_path, onnx_file)
+    
+    # Clean up temporary files
+    os.remove(weights_path)
+    os.remove(onnx_path)
+    
+    print("\\nModel weights and ONNX model saved successfully:")
+    print("-" * 50)
+    print(f"Save location: {zip_path}")
+    print(f"Contents:")
+    print(f"  - {weights_file} (PyTorch weights)")
+    print(f"  - {onnx_file} (ONNX model)")
+    print("-" * 50)
+except ImportError as e:
+    print("\\nError: Required module not found:")
+    print("-" * 50)
+    print(f"Error: {str(e)}")
+    print("Please install the required packages using:")
+    print("pip install onnx")
+    print("-" * 50)
+except Exception as e:
+    print("\\nError saving model weights and ONNX model:")
+    print("-" * 50)
+    print(f"Error: {str(e)}")
+    print("-" * 50)
+`;

@@ -6,8 +6,10 @@ import {
   modelTemplate,
   trainingLoopTemplate,
   imageInputTemplate,
+  saveONNXModelAndWeightsTemplate,
 } from './PyCode.js';
 import { AbstractCodeGenerator } from '../AbstractCodeGenerator';
+import { TEST_MODEL_WEIGHT } from '../../../../envPath';
 
 export class PyTorchCodeGenerator extends AbstractCodeGenerator {
   getImports(): string {
@@ -43,7 +45,6 @@ export class PyTorchCodeGenerator extends AbstractCodeGenerator {
   }
 
   getSaveModel(): string {
-    return `# Save the trained model
-torch.save(model.state_dict(), 'model.pth')`;
+    return ejs.render(saveONNXModelAndWeightsTemplate,{ weights_path: TEST_MODEL_WEIGHT });
   }
 }

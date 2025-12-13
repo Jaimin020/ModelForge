@@ -1,0 +1,103 @@
+/* Basic styles modeled after LayerSelectionPanel to keep consistent look */
+.inference-container {
+  overflow: auto;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+}
+
+.inference-panel {
+  border: 1px solid #ccc;
+  padding: 8px;
+  margin: 8px;
+  background: #fff;
+}
+
+.inference-header {
+  font-size: 13px;
+  padding: 6px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 6px;
+}
+
+.inference-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.inference-input-area {
+  background-color: #f9fbff;
+  padding: 8px;
+  border: 1px solid #eee;
+}
+
+.inference-section-header {
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.file-input-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.file-info {
+  font-size: 12px;
+  color: #666;
+}
+
+.or-divider {
+  text-align: center;
+  font-size: 11px;
+  color: #999;
+  margin: 8px 0;
+}
+
+.inference-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 8px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.inference-actions {
+  margin-top: 8px;
+}
+
+.start-inference-btn {
+  padding: 8px 14px;
+  background-color: #468dee;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.start-inference-btn[disabled] {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.inference-result {
+  background: #f5f7fb;
+  padding: 8px;
+  border: 1px solid #eee;
+}
+
+.result-pre {
+  background: #ffffff;
+  padding: 8px;
+  border-radius: 3px;
+  max-height: 320px;
+  overflow: auto;
+}
+
+.inference-error {
+  color: #a00;
+  font-size: 12px;
+  margin-top: 6px;
+}
