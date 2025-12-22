@@ -11,6 +11,7 @@ import Divider from '../EditorPanels/Divider.jsx';
 import { getNodeByName } from '../../utils/nodeOps/getNodeByName.jsx';
 import { ModelNodeManager } from '../../utils/graphMngr/ModelNodeManager.ts';
 import { HyperparameterModal } from '../../components/HyperparameterModal';
+import { SettingsModal } from '../../components/SettingsModal';
 import { GraphDataManager } from '../../utils/graphUtils/GraphDataManager.ts';
 import { LoadingOverlay } from '../Loading/LoadingModal.jsx';
 import { FooterLine } from '../Footer/FooterLine.jsx';
@@ -51,6 +52,7 @@ const DesignApp = () => {
   const [isInputNode, setIsInputNode] = useState(false);
   const [isInputModalOpen, setIsInputModalOpen] = useState(false);
   const [isHyperParamModalOpen, setIsHyperParamModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
   // Add at the top of component
   const convert = new Convert({ newline: true });
@@ -313,6 +315,10 @@ const DesignApp = () => {
     });
   };
 
+  const onSettings = () => {
+    setIsSettingsModalOpen(true);
+  };
+
   return (
     <div className="container">
       <LoadingOverlay isVisible={!!loadingMessage} message={loadingMessage} />
@@ -323,10 +329,13 @@ const DesignApp = () => {
         showInputConfig={isInputNode}
         onInputConfig={() => setIsInputModalOpen(true)}
         onHyperParam={() => setIsHyperParamModalOpen(true)}
+        isHyperParamModalOpen={isHyperParamModalOpen}
         onSave={onSave}
         onSaveAs={onSaveAs}
         onOpen={onOpen}
         onClear={onClear}
+        onSettings={onSettings}
+        isSettingsModalOpen={isSettingsModalOpen}
       />
       <ModelInputModal
         isOpen={isInputModalOpen}
@@ -336,6 +345,10 @@ const DesignApp = () => {
       <HyperparameterModal
         isOpen={isHyperParamModalOpen}
         onClose={() => setIsHyperParamModalOpen(false)}
+      />
+      <SettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
       />
       <div className="main-content">
         <LeftPanel
