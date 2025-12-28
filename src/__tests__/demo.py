@@ -10,7 +10,7 @@ import os
 
 
 # Load and preprocess data
-file_path = r'/Users/jaynikgaglani/Developer/JS/ModelForge/src/__tests__/train_new.csv'
+file_path = r'C:\Users\yashj\Desktop\ModelForgeGit\ModelForge\src\__tests__\train_new.csv'
 file_extension = os.path.splitext(file_path)[1].lower()
 
 if file_extension == '.csv':
@@ -43,7 +43,7 @@ print("Target Variable:", target_column)
 # Split the data
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, 
-    test_size=10, 
+    test_size=80, 
     random_state=42
 )
 
@@ -69,7 +69,7 @@ print("-" * 50)
 
 
 # Initialize hyperparameters
-num_epochs = 100
+num_epochs = 10
 learning_rate = 0.001
 
 # Print hyperparameter configuration
@@ -114,7 +114,7 @@ model.print_model_info()
 
 # Training loop
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-criterion = nn.CrossEntropyLoss()
+criterion = nn.MSELoss()
 
 # Training metrics tracking
 train_losses = []
