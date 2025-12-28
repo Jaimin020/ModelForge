@@ -13,8 +13,6 @@ export function Toolbar({
   onOpen,
   onClear,
   onSettings,
-  isHyperParamModalOpen,
-  isSettingsModalOpen,
 }) {
   const [isInputModalOpen, setIsInputModalOpen] = useState(false);
   // Function to handle training button click
@@ -304,23 +302,16 @@ export function Toolbar({
         <div style={dividerStyle} />
 
         <button
-          style={{
-            ...hyperParamButtonStyle,
-            backgroundColor: isHyperParamModalOpen ? '#6A1B9A' : '#9C27B0',
-          }}
+          style={hyperParamButtonStyle}
           onClick={onHyperParam}
           title="Configure Hyperparameters"
           onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = isHyperParamModalOpen
-              ? '#4A0E82'
-              : '#7B1FA2';
+            e.currentTarget.style.backgroundColor = '#7B1FA2';
             e.currentTarget.style.transform = 'translateY(-1px)';
             e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
           }}
           onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = isHyperParamModalOpen
-              ? '#6A1B9A'
-              : '#9C27B0';
+            e.currentTarget.style.backgroundColor = '#9C27B0';
             e.currentTarget.style.transform = 'translateY(0)';
             e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
           }}
@@ -357,23 +348,16 @@ export function Toolbar({
 
       {/* Right side settings button */}
       <button
-        style={{
-          ...settingsButtonStyle,
-          backgroundColor: isSettingsModalOpen ? '#455A64' : '#607D8B',
-        }}
+        style={settingsButtonStyle}
         onClick={onSettings}
         title="Settings"
         onMouseOver={(e) => {
-          e.currentTarget.style.backgroundColor = isSettingsModalOpen
-            ? '#33474A'
-            : '#455A64';
+          e.currentTarget.style.backgroundColor = '#455A64';
           e.currentTarget.style.transform = 'translateY(-1px)';
           e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
         }}
         onMouseOut={(e) => {
-          e.currentTarget.style.backgroundColor = isSettingsModalOpen
-            ? '#455A64'
-            : '#607D8B';
+          e.currentTarget.style.backgroundColor = '#607D8B';
           e.currentTarget.style.transform = 'translateY(0)';
           e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
         }}

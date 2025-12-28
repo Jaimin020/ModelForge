@@ -329,13 +329,11 @@ const DesignApp = () => {
         showInputConfig={isInputNode}
         onInputConfig={() => setIsInputModalOpen(true)}
         onHyperParam={() => setIsHyperParamModalOpen(true)}
-        isHyperParamModalOpen={isHyperParamModalOpen}
         onSave={onSave}
         onSaveAs={onSaveAs}
         onOpen={onOpen}
         onClear={onClear}
         onSettings={onSettings}
-        isSettingsModalOpen={isSettingsModalOpen}
       />
       <ModelInputModal
         isOpen={isInputModalOpen}
