@@ -141,6 +141,17 @@ export function Toolbar({
     },
   };
 
+  const clearButtonStyle = {
+    ...buttonStyle,
+    backgroundColor: '#ff7043',
+    color: 'white',
+    '&:hover': {
+      backgroundColor: '#e65100',
+      transform: 'translateY(-1px)',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+    },
+  };
+
   const hyperParamButtonStyle = {
     ...buttonStyle,
     backgroundColor: '#9C27B0',
@@ -233,7 +244,7 @@ export function Toolbar({
         </button>
 
         <button
-          style={saveButtonStyle}
+          style={clearButtonStyle}
           onClick={onClear}
           title="Clear Model"
           onMouseOver={(e) => {
