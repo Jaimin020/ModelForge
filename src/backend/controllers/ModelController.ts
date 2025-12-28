@@ -2,6 +2,7 @@ import { GraphController } from './GraphController';
 import { Engine } from '../Core/Engine';
 import { FileManager } from '../Core/FileManager';
 import { TEST_PY_FILE, TEST_DIR } from '../../envPath';
+import ONNXModelVerifier from '../utils/ONNXModelVerifier';
 
 export class ModelController {
   graphController = new GraphController();
@@ -30,5 +31,8 @@ export class ModelController {
     return modelGraph;
   }
 
-  async setupModelForInference(filePath: string) {}
+  async setupModelForInference(filePath: string) {
+    const result = await ONNXModelVerifier.verifyONNXModel("/Users/jaiminchauhan/Projects/Git/ModelForge/src/__tests__/modelAndweights.onnx.data");
+    return result;
+  }
 }

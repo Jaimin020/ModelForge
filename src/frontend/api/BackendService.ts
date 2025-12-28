@@ -13,4 +13,7 @@ export const backendService = {
   async analyseFolder(folderPath: string) {
     return await ipcRenderer.invoke('analyse-folder', folderPath);
   },
+  async setupModelForInference(filePath: string) {
+    return await ipcRenderer.invoke('setup-model-for-inference', filePath);
+  },
 };

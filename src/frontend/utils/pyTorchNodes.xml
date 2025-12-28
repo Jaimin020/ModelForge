@@ -30,7 +30,7 @@
             <param name="Folder" type="file" required="true" display="true"/>
             <param name="Number of Classes" type="int" required="true" display="false"/>
             <param name="Total Images" type="int" required="true" display="false"/>
-            <param name="Selected Classes" type="string" required="true" display="true"/>
+            <param name="Selected Classes" type="string" required="true" display="false"/>
             <param name="Class Statistics" type="string" required="true" display="false"/>
             <param name="Train Split" type="float" required="true" display="false"/>
             <param name="Test Split" type="float" required="true" display="false"/>

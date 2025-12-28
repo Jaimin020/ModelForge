@@ -5,8 +5,8 @@
  * It can be integrated into the backend inference pipeline.
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 /**
  * ONNX Model Verifier Class
@@ -338,35 +338,4 @@ class ONNXModelVerifier {
 /**
  * Export for use in other modules
  */
-module.exports = { ONNXModelVerifier };
-
-/**
- * Example usage and main execution
- */
-if (require.main === module) {
-  console.log('╔' + '═'.repeat(58) + '╗');
-  console.log('║' + ' ONNX Model Verification Utility '.padEnd(59, ' ') + '║');
-  console.log('╚' + '═'.repeat(58) + '╝\n');
-
-  // Example 1: Verify a single model
-  console.log('Example 1: Verify a single ONNX model');
-  console.log('─'.repeat(60));
-  const testDir = path.join(__dirname);
-  const demoModel = path.join(testDir, 'demo_model.onnx');
-
-  if (fs.existsSync(demoModel)) {
-    const result = ONNXModelVerifier.verifyONNXModel(demoModel);
-    console.log(JSON.stringify(result, null, 2));
-  } else {
-    console.log('No demo model found. Create one and try again.');
-  }
-
-  // Example 2: Verify all ONNX models in a directory
-  console.log('\n\nExample 2: Verify all ONNX models in directory');
-  console.log('─'.repeat(60));
-  const directoryResult =
-    ONNXModelVerifier.verifyONNXModelsInDirectory(testDir);
-  console.log(JSON.stringify(directoryResult, null, 2));
-
-  console.log('\n' + '═'.repeat(60) + '\n');
-}
+export default ONNXModelVerifier;

@@ -31,6 +31,15 @@ const InferencePanel = ({ width }) => {
       // setInferenceResult(json);
 
       // For now set a fake placeholder result so UI shows something.
+
+      //Check for ONNX model setup
+      const setupResult = await window.backend.setupModelForInference(selectedFile);
+      if (setupResult && !setupResult.isValid) {
+        setError(setupResult.error || 'Invalid ONNX model');
+        setIsRunning(false);
+        return;
+      }
+
       await new Promise((r) => setTimeout(r, 700));
       setInferenceResult({
         status: 'placeholder',

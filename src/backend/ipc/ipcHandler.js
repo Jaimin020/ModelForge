@@ -22,4 +22,9 @@ export function setupIpcHandlers() {
     const fileMngr = FileManager.getInstance();
     return await fileMngr.analyzeImageDatasetFolder(folderPath);
   });
+
+  ipcMain.handle('setup-model-for-inference', async (event, filePath) => {
+    const modelController = new ModelController();
+    return await modelController.setupModelForInference(filePath);
+  });
 }
