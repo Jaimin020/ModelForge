@@ -40,7 +40,7 @@ export function Toolbar({
 
   const toolbarStyle = {
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     padding: '8px',
     backgroundColor: '#f5f5f5',
@@ -345,6 +345,9 @@ export function Toolbar({
           </button>
         )}
       </div>
+
+      {/* Spacer to push settings button to right */}
+      <div style={{ flex: 1 }} />
 
       {/* Right side settings button */}
       <button
