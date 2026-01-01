@@ -5,6 +5,9 @@ const pythonHandler = {
   runPython: (scriptPath: string) =>
     ipcRenderer.invoke('run-python', scriptPath),
   stopPython: () => ipcRenderer.invoke('stop-python'),
+  detectPythonPaths: () => ipcRenderer.invoke('detect-python-paths'),
+  validatePythonPath: (pythonPath: string) =>
+    ipcRenderer.invoke('validate-python-path', pythonPath),
 };
 
 const dialogHandler = {
