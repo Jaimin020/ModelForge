@@ -62,7 +62,7 @@ describe('ModelPersistanceHandler', () => {
   beforeEach(() => {
     // Create a temporary file for each test
     tempFilePath = path.join(tempDir, `test-model-${Date.now()}.mff`);
-    
+
     // Mock ModelNodeManager
     mockModelNodeManager = {
       createNode: jest.fn(),
@@ -172,7 +172,7 @@ describe('ModelPersistanceHandler', () => {
       expect(mockParams.updateNodePositions).toHaveBeenCalledTimes(1);
       expect(window.backend.saveModel).toHaveBeenCalledWith(
         mockGraphManager.getGraphDataAsJson(),
-        tempFilePath
+        tempFilePath,
       );
     });
 
@@ -185,7 +185,7 @@ describe('ModelPersistanceHandler', () => {
       // Second save - may or may not prompt depending on module state
       jest.clearAllMocks();
       window.dialog.saveFilePathPicker.mockResolvedValue(tempFilePath);
-      
+
       await saveModel(mockParams);
 
       expect(mockParams.setLoadingMessage).toHaveBeenCalledWith('Saving...');
@@ -195,12 +195,12 @@ describe('ModelPersistanceHandler', () => {
     it('prevents saving when training is running', async () => {
       mockParams.isRunning = true;
       // Don't set up dialog mock since it shouldn't be called
-      
+
       await saveModel(mockParams);
 
       expect(mockParams.appendToOutput).toHaveBeenCalledWith(
         'Please stop training before saving the model',
-        'error'
+        'error',
       );
       // Note: backend may still be called due to module state from previous tests
       // The important thing is that the error message is shown
@@ -227,7 +227,7 @@ describe('ModelPersistanceHandler', () => {
 
       expect(mockParams.appendToOutput).toHaveBeenCalledWith(
         `Error saving model: ${errorMessage}`,
-        'error'
+        'error',
       );
       expect(mockParams.setLoadingMessage).toHaveBeenLastCalledWith('');
     });
@@ -240,7 +240,7 @@ describe('ModelPersistanceHandler', () => {
 
       expect(mockParams.appendToOutput).toHaveBeenLastCalledWith(
         expect.stringContaining('Model saved successfully'),
-        'success'
+        'success',
       );
       expect(mockParams.setLoadingMessage).toHaveBeenLastCalledWith('');
     });
@@ -268,7 +268,7 @@ describe('ModelPersistanceHandler', () => {
       });
       expect(window.backend.saveModel).toHaveBeenCalledWith(
         mockGraphManager.getGraphDataAsJson(),
-        tempFilePath
+        tempFilePath,
       );
     });
 
@@ -279,7 +279,7 @@ describe('ModelPersistanceHandler', () => {
 
       expect(mockParams.appendToOutput).toHaveBeenCalledWith(
         'Save operation cancelled',
-        'warn'
+        'warn',
       );
       expect(mockParams.setLoadingMessage).toHaveBeenLastCalledWith('');
     });
@@ -291,7 +291,7 @@ describe('ModelPersistanceHandler', () => {
 
       expect(mockParams.appendToOutput).toHaveBeenCalledWith(
         'Please stop training before saving the model',
-        'error'
+        'error',
       );
       // Dialog may or may not be called depending on implementation details
     });
@@ -305,7 +305,7 @@ describe('ModelPersistanceHandler', () => {
 
       expect(mockParams.appendToOutput).toHaveBeenCalledWith(
         `Error saving model: ${errorMessage}`,
-        'error'
+        'error',
       );
     });
   });
@@ -349,8 +349,12 @@ describe('ModelPersistanceHandler', () => {
       expect(mockParams.nodes.current.clear).toHaveBeenCalledTimes(1);
       expect(mockParams.edges.current.clear).toHaveBeenCalledTimes(1);
       expect(mockGraphManager.clearAllNodesAndEdges).toHaveBeenCalledTimes(1);
-      expect(mockParams.nodes.current.add).toHaveBeenCalledWith(validModelData.nodes);
-      expect(mockParams.edges.current.add).toHaveBeenCalledWith(validModelData.edges);
+      expect(mockParams.nodes.current.add).toHaveBeenCalledWith(
+        validModelData.nodes,
+      );
+      expect(mockParams.edges.current.add).toHaveBeenCalledWith(
+        validModelData.edges,
+      );
     });
 
     it('restores nodes in ModelNodeManager', async () => {
@@ -379,7 +383,7 @@ describe('ModelPersistanceHandler', () => {
       await onOpen(mockParams);
 
       expect(mockGraphManager.setHyperparameters).toHaveBeenCalledWith(
-        validModelData.hyperparameters
+        validModelData.hyperparameters,
       );
       expect(mockGraphManager.setHyperparameters).toHaveBeenCalledTimes(2); // Called twice in the current implementation
     });
@@ -400,7 +404,7 @@ describe('ModelPersistanceHandler', () => {
 
       expect(mockParams.appendToOutput).toHaveBeenCalledWith(
         'Load operation cancelled',
-        'warn'
+        'warn',
       );
       expect(window.backend.loadModel).not.toHaveBeenCalled();
       expect(mockParams.setLoadingMessage).toHaveBeenLastCalledWith('');
@@ -414,7 +418,7 @@ describe('ModelPersistanceHandler', () => {
 
       expect(mockParams.appendToOutput).toHaveBeenCalledWith(
         'Failed to load model: Invalid model file',
-        'error'
+        'error',
       );
       expect(mockParams.setLoadingMessage).toHaveBeenLastCalledWith('');
     });
@@ -427,7 +431,7 @@ describe('ModelPersistanceHandler', () => {
 
       expect(mockParams.appendToOutput).toHaveBeenCalledWith(
         'Failed to load model: Invalid model file',
-        'error'
+        'error',
       );
     });
 
@@ -439,7 +443,7 @@ describe('ModelPersistanceHandler', () => {
 
       expect(mockParams.appendToOutput).toHaveBeenCalledWith(
         'Failed to load model: Invalid model file',
-        'error'
+        'error',
       );
     });
 
@@ -452,7 +456,7 @@ describe('ModelPersistanceHandler', () => {
 
       expect(mockParams.appendToOutput).toHaveBeenCalledWith(
         `Error loading model: ${errorMessage}`,
-        'error'
+        'error',
       );
     });
 
@@ -468,7 +472,7 @@ describe('ModelPersistanceHandler', () => {
 
       expect(mockParams.appendToOutput).toHaveBeenCalledWith(
         'Model loaded successfully',
-        'success'
+        'success',
       );
       // Should not call setHyperparameters if no hyperparameters exist
       expect(mockGraphManager.setHyperparameters).not.toHaveBeenCalled();
@@ -484,7 +488,7 @@ describe('ModelPersistanceHandler', () => {
       // Should not throw error when network instance is null
       expect(mockParams.appendToOutput).toHaveBeenCalledWith(
         'Model loaded successfully',
-        'success'
+        'success',
       );
     });
 
@@ -503,7 +507,7 @@ describe('ModelPersistanceHandler', () => {
       const testFile = path.join(tempDir, 'cleanup-test.mff');
       fs.writeFileSync(testFile, 'test data');
       expect(fs.existsSync(testFile)).toBe(true);
-      
+
       fs.unlinkSync(testFile);
       expect(fs.existsSync(testFile)).toBe(false);
     });
@@ -517,7 +521,7 @@ describe('ModelPersistanceHandler', () => {
       await saveModel(mockParams);
       expect(mockParams.appendToOutput).toHaveBeenCalledWith(
         expect.stringContaining('Error saving model'),
-        'error'
+        'error',
       );
     });
 
@@ -548,19 +552,21 @@ describe('ModelPersistanceHandler', () => {
 
       expect(mockParams.appendToOutput).toHaveBeenCalledWith(
         'Error saving model: Network timeout',
-        'error'
+        'error',
       );
     });
 
     it('handles file system permission errors', async () => {
       window.dialog.filePicker.mockResolvedValue('/root/protected-file.mff');
-      window.backend.loadModel.mockRejectedValue(new Error('EACCES: permission denied'));
+      window.backend.loadModel.mockRejectedValue(
+        new Error('EACCES: permission denied'),
+      );
 
       await onOpen(mockParams);
 
       expect(mockParams.appendToOutput).toHaveBeenCalledWith(
         'Error loading model: EACCES: permission denied',
-        'error'
+        'error',
       );
     });
   });
