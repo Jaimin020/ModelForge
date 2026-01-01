@@ -55,8 +55,13 @@ export const ParameterViewer = ({ selectedNode, height }) => {
 
   useEffect(() => {
     const loadNodes = async () => {
-      const fetMap = await getNodeFeatureMap(PYTORCH_NODE_PATH);
-      setNodeParams(fetMap);
+      try {
+        const fetMap = await getNodeFeatureMap(PYTORCH_NODE_PATH);
+        setNodeParams(fetMap);
+      } catch (error) {
+        console.error('Failed to load node feature map:', error);
+        setNodeParams(new Map()); // Set empty Map on error
+      }
     };
     loadNodes();
   }, []);
@@ -78,7 +83,8 @@ export const ParameterViewer = ({ selectedNode, height }) => {
   }, [selectedNode]);
 
   const renderParameters = () => {
-    if (!selectedNode || !nodeParams.get(selectedNode.label)) return null;
+    if (!selectedNode || !nodeParams.get || !nodeParams.get(selectedNode.label))
+      return null;
 
     let nodeConfig;
     if (selectedNode.id) {
@@ -87,9 +93,8 @@ export const ParameterViewer = ({ selectedNode, height }) => {
       nodeConfig = nodeParams.get(selectedNode.label);
     }
 
-    const displayableParams = nodeConfig.parameters.filter(
-      (param) => param.display === true,
-    );
+    const displayableParams =
+      nodeConfig?.parameters?.filter((param) => param.display === true) || [];
     return (
       <>
         {displayableParams.length > 0 && (
@@ -171,7 +176,7 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                         value={
                           tempValues[param.name] !== undefined
                             ? tempValues[param.name]
-                            : param.value
+                            : param.value || ''
                         }
                         required={param.required}
                         placeholder={param.required ? 'Required' : 'Optional'}
@@ -179,7 +184,9 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                         onChange={(e) =>
                           handleParameterChange(
                             param.name,
-                            parseInt(e.target.value),
+                            e.target.value === ''
+                              ? ''
+                              : parseInt(e.target.value) || 0,
                           )
                         }
                       />
@@ -206,18 +213,18 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                       value={
                         tempValues[param.name] !== undefined
                           ? tempValues[param.name]
-                          : param.value
+                          : param.value || ''
                       }
                       required={param.required}
                       placeholder={param.required ? 'Required' : 'Optional'}
                       style={{ width: '100px' }}
-                      onBlur={(e) =>
+                      onChange={(e) =>
                         handleParameterChange(param.name, e.target.value)
                       }
                     />
                   )}
                 </div>
-                {index < nodeConfig.parameters.length - 1 && (
+                {index < (nodeConfig?.parameters?.length || 0) - 1 && (
                   <hr
                     style={{ margin: '8px 0', borderTop: '1px solid #ddd' }}
                   />
@@ -228,26 +235,26 @@ export const ParameterViewer = ({ selectedNode, height }) => {
         )}
         <div className="parameter-item">
           <label>Layer type:</label>
-          <span>{nodeConfig.feature}</span>
+          <span>{nodeConfig?.feature || 'Unknown'}</span>
         </div>
         <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
 
         <div className="parameter-item">
           <label>Library:</label>
-          <span>{nodeConfig.library}</span>
+          <span>{nodeConfig?.library || 'Unknown'}</span>
         </div>
         <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
 
         <div className="parameter-item">
           <label>Code ID:</label>
-          <span>{nodeConfig.codeId}</span>
+          <span>{nodeConfig?.codeId || 'Unknown'}</span>
         </div>
         <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
 
         <div className="parameter-item">
           <label>Generated Code:</label>
           <span style={{ fontSize: '11px', color: '#666' }}>
-            {nodeConfig.code}
+            {nodeConfig?.code || 'No code available'}
           </span>
         </div>
       </>
