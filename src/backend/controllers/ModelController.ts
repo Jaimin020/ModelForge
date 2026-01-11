@@ -9,7 +9,6 @@ import { app } from 'electron';
 
 const ort = require('onnxruntime-node');
 const JSZip = require('jszip');
-const npyz = require('npyz');
 export class ModelController {
   graphController = new GraphController();
 
