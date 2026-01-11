@@ -20,39 +20,29 @@ const InferencePanel = ({ width }) => {
     setInferenceResult(null);
 
     try {
-      // Placeholder: Form the payload for inference.
-      // In production this would call the backend / IPC to perform inference.
-      // Example (placeholder):
-      // const formData = new FormData();
-      // if (selectedFile) formData.append('file', selectedFile);
-      // else formData.append('text', inputText);
-      // const res = await fetch('/api/inference', { method: 'POST', body: formData });
-      // const json = await res.json();
-      // setInferenceResult(json);
-
-      // For now set a fake placeholder result so UI shows something.
-
-      //Check for ONNX model setup
-      const setupResult = await window.backend.setupModelForInference(selectedFile);
-      if (setupResult && !setupResult.isValid) {
-        setError(setupResult.error || 'Invalid ONNX model');
-        setIsRunning(false);
-        return;
-      }
-
-      await new Promise((r) => setTimeout(r, 700));
-      setInferenceResult({
-        status: 'placeholder',
-        message: selectedFile
-          ? `Would send file: ${selectedFile.name}`
-          : 'Would send text input',
-        // add structure that backend should return here
-      });
+      // Call backend to setup model and get metrics
+      const metrics = await window.backend.setupModelForInference(
+        selectedFile ? selectedFile.path : '',
+      );
+      setInferenceResult(metrics);
     } catch (err) {
       setError(err.message || String(err));
     } finally {
       setIsRunning(false);
     }
+  };
+
+  const handleExportCSV = () => {
+    if (!inferenceResult || !inferenceResult.csv) return;
+    const blob = new Blob([inferenceResult.csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'inference_results.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -95,6 +85,11 @@ const InferencePanel = ({ width }) => {
               >
                 {isRunning ? 'Running…' : 'Start Inference'}
               </button>
+              {inferenceResult && (
+                <button className="export-csv-btn" onClick={handleExportCSV}>
+                  Export Results
+                </button>
+              )}
             </div>
 
             {error && <div className="inference-error">Error: {error}</div>}
@@ -102,10 +97,27 @@ const InferencePanel = ({ width }) => {
 
           {inferenceResult && (
             <div className="inference-result">
-              <div className="inference-section-header">Results</div>
-              <pre className="result-pre">
-                {JSON.stringify(inferenceResult, null, 2)}
-              </pre>
+              <div className="inference-section-header">
+                Model Performance Metrics
+              </div>
+              <div className="metrics-grid">
+                <div className="metric-card">
+                  <div className="metric-label">MAE</div>
+                  <div className="metric-value">{inferenceResult.mae}</div>
+                </div>
+                <div className="metric-card">
+                  <div className="metric-label">MSE</div>
+                  <div className="metric-value">{inferenceResult.mse}</div>
+                </div>
+                <div className="metric-card">
+                  <div className="metric-label">RMSE</div>
+                  <div className="metric-value">{inferenceResult.rmse}</div>
+                </div>
+                <div className="metric-card">
+                  <div className="metric-label">R²</div>
+                  <div className="metric-value">{inferenceResult.r2}</div>
+                </div>
+              </div>
             </div>
           )}
         </div>

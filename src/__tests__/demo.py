@@ -14,7 +14,7 @@ import torch.onnx
 
 
 # Load and preprocess data
-file_path = r'/Users/jaiminchauhan/Projects/Git/ModelForge/src/__tests__/train_new.csv'
+file_path = r'/Users/jaiminchauhan/Downloads/titanic_processed_full_dataset.csv'
 file_extension = os.path.splitext(file_path)[1].lower()
 
 if file_extension == '.csv':
@@ -35,8 +35,8 @@ print("\nBasic statistics:\n", data.describe())
 print("-" * 50)
 
 # Prepare features and labels
-feature_columns = ["x"]
-target_column = 'y'
+feature_columns = ["Pclass","Sex","Age","SibSp","Parch","Fare","Embarked_C","Embarked_Q","Embarked_S"]
+target_column = 'Survived'
 
 X = data[feature_columns]
 y = data[target_column]
@@ -53,9 +53,30 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 # Convert to PyTorch tensors
 X_train_tensor = torch.FloatTensor(X_train.values)
-y_train_tensor = torch.FloatTensor(y_train.values)
+
+# Determine y tensor type based on data type
+if y_train.dtype == 'int64' or y_train.dtype == 'int32':
+    y_train_tensor = torch.LongTensor(y_train.values)
+    y_test_tensor = torch.LongTensor(y_test.values)
+    print("Target variable is integer (classification task)")
+else:
+    y_train_tensor = torch.FloatTensor(y_train.values)
+    y_test_tensor = torch.FloatTensor(y_test.values)
+    print("Target variable is float (regression task)")
+
 X_test_tensor = torch.FloatTensor(X_test.values)
-y_test_tensor = torch.FloatTensor(y_test.values)
+
+# Convert test tensors to NumPy (ONNX Runtime expects NumPy)
+X_test_np = X_test_tensor.cpu().numpy().astype(np.float32)
+y_test_np = y_test_tensor.cpu().numpy().astype(np.float32)
+
+# Save to JSON
+import json
+with open("/Users/jaiminchauhan/Projects/Git/ModelForge/src/__tests__/test_dataset.json", "w") as f:
+    json.dump({
+        "X_test": X_test_np.tolist(),
+        "y_test": y_test_np.tolist()
+    }, f)
 
 # Create data loaders
 batch_size = 1
@@ -73,7 +94,7 @@ print("-" * 50)
 
 
 # Initialize hyperparameters
-num_epochs = 10
+num_epochs = 100
 learning_rate = 0.001
 
 # Print hyperparameter configuration
@@ -86,16 +107,18 @@ print("-" * 50)
 class MyModel(nn.Module):
     def __init__(self):
         super(MyModel, self).__init__()
-        self.layer1 = nn.Linear(1, 128, False)
+        self.layer1 = nn.Linear(9, 32, )
         self.layer2 = nn.ReLU()
-        self.layer3 = nn.Linear(128, 1, True)
+        self.layer3 = nn.Linear(32, 16, )
         self.layer4 = nn.ReLU()
+        self.layer5 = nn.Linear(16, 2, )
         
     def forward(self, x):
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
+        x = self.layer5(x)
         return x
     def print_model_info(self):
         """Print model architecture and parameter information"""
@@ -120,6 +143,7 @@ class MyModel(nn.Module):
         print(f"Layer {2} ({self.layer2.__class__.__name__}): {sum(p.numel() for p in self.layer2.parameters()):,} parameters")
         print(f"Layer {3} ({self.layer3.__class__.__name__}): {sum(p.numel() for p in self.layer3.parameters()):,} parameters")
         print(f"Layer {4} ({self.layer4.__class__.__name__}): {sum(p.numel() for p in self.layer4.parameters()):,} parameters")
+        print(f"Layer {5} ({self.layer5.__class__.__name__}): {sum(p.numel() for p in self.layer5.parameters()):,} parameters")
         
         print("-" * 50)
 model = MyModel()
@@ -127,7 +151,7 @@ model.print_model_info()
 
 # Training loop
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-criterion = nn.MSELoss()
+criterion = nn.CrossEntropyLoss()
 
 # Training metrics tracking
 train_losses = []
@@ -203,7 +227,7 @@ for epoch in range(num_epochs):
 print("-" * 50)
 print("Training complete!")
 
-# Save model weights and ONNX model
+# Save ONNX model (weights are embedded in ONNX)
 try:
     save_path = r'/Users/jaiminchauhan/Projects/Git/ModelForge/src/__tests__/modelAndweights.zip'
     base_path = os.path.dirname(save_path)
@@ -212,12 +236,7 @@ try:
     # Create directory if it doesn't exist
     os.makedirs(base_path, exist_ok=True)
     
-    # Save the PyTorch weights
-    weights_file = f"{base_name}_weights.pth"
-    weights_path = os.path.join(base_path, weights_file)
-    torch.save(model.state_dict(), weights_path)
-    
-    # Export to ONNX format
+    # Export to ONNX format (weights are embedded)
     dummy_input = next(iter(train_loader))[0]  # Get a sample input
     onnx_file = f"{base_name}.onnx"
     onnx_path = os.path.join(base_path, onnx_file)
@@ -241,22 +260,30 @@ try:
         print(f"Warning: ONNX model verification failed: {str(onnx_error)}")
         print("The model will still be saved but may need verification")
     
-    # Create a zip file containing both the weights and ONNX model
+    # Check for external data file
+    onnx_data_path = onnx_path + '.data'
+    files_to_zip = [onnx_path]
+    if os.path.exists(onnx_data_path):
+        files_to_zip.append(onnx_data_path)
+    
+    # Create a zip file containing the ONNX model and data
     zip_path = f"{save_path}"
     with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        zipf.write(weights_path, weights_file)
-        zipf.write(onnx_path, onnx_file)
+        for file_path in files_to_zip:
+            file_name = os.path.basename(file_path)
+            zipf.write(file_path, file_name)
     
     # Clean up temporary files
-    os.remove(weights_path)
-    os.remove(onnx_path)
+    for file_path in files_to_zip:
+        os.remove(file_path)
     
-    print("\nModel weights and ONNX model saved successfully:")
+    print("\nONNX model saved successfully:")
     print("-" * 50)
     print(f"Save location: {zip_path}")
     print(f"Contents:")
-    print(f"  - {weights_file} (PyTorch weights)")
-    print(f"  - {onnx_file} (ONNX model)")
+    for file_path in files_to_zip:
+        file_name = os.path.basename(file_path)
+        print(f"  - {file_name}")
     print("-" * 50)
 except ImportError as e:
     print("\nError: Required module not found:")
@@ -266,7 +293,7 @@ except ImportError as e:
     print("pip install onnx")
     print("-" * 50)
 except Exception as e:
-    print("\nError saving model weights and ONNX model:")
+    print("\nError saving ONNX model:")
     print("-" * 50)
     print(f"Error: {str(e)}")
     print("-" * 50)

@@ -53,9 +53,30 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 # Convert to PyTorch tensors
 X_train_tensor = torch.FloatTensor(X_train.values)
-y_train_tensor = torch.FloatTensor(y_train.values)
+
+# Determine y tensor type based on data type
+if y_train.dtype == 'int64' or y_train.dtype == 'int32':
+    y_train_tensor = torch.LongTensor(y_train.values)
+    y_test_tensor = torch.LongTensor(y_test.values)
+    print("Target variable is integer (classification task)")
+else:
+    y_train_tensor = torch.FloatTensor(y_train.values)
+    y_test_tensor = torch.FloatTensor(y_test.values)
+    print("Target variable is float (regression task)")
+
 X_test_tensor = torch.FloatTensor(X_test.values)
-y_test_tensor = torch.FloatTensor(y_test.values)
+
+# Convert test tensors to NumPy (ONNX Runtime expects NumPy)
+X_test_np = X_test_tensor.cpu().numpy().astype(np.float32)
+y_test_np = y_test_tensor.cpu().numpy().astype(np.float32)
+
+# Save to JSON
+import json
+with open("/Users/jaiminchauhan/Projects/Git/ModelForge/src/__tests__/test_dataset.json", "w") as f:
+    json.dump({
+        "X_test": X_test_np.tolist(),
+        "y_test": y_test_np.tolist()
+    }, f)
 
 # Create data loaders
 batch_size = <%- batch_size %>
@@ -342,7 +363,7 @@ for epoch in range(num_epochs):
 print("-" * 50)
 print("Training complete!")`;
 
-export const saveONNXModelAndWeightsTemplate = `# Save model weights and ONNX model
+export const saveONNXModelAndWeightsTemplate = `# Save ONNX model (weights are embedded in ONNX)
 try:
     save_path = r'<%= weights_path %>'
     base_path = os.path.dirname(save_path)
@@ -351,12 +372,7 @@ try:
     # Create directory if it doesn't exist
     os.makedirs(base_path, exist_ok=True)
     
-    # Save the PyTorch weights
-    weights_file = f"{base_name}_weights.pth"
-    weights_path = os.path.join(base_path, weights_file)
-    torch.save(model.state_dict(), weights_path)
-    
-    # Export to ONNX format
+    # Export to ONNX format (weights are embedded)
     dummy_input = next(iter(train_loader))[0]  # Get a sample input
     onnx_file = f"{base_name}.onnx"
     onnx_path = os.path.join(base_path, onnx_file)
@@ -380,22 +396,30 @@ try:
         print(f"Warning: ONNX model verification failed: {str(onnx_error)}")
         print("The model will still be saved but may need verification")
     
-    # Create a zip file containing both the weights and ONNX model
+    # Check for external data file
+    onnx_data_path = onnx_path + '.data'
+    files_to_zip = [onnx_path]
+    if os.path.exists(onnx_data_path):
+        files_to_zip.append(onnx_data_path)
+    
+    # Create a zip file containing the ONNX model and data
     zip_path = f"{save_path}"
     with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        zipf.write(weights_path, weights_file)
-        zipf.write(onnx_path, onnx_file)
+        for file_path in files_to_zip:
+            file_name = os.path.basename(file_path)
+            zipf.write(file_path, file_name)
     
     # Clean up temporary files
-    os.remove(weights_path)
-    os.remove(onnx_path)
+    for file_path in files_to_zip:
+        os.remove(file_path)
     
-    print("\\nModel weights and ONNX model saved successfully:")
+    print("\\nONNX model saved successfully:")
     print("-" * 50)
     print(f"Save location: {zip_path}")
     print(f"Contents:")
-    print(f"  - {weights_file} (PyTorch weights)")
-    print(f"  - {onnx_file} (ONNX model)")
+    for file_path in files_to_zip:
+        file_name = os.path.basename(file_path)
+        print(f"  - {file_name}")
     print("-" * 50)
 except ImportError as e:
     print("\\nError: Required module not found:")
@@ -405,7 +429,7 @@ except ImportError as e:
     print("pip install onnx")
     print("-" * 50)
 except Exception as e:
-    print("\\nError saving model weights and ONNX model:")
+    print("\\nError saving ONNX model:")
     print("-" * 50)
     print(f"Error: {str(e)}")
     print("-" * 50)

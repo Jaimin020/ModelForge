@@ -66,6 +66,8 @@
 
 .inference-actions {
   margin-top: 8px;
+  display: flex;
+  gap: 8px;
 }
 
 .start-inference-btn {
@@ -82,10 +84,57 @@
   cursor: default;
 }
 
+.export-csv-btn {
+  padding: 8px 14px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.export-csv-btn:hover {
+  background-color: #218838;
+}
+
 .inference-result {
   background: #f5f7fb;
   padding: 8px;
   border: 1px solid #eee;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.metric-card {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease;
+}
+
+.metric-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.metric-label {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.metric-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
 }
 
 .result-pre {
