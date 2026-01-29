@@ -79,14 +79,10 @@ const DesignApp = () => {
         zoomSpeed: 1, // Zoom speed multiplier
       },
       manipulation: {
+        enabled: false, // Disabled - using custom vertical toolbar instead
         addEdge: (data, callback) => {
           callback(data);
         },
-        enabled: true,
-        initiallyActive: true,
-        addNode: false,
-        // addEdge: true,
-        editEdge: true,
         deleteNode: (data, callback) => {
           setSelectedNode(null);
           setIsInputModalOpen(null);
@@ -362,6 +358,7 @@ const DesignApp = () => {
           handleDrop={handleDrop}
           output={output}
           setOutput={setOutput}
+          networkInstance={networkInstance}
         />
       </div>
     </div>

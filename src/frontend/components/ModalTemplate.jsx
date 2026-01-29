@@ -22,21 +22,25 @@ export function ModalTemplate({
     >
       <div
         style={{
-          backgroundColor: 'white',
-          border: '1px solid #ccc',
+          backgroundColor: '#252526',
+          border: '1px solid #454545',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
           borderRadius: '0px',
           width: '800px',
           maxHeight: '90vh',
+          color: '#cccccc',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         <div
           style={{
-            fontSize: '14px',
-            backgroundColor: '#2c3e50',
-            color: 'white',
+            fontSize: '13px',
+            backgroundColor: '#333333',
+            color: '#cccccc',
             padding: '8px 12px',
-            borderBottom: '2px solid #34495e',
-            fontWeight: 'bold',
+            borderBottom: '1px solid #454545',
+            fontWeight: '600',
             letterSpacing: '0.5px',
             display: 'flex',
             alignItems: 'center',
@@ -51,12 +55,11 @@ export function ModalTemplate({
 
         <div
           style={{
-            backgroundColor: '#f5f5f5',
-            padding: '8px',
-            border: '1px solid #ddd',
-            borderRadius: '0px',
-            fontSize: '12px',
-            margin: '5px',
+            backgroundColor: '#252526',
+            padding: '16px',
+            fontSize: '13px',
+            flex: 1,
+            overflowY: 'auto',
           }}
         >
           <div

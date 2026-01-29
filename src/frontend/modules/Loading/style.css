@@ -12,12 +12,13 @@
 }
 
 .loading-container {
-  background-color: #fff;
+  background-color: #252526;
   padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 0px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   text-align: center;
   max-width: 300px;
+  border: 1px solid #454545;
 }
 
 .spinner {
@@ -45,10 +46,12 @@
 }
 
 @keyframes bounce {
+
   0%,
   100% {
     transform: scale(0);
   }
+
   50% {
     transform: scale(1);
   }
@@ -57,5 +60,5 @@
 .loading-message {
   margin: 0;
   font-size: 16px;
-  color: #333;
+  color: #cccccc;
 }

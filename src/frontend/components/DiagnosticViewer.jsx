@@ -96,15 +96,15 @@ export function DiagnosticViewer({ output, clearOutput }) {
   };
 
   return (
-    <div style={{ margin: '5px' }}>
+    <div style={{ margin: '2px' }}>
       {/* Drag handle above border */}
       <div
         onMouseDown={startDragging}
         style={{
           height: '2px',
           cursor: 'row-resize',
-          backgroundColor: '#ccc',
-          marginBottom: '2px',
+          backgroundColor: '#454545',
+          marginBottom: '1px',
           borderTopLeftRadius: '4px',
           borderTopRightRadius: '4px',
         }}
@@ -116,19 +116,20 @@ export function DiagnosticViewer({ output, clearOutput }) {
         className="diagnostic-viewer"
         ref={containerRef}
         style={{
-          border: '1px solid #ccc',
+          border: '1px solid #454545',
           borderRadius: '0px',
-          padding: '5px',
+          padding: '2px',
+          backgroundColor: '#252526',
         }}
       >
         <div
           style={{
-            fontSize: '12px',
-            backgroundColor: 'white',
-            padding: '3px',
-            borderBottom: '1px solid #ddd',
-            marginBottom: '3px',
-            paddingBottom: '8px',
+            fontSize: '11px',
+            backgroundColor: '#333333',
+            color: '#cccccc',
+            padding: '4px 6px',
+            borderBottom: '1px solid #454545',
+            marginBottom: '2px',
           }}
         >
           <span>Diagnostic Viewer</span>
@@ -136,8 +137,9 @@ export function DiagnosticViewer({ output, clearOutput }) {
             onClick={clearOutput}
             style={{
               fontSize: '11px',
-              color: 'black',
-              border: '1px solid grey',
+              color: '#cccccc',
+              backgroundColor: '#3c3c3c',
+              border: '1px solid #454545',
               padding: '2px 6px',
               cursor: 'pointer',
               borderRadius: '3px',
@@ -157,13 +159,14 @@ export function DiagnosticViewer({ output, clearOutput }) {
         <div
           ref={viewerRef}
           style={{
-            backgroundColor: '#f5f5f5',
-            padding: '8px',
-            border: '1px solid #ddd',
+            backgroundColor: '#1e1e1e',
+            color: '#cccccc',
+            padding: '6px',
+            border: '1px solid #454545',
             borderRadius: '0px',
             height: `${height}px`,
             overflowY: 'scroll',
-            fontSize: '14px',
+            fontSize: '12px',
             margin: 0,
           }}
         >

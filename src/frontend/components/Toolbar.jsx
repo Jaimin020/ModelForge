@@ -42,136 +42,87 @@ export function Toolbar({
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    padding: '8px',
-    backgroundColor: '#f5f5f5',
-    borderBottom: '1px solid lightgray',
+    padding: '6px 8px',
+    backgroundColor: '#1e1e1e',
+    borderBottom: '1px solid #2d2d30',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.2)',
   };
 
-  const buttonStyle = {
+  const buttonBaseStyle = {
     display: 'flex',
     alignItems: 'center',
-    gap: '5px',
-    padding: '6px 12px',
-    margin: '0 4px',
-    fontSize: '14px',
+    gap: '6px',
+    padding: '6px 14px',
+    margin: '0 3px',
+    fontSize: '13px',
+    fontWeight: '500',
     cursor: 'pointer',
-    borderRadius: '4px',
+    borderRadius: '5px',
     border: 'none',
     outline: 'none',
-    transition: 'all 0.2s ease',
-    boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+    transition: 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.3)',
+    backgroundColor: '#2d2d30',
+    color: '#cccccc',
+    whiteSpace: 'nowrap',
+  };
+
+  const buttonHoverStyle = {
+    backgroundColor: '#3e3e42',
+    transform: 'translateY(-1px)',
+    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.4)',
+  };
+
+  const primaryButtonStyle = {
+    ...buttonBaseStyle,
+    backgroundColor: '#0e639c',
+    color: '#ffffff',
+  };
+
+  const primaryButtonHoverStyle = {
+    backgroundColor: '#1177bb',
+    transform: 'translateY(-1px)',
+    boxShadow: '0 2px 6px rgba(14, 99, 156, 0.4)',
+  };
+
+  const destructiveButtonStyle = {
+    ...buttonBaseStyle,
+    backgroundColor: '#5a1f1f',
+    color: '#ff6b6b',
+  };
+
+  const destructiveButtonHoverStyle = {
+    backgroundColor: '#6b2929',
+    transform: 'translateY(-1px)',
+    boxShadow: '0 2px 6px rgba(255, 107, 107, 0.3)',
+    color: '#ff8787',
+  };
+
+  const criticalButtonStyle = {
+    ...buttonBaseStyle,
+    backgroundColor: '#b71c1c',
+    color: '#ffffff',
+  };
+
+  const criticalButtonHoverStyle = {
+    backgroundColor: '#c62828',
+    transform: 'translateY(-1px)',
+    boxShadow: '0 2px 6px rgba(183, 28, 28, 0.5)',
   };
 
   const dividerStyle = {
     height: '24px',
     width: '1px',
-    backgroundColor: '#d0d0d0',
+    backgroundColor: '#3e3e42',
     margin: '0 8px',
   };
 
-  const openButtonStyle = {
-    ...buttonStyle,
-    backgroundColor: '#FF9800',
-    color: 'white',
-    '&:hover': {
-      backgroundColor: '#e68a00',
-      transform: 'translateY(-1px)',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-    },
-    '&:active': {
-      transform: 'translateY(0)',
-      boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
-    },
+  const handleMouseEnter = (e, hoverStyle) => {
+    Object.assign(e.currentTarget.style, hoverStyle);
   };
 
-  const saveButtonStyle = {
-    ...buttonStyle,
-    backgroundColor: '#2196F3',
-    color: 'white',
-    '&:hover': {
-      backgroundColor: '#0b7dda',
-      transform: 'translateY(-1px)',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-    },
-    '&:active': {
-      transform: 'translateY(0)',
-      boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
-    },
-    whiteSpace: 'nowrap',
-  };
-
-  const runButtonStyle = {
-    ...buttonStyle,
-    backgroundColor: '#4CAF50',
-    color: 'white',
-    '&:hover': {
-      backgroundColor: '#45a049',
-      transform: 'translateY(-1px)',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-    },
-    '&:active': {
-      transform: 'translateY(0)',
-      boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
-    },
-  };
-
-  const stopButtonStyle = {
-    ...buttonStyle,
-    backgroundColor: '#F44336',
-    color: 'white',
-    '&:hover': {
-      backgroundColor: '#d32f2f',
-      transform: 'translateY(-1px)',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-    },
-    '&:active': {
-      transform: 'translateY(0)',
-      boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
-    },
-  };
-
-  const configButtonStyle = {
-    ...buttonStyle,
-    backgroundColor: '#4CAF50',
-    color: 'white',
-    '&:hover': {
-      backgroundColor: '#45a049',
-      transform: 'translateY(-1px)',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-    },
-  };
-
-  const clearButtonStyle = {
-    ...buttonStyle,
-    backgroundColor: '#ff7043',
-    color: 'white',
-    '&:hover': {
-      backgroundColor: '#e65100',
-      transform: 'translateY(-1px)',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-    },
-  };
-
-  const hyperParamButtonStyle = {
-    ...buttonStyle,
-    backgroundColor: '#9C27B0',
-    color: 'white',
-    '&:hover': {
-      backgroundColor: '#7B1FA2',
-      transform: 'translateY(-1px)',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-    },
-  };
-
-  const settingsButtonStyle = {
-    ...buttonStyle,
-    backgroundColor: '#607D8B',
-    color: 'white',
-    '&:hover': {
-      backgroundColor: '#455A64',
-      transform: 'translateY(-1px)',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-    },
+  const handleMouseLeave = (e, baseStyle) => {
+    Object.assign(e.currentTarget.style, baseStyle);
   };
 
   return (
@@ -179,19 +130,11 @@ export function Toolbar({
       {/* Left side buttons */}
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <button
-          style={openButtonStyle}
+          style={buttonBaseStyle}
           onClick={onOpen}
           title="Open Model"
-          onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = '#e68a00';
-            e.currentTarget.style.transform = 'translateY(-1px)';
-            e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = '#FF9800';
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-          }}
+          onMouseEnter={(e) => handleMouseEnter(e, buttonHoverStyle)}
+          onMouseLeave={(e) => handleMouseLeave(e, buttonBaseStyle)}
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
             <path d="M8.5 10.5a.5.5 0 0 0-1 0v1.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 12.293v-1.793z" />
@@ -202,19 +145,11 @@ export function Toolbar({
         </button>
 
         <button
-          style={saveButtonStyle}
+          style={primaryButtonStyle}
           onClick={onSave}
           title="Save Model"
-          onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = '#0b7dda';
-            e.currentTarget.style.transform = 'translateY(-1px)';
-            e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = '#2196F3';
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-          }}
+          onMouseEnter={(e) => handleMouseEnter(e, primaryButtonHoverStyle)}
+          onMouseLeave={(e) => handleMouseLeave(e, primaryButtonStyle)}
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
             <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v4.5h2a.5.5 0 0 1 .354.854l-2.5 2.5a.5.5 0 0 1-.708 0l-2.5-2.5A.5.5 0 0 1 5.5 6.5h2V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z" />
@@ -223,19 +158,11 @@ export function Toolbar({
         </button>
 
         <button
-          style={saveButtonStyle}
+          style={primaryButtonStyle}
           onClick={onSaveAs}
           title="Save Model As"
-          onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = '#0b7dda';
-            e.currentTarget.style.transform = 'translateY(-1px)';
-            e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = '#2196F3';
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-          }}
+          onMouseEnter={(e) => handleMouseEnter(e, primaryButtonHoverStyle)}
+          onMouseLeave={(e) => handleMouseLeave(e, primaryButtonStyle)}
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
             <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v4.5h2a.5.5 0 0 1 .354.854l-2.5 2.5a.5.5 0 0 1-.708 0l-2.5-2.5A.5.5 0 0 1 5.5 6.5h2V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z" />
@@ -244,19 +171,11 @@ export function Toolbar({
         </button>
 
         <button
-          style={clearButtonStyle}
+          style={destructiveButtonStyle}
           onClick={onClear}
           title="Clear Model"
-          onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = '#e65100';
-            e.currentTarget.style.transform = 'translateY(-1px)';
-            e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = '#ff7043';
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-          }}
+          onMouseEnter={(e) => handleMouseEnter(e, destructiveButtonHoverStyle)}
+          onMouseLeave={(e) => handleMouseLeave(e, destructiveButtonStyle)}
         >
           <BrushCleaning
             style={{ marginRight: '3px', position: 'relative', top: '1px' }}
@@ -269,20 +188,12 @@ export function Toolbar({
         <div style={dividerStyle} />
 
         <button
-          style={runButtonStyle}
+          style={primaryButtonStyle}
           onClick={onRun}
           disabled={isRunning}
-          title="Train"
-          onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = '#45a049';
-            e.currentTarget.style.transform = 'translateY(-1px)';
-            e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = '#4CAF50';
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-          }}
+          title="Train Model"
+          onMouseEnter={(e) => handleMouseEnter(e, primaryButtonHoverStyle)}
+          onMouseLeave={(e) => handleMouseLeave(e, primaryButtonStyle)}
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
             <path d="M4 2v12l10-6L4 2z" />
@@ -290,19 +201,11 @@ export function Toolbar({
           {isRunning ? 'Training...' : 'Train'}
         </button>
         <button
-          style={stopButtonStyle}
+          style={criticalButtonStyle}
           onClick={onStop}
-          title="Stop"
-          onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = '#d32f2f';
-            e.currentTarget.style.transform = 'translateY(-1px)';
-            e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = '#F44336';
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-          }}
+          title="Stop Training"
+          onMouseEnter={(e) => handleMouseEnter(e, criticalButtonHoverStyle)}
+          onMouseLeave={(e) => handleMouseLeave(e, criticalButtonStyle)}
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
             <rect x="3" y="3" width="10" height="10" />
@@ -313,19 +216,11 @@ export function Toolbar({
         <div style={dividerStyle} />
 
         <button
-          style={hyperParamButtonStyle}
+          style={buttonBaseStyle}
           onClick={onHyperParam}
           title="Configure Hyperparameters"
-          onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = '#7B1FA2';
-            e.currentTarget.style.transform = 'translateY(-1px)';
-            e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = '#9C27B0';
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-          }}
+          onMouseEnter={(e) => handleMouseEnter(e, buttonHoverStyle)}
+          onMouseLeave={(e) => handleMouseLeave(e, buttonBaseStyle)}
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
             <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z" />
@@ -335,19 +230,11 @@ export function Toolbar({
 
         {showInputConfig && (
           <button
-            style={configButtonStyle}
+            style={buttonBaseStyle}
             onClick={onInputConfig}
             title="Configure Input"
-            onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = '#45a049';
-              e.currentTarget.style.transform = 'translateY(-1px)';
-              e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = '#4CAF50';
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-            }}
+            onMouseEnter={(e) => handleMouseEnter(e, buttonHoverStyle)}
+            onMouseLeave={(e) => handleMouseLeave(e, buttonBaseStyle)}
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
               <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
@@ -362,19 +249,11 @@ export function Toolbar({
 
       {/* Right side settings button */}
       <button
-        style={settingsButtonStyle}
+        style={buttonBaseStyle}
         onClick={onSettings}
         title="Settings"
-        onMouseOver={(e) => {
-          e.currentTarget.style.backgroundColor = '#455A64';
-          e.currentTarget.style.transform = 'translateY(-1px)';
-          e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
-        }}
-        onMouseOut={(e) => {
-          e.currentTarget.style.backgroundColor = '#607D8B';
-          e.currentTarget.style.transform = 'translateY(0)';
-          e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-        }}
+        onMouseEnter={(e) => handleMouseEnter(e, buttonHoverStyle)}
+        onMouseLeave={(e) => handleMouseLeave(e, buttonBaseStyle)}
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
           <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z" />

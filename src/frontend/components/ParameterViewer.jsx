@@ -93,14 +93,33 @@ export const ParameterViewer = ({ selectedNode, height }) => {
       nodeConfig = nodeParams.get(selectedNode.label);
     }
 
+    const inputStyle = {
+      backgroundColor: '#3c3c3c',
+      color: '#cccccc',
+      border: '1px solid #3c3c3c',
+      padding: '4px',
+      borderRadius: '2px',
+      outline: 'none',
+    };
+
+    const buttonStyle = {
+      fontSize: '10px',
+      padding: '2px 5px',
+      backgroundColor: '#0e639c',
+      color: 'white',
+      border: 'none',
+      cursor: 'pointer',
+      borderRadius: '2px',
+    };
+
     const displayableParams =
       nodeConfig?.parameters?.filter((param) => param.display === true) || [];
     return (
       <>
         {displayableParams.length > 0 && (
-          <div style={{ marginTop: '10px' }}>
+          <div style={{ marginTop: '4px' }}>
             <label style={{ fontWeight: 'bold' }}>Parameters:</label>
-            <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
+            <hr style={{ margin: '4px 0', borderTop: '1px solid #454545' }} />
             {displayableParams.map((param, index) => (
               <div key={index}>
                 <div className="parameter-item">
@@ -109,7 +128,7 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                     <span style={{ color: 'red', marginLeft: '2px' }}>*</span>
                   )}
                   {param.type === 'file' ? (
-                    <div style={{ display: 'flex', gap: '5px' }}>
+                    <div style={{ display: 'flex', gap: '3px' }}>
                       <span
                         style={{
                           fontWeight: 'bold',
@@ -130,12 +149,12 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                       style={{
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '5px',
+                        gap: '3px',
                       }}
                     >
                       <select
                         value={tempValues[param.name] ? 'True' : 'False'}
-                        style={{ width: '100px' }}
+                        style={{ ...inputStyle, width: '100px' }}
                         onChange={(e) =>
                           handleParameterChange(
                             param.name,
@@ -146,10 +165,10 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                         <option value="True">true</option>
                         <option value="False">false</option>
                       </select>
-                      <div style={{ display: 'flex', gap: '5px' }}>
+                      <div style={{ display: 'flex', gap: '3px' }}>
                         <button
                           onClick={() => handleUpdateParameter(param.name)}
-                          style={{ fontSize: '10px', padding: '2px 5px' }}
+                          style={buttonStyle}
                         >
                           Update
                         </button>
@@ -157,7 +176,7 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                           onClick={() =>
                             handleResetParameter(param.name, param.type)
                           }
-                          style={{ fontSize: '10px', padding: '2px 5px' }}
+                          style={buttonStyle}
                         >
                           Reset
                         </button>
@@ -180,7 +199,7 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                         }
                         required={param.required}
                         placeholder={param.required ? 'Required' : 'Optional'}
-                        style={{ width: '100px' }}
+                        style={{ ...inputStyle, width: '100px' }}
                         onChange={(e) =>
                           handleParameterChange(
                             param.name,
@@ -193,7 +212,7 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                       <div style={{ display: 'flex', gap: '5px' }}>
                         <button
                           onClick={() => handleUpdateParameter(param.name)}
-                          style={{ fontSize: '10px', padding: '2px 5px' }}
+                          style={buttonStyle}
                         >
                           Update
                         </button>
@@ -201,7 +220,7 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                           onClick={() =>
                             handleResetParameter(param.name, param.type)
                           }
-                          style={{ fontSize: '10px', padding: '2px 5px' }}
+                          style={buttonStyle}
                         >
                           Reset
                         </button>
@@ -217,7 +236,7 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                       }
                       required={param.required}
                       placeholder={param.required ? 'Required' : 'Optional'}
-                      style={{ width: '100px' }}
+                      style={{ ...inputStyle, width: '100px' }}
                       onChange={(e) =>
                         handleParameterChange(param.name, e.target.value)
                       }
@@ -226,7 +245,7 @@ export const ParameterViewer = ({ selectedNode, height }) => {
                 </div>
                 {index < (nodeConfig?.parameters?.length || 0) - 1 && (
                   <hr
-                    style={{ margin: '8px 0', borderTop: '1px solid #ddd' }}
+                    style={{ margin: '4px 0', borderTop: '1px solid #454545' }}
                   />
                 )}
               </div>
@@ -237,23 +256,23 @@ export const ParameterViewer = ({ selectedNode, height }) => {
           <label>Layer type:</label>
           <span>{nodeConfig?.feature || 'Unknown'}</span>
         </div>
-        <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
+        <hr style={{ margin: '4px 0', borderTop: '1px solid #454545' }} />
 
         <div className="parameter-item">
           <label>Library:</label>
           <span>{nodeConfig?.library || 'Unknown'}</span>
         </div>
-        <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
+        <hr style={{ margin: '4px 0', borderTop: '1px solid #454545' }} />
 
         <div className="parameter-item">
           <label>Code ID:</label>
           <span>{nodeConfig?.codeId || 'Unknown'}</span>
         </div>
-        <hr style={{ margin: '8px 0', borderTop: '1px solid #ddd' }} />
+        <hr style={{ margin: '4px 0', borderTop: '1px solid #454545' }} />
 
         <div className="parameter-item">
           <label>Generated Code:</label>
-          <span style={{ fontSize: '11px', color: '#666' }}>
+          <span style={{ fontSize: '11px', color: '#888' }}>
             {nodeConfig?.code || 'No code available'}
           </span>
         </div>
