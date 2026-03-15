@@ -13,88 +13,178 @@ from io import BytesIO
 import torch.onnx
 
 
-# Load and preprocess data
-file_path = r'/Users/jaiminchauhan/Downloads/titanic_processed_full_dataset.csv'
-file_extension = os.path.splitext(file_path)[1].lower()
+# Load and preprocess image data
+import torchvision.transforms as transforms
+from torchvision.datasets import ImageFolder
+from PIL import Image
+import os
 
-if file_extension == '.csv':
-    data = pd.read_csv(file_path)
-elif file_extension in ['.xlsx', '.xls']:
-    data = pd.read_excel(file_path)
-else:
-    raise ValueError("Unsupported file format")
+folder_path = r'/Users/jaiminchauhan/Downloads/Rice_Image_Dataset'
+num_classes = 2
+total_images = 30000
+selected_classes = ["Arborio","Basmati"]
+train_split = 80 * 0.01
+test_split = 10 * 0.01
 
 # Print dataset metadata
-print("Dataset Info:")
+print("Image Dataset Info:")
 print("-" * 50)
-print(f"Total samples: {len(data)}")
-print(f"Features: {data.columns.tolist()}")
-print(f"Data types:\n{data.dtypes}")
-print("\nSample data:\n", data.head())
-print("\nBasic statistics:\n", data.describe())
-print("-" * 50)
+print(f"Dataset folder: {folder_path}")
+print(f"Number of classes: {num_classes}")
+print(f"Total images: {total_images}")
+print(f"Selected classes: {selected_classes}")
+print(f"Train split: {train_split}")
+print(f"Test split: {test_split}")
 
-# Prepare features and labels
-feature_columns = ["Pclass","Sex","Age","SibSp","Parch","Fare","Embarked_C","Embarked_Q","Embarked_S"]
-target_column = 'Survived'
+# Define image transformations
+transform_train = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.RandomHorizontalFlip(p=0.5),
+    transforms.RandomRotation(10),
+    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+])
 
-X = data[feature_columns]
-y = data[target_column]
+transform_test = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+])
 
-print("\nSelected Features:", feature_columns)
-print("Target Variable:", target_column)
+# Custom dataset class to filter selected classes
+class FilteredImageFolder(ImageFolder):
+    def __init__(self, root, transform=None, selected_classes=None):
+        super().__init__(root, transform)
+        if selected_classes:
+            # Filter samples to include only selected classes
+            self.selected_class_indices = [self.class_to_idx[cls] for cls in selected_classes if cls in self.class_to_idx]
+            self.samples = [(path, target) for path, target in self.samples if target in self.selected_class_indices]
+            self.targets = [target for target in self.targets if target in self.selected_class_indices]
+            
+            # Update class mappings
+            self.classes = selected_classes
+            self.class_to_idx = {cls: idx for idx, cls in enumerate(selected_classes)}
+            
+            # Remap target indices to be sequential (0, 1, 2, ...)
+            old_to_new_idx = {old_idx: new_idx for new_idx, old_idx in enumerate(self.selected_class_indices)}
+            self.samples = [(path, old_to_new_idx[target]) for path, target in self.samples]
+            self.targets = [old_to_new_idx[target] for target in self.targets]
 
-# Split the data
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, 
-    test_size=10, 
-    random_state=42
+# Load the full dataset with selected classes only
+full_dataset = FilteredImageFolder(
+    root=folder_path, 
+    transform=transform_train,
+    selected_classes=selected_classes if selected_classes else None
 )
 
-# Convert to PyTorch tensors
-X_train_tensor = torch.FloatTensor(X_train.values)
+# Print class information
+print("\nClass Information:")
+print("-" * 50)
+print(f"Classes found: {full_dataset.classes}")
+print(f"Class to index mapping: {full_dataset.class_to_idx}")
+print(f"Number of samples per class:")
 
-# Determine y tensor type based on data type
-if y_train.dtype == 'int64' or y_train.dtype == 'int32':
-    y_train_tensor = torch.LongTensor(y_train.values)
-    y_test_tensor = torch.LongTensor(y_test.values)
-    print("Target variable is integer (classification task)")
+# Count samples per class
+class_counts = {}
+for _, target in full_dataset.samples:
+    class_name = full_dataset.classes[target]
+    class_counts[class_name] = class_counts.get(class_name, 0) + 1
+
+for class_name, count in class_counts.items():
+    print(f"  {class_name}: {count} samples")
+
+# Calculate dataset split sizes
+dataset_size = len(full_dataset)
+if dataset_size == 0:
+    raise ValueError(
+        f"No images were found in '{folder_path}' for classes {selected_classes}. "
+        "Check the dataset path and selected class names."
+    )
+
+if not 0 < train_split < 1:
+    raise ValueError(f"train_split must be between 0 and 1, got {train_split}")
+if not 0 <= test_split < 1:
+    raise ValueError(f"test_split must be between 0 and 1, got {test_split}")
+if train_split + test_split > 1:
+    raise ValueError(
+        f"train_split ({train_split}) and test_split ({test_split}) exceed 100% of the dataset"
+    )
+
+train_size = int(round(train_split * dataset_size))
+if dataset_size > 1:
+    train_size = min(max(train_size, 1), dataset_size - 1)
 else:
-    y_train_tensor = torch.FloatTensor(y_train.values)
-    y_test_tensor = torch.FloatTensor(y_test.values)
-    print("Target variable is float (regression task)")
+    train_size = dataset_size
+test_size = dataset_size - train_size
 
-X_test_tensor = torch.FloatTensor(X_test.values)
+print(f"\nDataset Split:")
+print("-" * 50)
+print(f"Total dataset size: {dataset_size}")
+print(f"Training size: {train_size}")
+print(f"Testing size: {test_size}")
 
-# Convert test tensors to NumPy (ONNX Runtime expects NumPy)
-X_test_np = X_test_tensor.cpu().numpy().astype(np.float32)
-y_test_np = y_test_tensor.cpu().numpy().astype(np.float32)
+# Split the dataset
+train_dataset, test_dataset = torch.utils.data.random_split(
+    full_dataset, 
+    [train_size, test_size],
+    generator=torch.Generator().manual_seed(42)
+)
 
-# Save to JSON
-import json
-with open("/Users/jaiminchauhan/Projects/Git/ModelForge/src/__tests__/test_dataset.json", "w") as f:
-    json.dump({
-        "X_test": X_test_np.tolist(),
-        "y_test": y_test_np.tolist()
-    }, f)
+# Create test dataset with different transforms
+test_dataset_with_transform = FilteredImageFolder(
+    root=folder_path, 
+    transform=transform_test,
+    selected_classes=selected_classes if selected_classes else None
+)
 
-# Create data loaders
-batch_size = 1
-train_dataset = TensorDataset(X_train_tensor, y_train_tensor)
-test_dataset = TensorDataset(X_test_tensor, y_test_tensor)
+# Apply the same split to test dataset
+_, test_dataset = torch.utils.data.random_split(
+    test_dataset_with_transform, 
+    [train_size, test_size],
+    generator=torch.Generator().manual_seed(42)
+)
 
-train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=batch_size)
+# Create data loaders with num_workers=0 to avoid multiprocessing issues
+batch_size = 32
+train_loader = DataLoader(
+    train_dataset, 
+    batch_size=batch_size, 
+    shuffle=True,
+    num_workers=0,  # Set to 0 to avoid multiprocessing issues
+    pin_memory=False
+)
+
+test_loader = DataLoader(
+    test_dataset, 
+    batch_size=batch_size, 
+    shuffle=False,
+    num_workers=0,  # Set to 0 to avoid multiprocessing issues
+    pin_memory=False
+)
 
 print("\nData Loading Complete:")
-print(f"Training samples: {len(X_train)}")
-print(f"Testing samples: {len(X_test)}")
-print(f"Feature dimension: {X_train.shape[1]}")
+print("-" * 50)
+print(f"Training batches: {len(train_loader)}")
+print(f"Testing batches: {len(test_loader)}")
+print(f"Batch size: {batch_size}")
+
+if len(train_loader) == 0:
+    raise ValueError("Training loader is empty after splitting the dataset.")
+
+# Get image shape safely
+try:
+    sample_batch = next(iter(train_loader))
+    print(f"Image shape: {sample_batch[0].shape}")
+    print(f"Label shape: {sample_batch[1].shape}")
+except Exception as e:
+    print(f"Could not get sample batch: {e}")
+
 print("-" * 50)
 
 
 # Initialize hyperparameters
-num_epochs = 100
+num_epochs = 2
 learning_rate = 0.001
 
 # Print hyperparameter configuration
@@ -107,18 +197,16 @@ print("-" * 50)
 class MyModel(nn.Module):
     def __init__(self):
         super(MyModel, self).__init__()
-        self.layer1 = nn.Linear(9, 32, )
+        self.layer1 = nn.Conv2d(3, 3, 3, 1, 1)
         self.layer2 = nn.ReLU()
-        self.layer3 = nn.Linear(32, 16, )
-        self.layer4 = nn.ReLU()
-        self.layer5 = nn.Linear(16, 2, )
+        self.layer3 = nn.Flatten(1, -1)
+        self.layer4 = nn.Linear(150528, 2, True)
         
     def forward(self, x):
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
-        x = self.layer5(x)
         return x
     def print_model_info(self):
         """Print model architecture and parameter information"""
@@ -143,7 +231,6 @@ class MyModel(nn.Module):
         print(f"Layer {2} ({self.layer2.__class__.__name__}): {sum(p.numel() for p in self.layer2.parameters()):,} parameters")
         print(f"Layer {3} ({self.layer3.__class__.__name__}): {sum(p.numel() for p in self.layer3.parameters()):,} parameters")
         print(f"Layer {4} ({self.layer4.__class__.__name__}): {sum(p.numel() for p in self.layer4.parameters()):,} parameters")
-        print(f"Layer {5} ({self.layer5.__class__.__name__}): {sum(p.numel() for p in self.layer5.parameters()):,} parameters")
         
         print("-" * 50)
 model = MyModel()
@@ -180,6 +267,7 @@ for epoch in range(num_epochs):
     # Evaluation phase
     model.eval()
     test_loss = 0
+    avg_test_loss = float("nan")
     
     with torch.no_grad():
         all_predictions = []
@@ -190,6 +278,13 @@ for epoch in range(num_epochs):
             all_predictions.append(output)
             all_targets.append(target)
     
+    if len(test_loader) == 0:
+        test_losses.append(avg_test_loss)
+        print(f"Epoch {epoch+1}/{num_epochs}, "
+              f"Train Loss: {avg_train_loss:.4f}, "
+              "Test Loss: N/A (empty test split)")
+        continue
+
     avg_test_loss = test_loss / len(test_loader)
     test_losses.append(avg_test_loss)
     

@@ -103,8 +103,8 @@ folder_path = r'<%= folder_path %>'
 num_classes = <%= num_classes %>
 total_images = <%= total_images %>
 selected_classes = <%- JSON.stringify(selected_classes) %>
-train_split = <%= train_split %>
-test_split = <%= test_split %>
+train_split = <%= train_split %> * 0.01
+test_split = <%= test_split %> * 0.01
 
 # Print dataset metadata
 print("Image Dataset Info:")
@@ -176,7 +176,26 @@ for class_name, count in class_counts.items():
 
 # Calculate dataset split sizes
 dataset_size = len(full_dataset)
-train_size = int(train_split * dataset_size)
+if dataset_size == 0:
+    raise ValueError(
+        f"No images were found in '{folder_path}' for classes {selected_classes}. "
+        "Check the dataset path and selected class names."
+    )
+
+if not 0 < train_split < 1:
+    raise ValueError(f"train_split must be between 0 and 1, got {train_split}")
+if not 0 <= test_split < 1:
+    raise ValueError(f"test_split must be between 0 and 1, got {test_split}")
+if train_split + test_split > 1:
+    raise ValueError(
+        f"train_split ({train_split}) and test_split ({test_split}) exceed 100% of the dataset"
+    )
+
+train_size = int(round(train_split * dataset_size))
+if dataset_size > 1:
+    train_size = min(max(train_size, 1), dataset_size - 1)
+else:
+    train_size = dataset_size
 test_size = dataset_size - train_size
 
 print(f"\\nDataset Split:")
@@ -229,6 +248,9 @@ print("-" * 50)
 print(f"Training batches: {len(train_loader)}")
 print(f"Testing batches: {len(test_loader)}")
 print(f"Batch size: {batch_size}")
+
+if len(train_loader) == 0:
+    raise ValueError("Training loader is empty after splitting the dataset.")
 
 # Get image shape safely
 try:
@@ -316,6 +338,7 @@ for epoch in range(num_epochs):
     # Evaluation phase
     model.eval()
     test_loss = 0
+    avg_test_loss = float("nan")
     
     with torch.no_grad():
         all_predictions = []
@@ -326,6 +349,13 @@ for epoch in range(num_epochs):
             all_predictions.append(output)
             all_targets.append(target)
     
+    if len(test_loader) == 0:
+        test_losses.append(avg_test_loss)
+        print(f"Epoch {epoch+1}/{num_epochs}, "
+              f"Train Loss: {avg_train_loss:.4f}, "
+              "Test Loss: N/A (empty test split)")
+        continue
+
     avg_test_loss = test_loss / len(test_loader)
     test_losses.append(avg_test_loss)
     
