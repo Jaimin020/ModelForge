@@ -58,9 +58,9 @@ let mainWindow: BrowserWindow | null = null;
 const resolvedAppVersion = resolveAppVersion();
 let startupState: StartupUiState = {
   isVisible: true,
-  status: 'running',
+  status: 'idle',
   message: 'Preparing Python environment...',
-  logs: ['Starting ModelForge setup.'],
+  logs: [],
   appName: app.getName(),
   version: resolvedAppVersion,
 };
@@ -233,23 +233,20 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(async () => {
-    updateStartupState({
-      isVisible: true,
-      status: 'running',
-      message: 'Preparing Python environment...',
-      logs: startupState.logs.length
-        ? startupState.logs
-        : ['Starting ModelForge setup.'],
-      appName: app.getName(),
-      version: resolvedAppVersion,
-      error: undefined,
-    });
-
     await createWindow();
 
     try {
       const startupSetup = PythonStartupSetup.getInstance();
       startupSetup.setLogger(appendStartupLog);
+      updateStartupState({
+        isVisible: true,
+        status: 'running',
+        message: 'Preparing Python environment...',
+        logs: ['Starting ModelForge setup.'],
+        appName: app.getName(),
+        version: resolvedAppVersion,
+        error: undefined,
+      });
       await startupSetup.runStartupSetup();
       updateStartupState({
         isVisible: false,
@@ -266,7 +263,7 @@ app
         isVisible: true,
         status: 'error',
         error:
-          error?.message ||
+        error?.message ||
           'ModelForge could not prepare the Python environment on startup.',
         message: 'Python setup failed.',
       });
