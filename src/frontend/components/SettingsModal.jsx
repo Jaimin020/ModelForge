@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import SettingsManager from '../utils/SettingsManager';
-import PythonPathDetector from '../utils/PythonPathDetector';
+import PythonPathDetector from '../../setup/PythonPathDetector';
 
 export function SettingsModal({ isOpen, onClose }) {
   const [settings, setSettings] = useState({

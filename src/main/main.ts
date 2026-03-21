@@ -27,6 +27,8 @@ import { paths } from './config';
 import { setupIpcHandlers } from '../backend/ipc/ipcHandler';
 import * as XLSX from 'xlsx';
 import { createNewWindow } from './windowManager';
+import PythonStartupSetup from './PythonStartupSetup';
+import { selectFilePath, selectSaveFilePath } from './dialogHandlers';
 
 class AppUpdater {
   constructor() {
@@ -42,12 +44,59 @@ const pythonExec = {
   linux: path.join(__dirname, 'installed-python', 'bin/python3'),
 };
 
+type StartupUiState = {
+  isVisible: boolean;
+  status: 'idle' | 'running' | 'success' | 'error';
+  message: string;
+  logs: string[];
+  appName: string;
+  version: string;
+  error?: string;
+};
+
 let mainWindow: BrowserWindow | null = null;
+let startupState: StartupUiState = {
+  isVisible: true,
+  status: 'idle',
+  message: 'Preparing Python environment...',
+  logs: [],
+  appName: app.getName(),
+  version: app.getVersion(),
+};
+
+function updateStartupState(partial: Partial<StartupUiState>) {
+  startupState = {
+    ...startupState,
+    ...partial,
+  };
+
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('startup-state-updated', startupState);
+  }
+}
+
+function appendStartupLog(message: string) {
+  const nextLogs = [...startupState.logs, message].slice(-200);
+  updateStartupState({
+    logs: nextLogs,
+    message,
+  });
+}
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
+});
+
+ipcMain.handle('get-startup-state', async () => startupState);
+ipcMain.handle('dismiss-startup-error', async () => {
+  const startupSetup = PythonStartupSetup.getInstance();
+  await startupSetup.cleanupFailedVenvOnDemand();
+  updateStartupState({
+    isVisible: false,
+  });
+  return true;
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -149,8 +198,42 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(async () => {
-    // Install Python first
-    createWindow();
+    await createWindow();
+
+    try {
+      const startupSetup = PythonStartupSetup.getInstance();
+      startupSetup.setLogger(appendStartupLog);
+      updateStartupState({
+        isVisible: true,
+        status: 'running',
+        message: 'Preparing Python environment...',
+        logs: ['Starting ModelForge setup.'],
+        appName: app.getName(),
+        version: app.getVersion(),
+        error: undefined,
+      });
+      await startupSetup.runStartupSetup();
+      updateStartupState({
+        isVisible: false,
+        status: 'success',
+        message: 'Startup setup completed.',
+      });
+    } catch (error: any) {
+      log.error('Python startup setup failed:', error);
+      appendStartupLog(
+        error?.message ||
+          'ModelForge could not prepare the Python environment on startup.',
+      );
+      updateStartupState({
+        isVisible: true,
+        status: 'error',
+        error:
+        error?.message ||
+          'ModelForge could not prepare the Python environment on startup.',
+        message: 'Python setup failed.',
+      });
+    }
+
     app.on('activate', () => {
       // Disable browser shortcuts
       // disableBrowserShortcuts();
@@ -246,35 +329,16 @@ ipcMain.handle('writeFile', async (event, filePath, data) => {
 });
 
 ipcMain.handle('select-file', async (event, fileFomrate, isFolderType) => {
-  var result = null;
-  if (isFolderType) {
-    result = await dialog.showOpenDialog(mainWindow!, {
-      properties: ['openDirectory'],
-    });
-  } else {
-    result = await dialog.showOpenDialog(mainWindow!, {
-      properties: ['openFile'],
-      filters: [fileFomrate],
-    });
-  }
-
-  return result.canceled ? null : result.filePaths[0];
+  return selectFilePath(mainWindow, fileFomrate, isFolderType);
 });
 
 ipcMain.handle(
   'save-file-dialog',
   async (_event, { defaultName, extensions }) => {
-    const { canceled, filePath } = await dialog.showSaveDialog({
-      defaultPath: defaultName,
-      filters: [
-        {
-          name: 'Files',
-          extensions: extensions,
-        },
-      ],
+    return selectSaveFilePath({
+      defaultName,
+      extensions,
     });
-
-    return canceled ? null : filePath;
   },
 );
 

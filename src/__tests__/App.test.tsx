@@ -21,6 +21,21 @@ Object.defineProperty(window, 'windowMngr', {
   writable: true
 });
 
+Object.defineProperty(window, 'api', {
+  value: {
+    onStartupUpdate: jest.fn(),
+    getStartupState: jest.fn().mockResolvedValue({
+      isVisible: false,
+      status: 'success',
+      message: 'Startup setup completed.',
+      logs: [],
+      appName: 'ModelForge',
+      version: '1.0.0'
+    })
+  },
+  writable: true
+});
+
 // Mock ResizeObserver with proper TypeScript typing
 global.ResizeObserver = class ResizeObserver {
   private callback: ResizeObserverCallback;

@@ -8,6 +8,14 @@ const pythonHandler = {
   detectPythonPaths: () => ipcRenderer.invoke('detect-python-paths'),
   validatePythonPath: (pythonPath: string) =>
     ipcRenderer.invoke('validate-python-path', pythonPath),
+  getStartupState: () => ipcRenderer.invoke('get-startup-state'),
+  dismissStartupError: () => ipcRenderer.invoke('dismiss-startup-error'),
+  onStartupUpdate: (callback: (state: any) => void) => {
+    ipcRenderer.removeAllListeners('startup-state-updated');
+    ipcRenderer.on('startup-state-updated', (_event, state) => {
+      callback(state);
+    });
+  },
 };
 
 const dialogHandler = {
