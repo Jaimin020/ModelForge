@@ -1,9 +1,13 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
-const normalizePath = (p) => path.resolve(p).replace(/\\/g, '/');
+const normalizePath = (targetPath: string) =>
+  path.resolve(targetPath).replace(/\\/g, '/');
 
-function generateEnvPathFile(baseDir = __dirname) {
+export function generateEnvPathFile(
+  baseDir: string,
+  pythonPath: string = process.env.PYTHON_PATH || '',
+): string {
   const basePath = normalizePath(baseDir);
   const applicationDirPath = normalizePath(path.join(baseDir, 'application'));
   const venvDirPath = normalizePath(
@@ -14,9 +18,7 @@ function generateEnvPathFile(baseDir = __dirname) {
       ? path.join(venvDirPath, 'Scripts', 'python.exe')
       : path.join(venvDirPath, 'bin', 'python'),
   );
-  const systemPythonPath = process.env.PYTHON_PATH
-    ? normalizePath(process.env.PYTHON_PATH)
-    : '';
+  const normalizedPythonPath = pythonPath ? normalizePath(pythonPath) : '';
   const frontendDir = path.resolve(baseDir, 'src/');
   const envPathFile = path.join(frontendDir, 'envPath.js');
 
@@ -37,7 +39,7 @@ export const TEST_PY_FILE = TEST_DIR + "/demo.py";
 export const TEST_MODEL_WEIGHT = ${JSON.stringify(testModelWeightPath)};
 export const PYTORCH_VENV_PATH = ${JSON.stringify(venvDirPath)};
 export const VENV_PYTHON_PATH = ${JSON.stringify(venvPythonPath)};
-export const PYTHON_PATH = ${JSON.stringify(systemPythonPath)};
+export const PYTHON_PATH = ${JSON.stringify(normalizedPythonPath)};
 `;
 
   if (!fs.existsSync(frontendDir)) {
@@ -45,14 +47,5 @@ export const PYTHON_PATH = ${JSON.stringify(systemPythonPath)};
   }
 
   fs.writeFileSync(envPathFile, fileContent, 'utf8');
-  console.log(`✅ envPath.js written to ${envPathFile}`);
   return envPathFile;
-}
-
-module.exports = {
-  generateEnvPathFile,
-};
-
-if (require.main === module) {
-  generateEnvPathFile();
 }

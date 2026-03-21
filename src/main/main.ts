@@ -55,13 +55,14 @@ type StartupUiState = {
 };
 
 let mainWindow: BrowserWindow | null = null;
+const resolvedAppVersion = resolveAppVersion();
 let startupState: StartupUiState = {
   isVisible: true,
   status: 'idle',
   message: 'Preparing Python environment...',
   logs: [],
   appName: app.getName(),
-  version: app.getVersion(),
+  version: resolvedAppVersion,
 };
 
 function updateStartupState(partial: Partial<StartupUiState>) {
@@ -81,6 +82,40 @@ function appendStartupLog(message: string) {
     logs: nextLogs,
     message,
   });
+}
+
+function resolveAppVersion(): string {
+  const appVersion = app.getVersion();
+  if (appVersion && appVersion !== '0.0' && appVersion !== '0.0.0') {
+    return appVersion;
+  }
+
+  const candidatePaths = [
+    path.join(app.getAppPath(), 'package.json'),
+    path.join(process.cwd(), 'release/app/package.json'),
+    path.join(process.cwd(), 'package.json'),
+  ];
+
+  for (const candidatePath of candidatePaths) {
+    try {
+      if (!fs.existsSync(candidatePath)) {
+        continue;
+      }
+
+      const packageJson = JSON.parse(fs.readFileSync(candidatePath, 'utf8'));
+      if (
+        packageJson.version &&
+        packageJson.version !== '0.0' &&
+        packageJson.version !== '0.0.0'
+      ) {
+        return packageJson.version;
+      }
+    } catch (error) {
+      continue;
+    }
+  }
+
+  return appVersion || '0.0.0';
 }
 
 ipcMain.on('ipc-example', async (event, arg) => {
@@ -209,7 +244,7 @@ app
         message: 'Preparing Python environment...',
         logs: ['Starting ModelForge setup.'],
         appName: app.getName(),
-        version: app.getVersion(),
+        version: resolvedAppVersion,
         error: undefined,
       });
       await startupSetup.runStartupSetup();

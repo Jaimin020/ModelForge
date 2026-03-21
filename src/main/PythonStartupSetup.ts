@@ -5,6 +5,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { paths } from './config';
+import { generateEnvPathFile } from './envPathGenerator';
 
 const execFileAsync = promisify(execFile);
 
@@ -405,18 +406,11 @@ export class PythonStartupSetup {
   }
 
   private async executeEnvSetupScript(): Promise<void> {
-    const scriptPath = path.join(app.getAppPath(), 'setupEnvPath.js');
-
-    if (!fs.existsSync(scriptPath)) {
-      this.log('setupEnvPath.js not found. Skipping envPath generation.');
-      return;
-    }
-
-    await execFileAsync(process.execPath, [scriptPath], {
-      cwd: app.getAppPath(),
-      env: process.env,
-      timeout: 30000,
-    });
+    const envPathFile = generateEnvPathFile(
+      app.getAppPath(),
+      process.env.PYTHON_PATH,
+    );
+    this.log(`envPath.js written to ${envPathFile}`);
   }
 
   private get venvRoot(): string {
