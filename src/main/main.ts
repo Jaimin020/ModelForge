@@ -84,6 +84,10 @@ function appendStartupLog(message: string) {
   });
 }
 
+function isValidSemver(version: string): boolean {
+  return /^\d+\.\d+\.\d+([-.][0-9A-Za-z.]+)?$/.test(version);
+}
+
 function resolveAppVersion(): string {
   const appVersion = app.getVersion();
   if (appVersion && appVersion !== '0.0' && appVersion !== '0.0.0') {
@@ -213,9 +217,14 @@ const createWindow = async () => {
     return { action: 'deny' };
   });
 
-  // Remove this if your app does not use auto updates
-  // eslint-disable-next-line
-  new AppUpdater();
+  if (app.isPackaged && isValidSemver(app.getVersion())) {
+    // eslint-disable-next-line
+    new AppUpdater();
+  } else {
+    log.warn(
+      `Skipping auto updater. Packaged: ${app.isPackaged}, version: ${app.getVersion()}`,
+    );
+  }
 };
 
 /**
