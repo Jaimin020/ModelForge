@@ -406,6 +406,11 @@ export class PythonStartupSetup {
   }
 
   private async executeEnvSetupScript(): Promise<void> {
+    if (app.isPackaged) {
+      this.log('Skipping envPath.js generation in packaged app.');
+      return;
+    }
+
     const envPathFile = generateEnvPathFile(
       app.getAppPath(),
       process.env.PYTHON_PATH,
@@ -414,7 +419,9 @@ export class PythonStartupSetup {
   }
 
   private get venvRoot(): string {
-    return path.join(app.getAppPath(), 'application');
+    return app.isPackaged
+      ? path.join(app.getPath('userData'), 'application')
+      : path.join(app.getAppPath(), 'application');
   }
 
   private async removeVenvDirectory(venvPath: string): Promise<void> {
