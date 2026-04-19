@@ -53,7 +53,12 @@ const DesignApp = () => {
 
   // Marquee Drag Selection State
   const [isSelecting, setIsSelecting] = useState(false);
-  const [selectionBox, setSelectionBox] = useState({ startX: 0, startY: 0, endX: 0, endY: 0 });
+  const [selectionBox, setSelectionBox] = useState({
+    startX: 0,
+    startY: 0,
+    endX: 0,
+    endY: 0,
+  });
   const isSelectingRef = useRef(false);
   const selectionBoxRef = useRef({ startX: 0, startY: 0, endX: 0, endY: 0 });
 
@@ -83,7 +88,7 @@ const DesignApp = () => {
     return new GraphMemento(
       nodes.current.get(),
       edges.current.get(),
-      nodeManager.getAllNodes()
+      nodeManager.getAllNodes(),
     );
   };
 
@@ -98,7 +103,7 @@ const DesignApp = () => {
     edges.current.clear();
     nodeManager.clearAllNodes();
 
-    snapshot.modelNodes.forEach(n => {
+    snapshot.modelNodes.forEach((n) => {
       const { id, ...data } = n;
       nodeManager.createNode(id, data);
     });
@@ -182,26 +187,37 @@ const DesignApp = () => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'c') {
         if (networkInstance.current) {
           const selection = networkInstance.current.getSelection();
-          const positions = networkInstance.current.getPositions(selection.nodes);
+          const positions = networkInstance.current.getPositions(
+            selection.nodes,
+          );
           copyPasteCommand.current.copy(
             selection.nodes,
             selection.edges,
             nodes.current,
             edges.current,
-            positions
+            positions,
           );
         }
       }
       if ((e.metaKey || e.ctrlKey) && (e.key === 'v' || e.key === 'p')) {
-        if (copyPasteCommand.current.hasMemento() && networkRef.current && networkInstance.current) {
+        if (
+          copyPasteCommand.current.hasMemento() &&
+          networkRef.current &&
+          networkInstance.current
+        ) {
           e.preventDefault();
           captureState();
           const rect = networkRef.current.getBoundingClientRect();
           const x = mousePosRef.current.x - rect.left;
           const y = mousePosRef.current.y - rect.top;
           const canvasPosition = networkInstance.current.DOMtoCanvas({ x, y });
-          
-          copyPasteCommand.current.paste(nodes.current, edges.current, canvasPosition.x, canvasPosition.y);
+
+          copyPasteCommand.current.paste(
+            nodes.current,
+            edges.current,
+            canvasPosition.x,
+            canvasPosition.y,
+          );
         }
       }
       if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
@@ -239,14 +255,16 @@ const DesignApp = () => {
     // Capture drag state to undo drags or run selection box logic
     networkInstance.current.on('dragStart', (params) => {
       if (params.event.srcEvent.shiftKey) {
-        networkInstance.current.setOptions({ interaction: { dragView: false } });
+        networkInstance.current.setOptions({
+          interaction: { dragView: false },
+        });
         isSelectingRef.current = true;
         setIsSelecting(true);
         const startState = {
           startX: params.event.srcEvent.clientX,
           startY: params.event.srcEvent.clientY,
           endX: params.event.srcEvent.clientX,
-          endY: params.event.srcEvent.clientY
+          endY: params.event.srcEvent.clientY,
         };
         selectionBoxRef.current = startState;
         setSelectionBox(startState);
@@ -259,7 +277,7 @@ const DesignApp = () => {
       if (isSelectingRef.current) {
         const newEnd = {
           endX: params.event.srcEvent.clientX,
-          endY: params.event.srcEvent.clientY
+          endY: params.event.srcEvent.clientY,
         };
         selectionBoxRef.current = { ...selectionBoxRef.current, ...newEnd };
         setSelectionBox(selectionBoxRef.current);
@@ -274,28 +292,38 @@ const DesignApp = () => {
 
         const rect = networkRef.current.getBoundingClientRect();
         const box = selectionBoxRef.current;
-        
+
         const domStartX = Math.min(box.startX, box.endX) - rect.left;
         const domStartY = Math.min(box.startY, box.endY) - rect.top;
         const domEndX = Math.max(box.startX, box.endX) - rect.left;
         const domEndY = Math.max(box.startY, box.endY) - rect.top;
 
-        const canvasStart = networkInstance.current.DOMtoCanvas({ x: domStartX, y: domStartY });
-        const canvasEnd = networkInstance.current.DOMtoCanvas({ x: domEndX, y: domEndY });
+        const canvasStart = networkInstance.current.DOMtoCanvas({
+          x: domStartX,
+          y: domStartY,
+        });
+        const canvasEnd = networkInstance.current.DOMtoCanvas({
+          x: domEndX,
+          y: domEndY,
+        });
 
         const selectedIds = [];
         const allNodes = nodes.current.get();
         const positions = networkInstance.current.getPositions();
 
-        allNodes.forEach(node => {
+        allNodes.forEach((node) => {
           const pos = positions[node.id];
-          if (pos && 
-              pos.x >= canvasStart.x && pos.x <= canvasEnd.x &&
-              pos.y >= canvasStart.y && pos.y <= canvasEnd.y) {
-             selectedIds.push(node.id);
+          if (
+            pos &&
+            pos.x >= canvasStart.x &&
+            pos.x <= canvasEnd.x &&
+            pos.y >= canvasStart.y &&
+            pos.y <= canvasEnd.y
+          ) {
+            selectedIds.push(node.id);
           }
         });
-        
+
         networkInstance.current.selectNodes(selectedIds);
       }
     });
@@ -514,7 +542,7 @@ const DesignApp = () => {
               left: Math.min(selectionBox.startX, selectionBox.endX),
               top: Math.min(selectionBox.startY, selectionBox.endY),
               width: Math.abs(selectionBox.endX - selectionBox.startX),
-              height: Math.abs(selectionBox.endY - selectionBox.startY)
+              height: Math.abs(selectionBox.endY - selectionBox.startY),
             }}
           />
         )}

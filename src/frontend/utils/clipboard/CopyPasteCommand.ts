@@ -10,16 +10,21 @@ export class CopyPasteCommand {
   }
 
   public copy(
-    selectedNodeIds: number[], 
-    selectedEdgeIds: number[], 
-    visNodes: any, 
-    visEdges: any, 
-    positions: Record<number, { x: number, y: number }>
+    selectedNodeIds: number[],
+    selectedEdgeIds: number[],
+    visNodes: any,
+    visEdges: any,
+    positions: Record<number, { x: number; y: number }>,
   ): void {
     if (!selectedNodeIds || selectedNodeIds.length === 0) return;
 
-    let sumX = 0, sumY = 0;
-    const validNodes: Array<{ id: number, pos: { x: number, y: number }, state: any }> = [];
+    let sumX = 0,
+      sumY = 0;
+    const validNodes: Array<{
+      id: number;
+      pos: { x: number; y: number };
+      state: any;
+    }> = [];
 
     for (const id of selectedNodeIds) {
       const pos = positions[id];
@@ -38,10 +43,10 @@ export class CopyPasteCommand {
     const centerX = sumX / validNodes.length;
     const centerY = sumY / validNodes.length;
 
-    const copiedNodes: CopiedNode[] = validNodes.map(n => ({
+    const copiedNodes: CopiedNode[] = validNodes.map((n) => ({
       state: n.state,
       relativeX: n.pos.x - centerX,
-      relativeY: n.pos.y - centerY
+      relativeY: n.pos.y - centerY,
     }));
 
     const copiedEdges: CopiedEdge[] = [];
@@ -50,24 +55,35 @@ export class CopyPasteCommand {
     for (const edgeId of selectedEdgeIds) {
       const edgeData = visEdges.get(edgeId);
       // Only copy edge if BOTH endpoints are within the copied selection group.
-      if (edgeData && selectedNodesSet.has(edgeData.from) && selectedNodesSet.has(edgeData.to)) {
+      if (
+        edgeData &&
+        selectedNodesSet.has(edgeData.from) &&
+        selectedNodesSet.has(edgeData.to)
+      ) {
         copiedEdges.push({
           fromOldId: edgeData.from,
           toOldId: edgeData.to,
-          data: edgeData
+          data: edgeData,
         });
       }
     }
 
     this.memento = new NodeMemento(copiedNodes, copiedEdges);
-    console.log(`Copied ${copiedNodes.length} nodes and ${copiedEdges.length} edges.`);
+    console.log(
+      `Copied ${copiedNodes.length} nodes and ${copiedEdges.length} edges.`,
+    );
   }
 
   public hasMemento(): boolean {
     return this.memento !== null;
   }
 
-  public paste(visNodes: any, visEdges: any, canvasX: number, canvasY: number): void {
+  public paste(
+    visNodes: any,
+    visEdges: any,
+    canvasX: number,
+    canvasY: number,
+  ): void {
     if (!this.memento) {
       console.warn('Clipboard empty, nothing to paste');
       return;
@@ -75,7 +91,7 @@ export class CopyPasteCommand {
 
     const idMapping = new Map<number, number>();
 
-    this.memento.copiedNodes.forEach(copiedNode => {
+    this.memento.copiedNodes.forEach((copiedNode) => {
       const newId = Math.random() * 1e7;
       const oldId = copiedNode.state.id;
       idMapping.set(oldId, newId);
@@ -100,12 +116,12 @@ export class CopyPasteCommand {
       });
     });
 
-    this.memento.copiedEdges.forEach(copiedEdge => {
+    this.memento.copiedEdges.forEach((copiedEdge) => {
       const newFrom = idMapping.get(copiedEdge.fromOldId);
       const newTo = idMapping.get(copiedEdge.toOldId);
 
       if (newFrom && newTo) {
-         // Create duplicate edge but substitute new mapped IDs
+        // Create duplicate edge but substitute new mapped IDs
         visEdges.add({
           ...copiedEdge.data,
           id: Math.random() * 1e7,
@@ -115,6 +131,8 @@ export class CopyPasteCommand {
       }
     });
 
-    console.log(`Pasted ${this.memento.copiedNodes.length} nodes and ${this.memento.copiedEdges.length} edges.`);
+    console.log(
+      `Pasted ${this.memento.copiedNodes.length} nodes and ${this.memento.copiedEdges.length} edges.`,
+    );
   }
 }
