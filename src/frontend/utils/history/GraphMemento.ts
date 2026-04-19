@@ -1,4 +1,4 @@
-import { ModelNode } from '../../../interface/NodeInterface.js';
+import { ModelNode } from '../../../interface/NodeInterface';
 
 export class GraphMemento {
   public visNodes: any[];

@@ -1,4 +1,4 @@
-import { GraphMemento } from './GraphMemento.js';
+import { GraphMemento } from './GraphMemento';
 
 export class HistoryManager {
   private undoStack: GraphMemento[] = [];

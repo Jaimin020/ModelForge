@@ -1,14 +1,24 @@
-import { ModelNode } from '../../../interface/NodeInterface.js';
+import { ModelNode } from '../../../interface/NodeInterface';
+
+export interface CopiedNode {
+  state: ModelNode;
+  relativeX: number;
+  relativeY: number;
+}
+
+export interface CopiedEdge {
+  fromOldId: number;
+  toOldId: number;
+  data: any;
+}
 
 export class NodeMemento {
-  private state: ModelNode;
+  public copiedNodes: CopiedNode[];
+  public copiedEdges: CopiedEdge[];
 
-  constructor(state: ModelNode) {
-    // Deep copy to prevent mutating the memento reference if the original node is modified later
-    this.state = JSON.parse(JSON.stringify(state));
-  }
-
-  public getState(): ModelNode {
-    return JSON.parse(JSON.stringify(this.state));
+  constructor(nodes: CopiedNode[], edges: CopiedEdge[]) {
+    // Deep copy to prevent mutating the memento reference
+    this.copiedNodes = JSON.parse(JSON.stringify(nodes));
+    this.copiedEdges = JSON.parse(JSON.stringify(edges));
   }
 }
