@@ -11,6 +11,8 @@ export const errors = {
   STOP_TRAINING_BEFORE_SAVE: 'Please stop the training process before saving.',
   LOAD_FAILED_INVALID_MODEL: 'Failed to load model: Invalid model data.',
   ERROR_LOADING_MODEL: (err) => `Error loading model: ${err}`,
+  STOP_TRAINING_BEFORE_CLEAR:
+    'Please stop the training process before clearing the model.',
 };
 
 export const warns = {

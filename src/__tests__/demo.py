@@ -10,7 +10,7 @@ import os
 
 
 # Load and preprocess data
-file_path = r'C:\Users\yashj\Desktop\ModelForgeGit\ModelForge\src\__tests__\train_new.csv'
+file_path = r'/Users/jaiminchauhan/Downloads/complex_dataset_1000_samples.csv'
 file_extension = os.path.splitext(file_path)[1].lower()
 
 if file_extension == '.csv':
@@ -31,8 +31,8 @@ print("\nBasic statistics:\n", data.describe())
 print("-" * 50)
 
 # Prepare features and labels
-feature_columns = ["x"]
-target_column = 'y'
+feature_columns = ["feature_1","feature_2","feature_3","feature_4","feature_5","feature_6"]
+target_column = 'target'
 
 X = data[feature_columns]
 y = data[target_column]
@@ -43,7 +43,7 @@ print("Target Variable:", target_column)
 # Split the data
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, 
-    test_size=80, 
+    test_size=10, 
     random_state=42
 )
 
@@ -54,7 +54,7 @@ X_test_tensor = torch.FloatTensor(X_test.values)
 y_test_tensor = torch.FloatTensor(y_test.values)
 
 # Create data loaders
-batch_size = 32
+batch_size = 1
 train_dataset = TensorDataset(X_train_tensor, y_train_tensor)
 test_dataset = TensorDataset(X_test_tensor, y_test_tensor)
 
@@ -69,7 +69,7 @@ print("-" * 50)
 
 
 # Initialize hyperparameters
-num_epochs = 10
+num_epochs = 20
 learning_rate = 0.001
 
 # Print hyperparameter configuration
@@ -82,7 +82,7 @@ print("-" * 50)
 class MyModel(nn.Module):
     def __init__(self):
         super(MyModel, self).__init__()
-        self.layer1 = nn.Linear(1, 1, )
+        self.layer1 = nn.Linear(6, 1, )
         
     def forward(self, x):
         x = self.layer1(x)
