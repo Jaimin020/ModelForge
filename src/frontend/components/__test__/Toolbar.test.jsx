@@ -276,9 +276,7 @@ describe('Toolbar Component', () => {
     });
 
     it('changes from Training... to Train when isRunning changes to false', () => {
-      const { rerender } = render(
-        <Toolbar {...mockProps} isRunning={true} />,
-      );
+      const { rerender } = render(<Toolbar {...mockProps} isRunning={true} />);
       expect(screen.getByText('Training...')).toBeInTheDocument();
 
       rerender(<Toolbar {...mockProps} isRunning={false} />);
@@ -287,9 +285,7 @@ describe('Toolbar Component', () => {
     });
 
     it('train button becomes enabled when isRunning changes from true to false', () => {
-      const { rerender } = render(
-        <Toolbar {...mockProps} isRunning={true} />,
-      );
+      const { rerender } = render(<Toolbar {...mockProps} isRunning={true} />);
       let trainButton = screen.getByTitle('Train');
       expect(trainButton).toBeDisabled();
 
@@ -384,9 +380,7 @@ describe('Toolbar Component', () => {
     });
 
     it('reflects isRunning state changes immediately', () => {
-      const { rerender } = render(
-        <Toolbar {...mockProps} isRunning={false} />,
-      );
+      const { rerender } = render(<Toolbar {...mockProps} isRunning={false} />);
       let trainButton = screen.getByTitle('Train');
       expect(trainButton).not.toBeDisabled();
 
@@ -396,9 +390,7 @@ describe('Toolbar Component', () => {
     });
 
     it('preserves button functionality after prop updates', () => {
-      const { rerender } = render(
-        <Toolbar {...mockProps} isRunning={true} />,
-      );
+      const { rerender } = render(<Toolbar {...mockProps} isRunning={true} />);
 
       rerender(<Toolbar {...mockProps} isRunning={false} />);
 
@@ -625,13 +617,17 @@ describe('Toolbar Component', () => {
       fireEvent.mouseOver(hyperParamButton);
       expect(hyperParamButton.style.backgroundColor).toBe('rgb(123, 31, 162)'); // #7B1FA2
       expect(hyperParamButton.style.transform).toBe('translateY(-1px)');
-      expect(hyperParamButton.style.boxShadow).toBe('0 2px 4px rgba(0,0,0,0.2)');
+      expect(hyperParamButton.style.boxShadow).toBe(
+        '0 2px 4px rgba(0,0,0,0.2)',
+      );
 
       // Test mouse out
       fireEvent.mouseOut(hyperParamButton);
       expect(hyperParamButton.style.backgroundColor).toBe('rgb(156, 39, 176)'); // #9C27B0
       expect(hyperParamButton.style.transform).toBe('translateY(0)');
-      expect(hyperParamButton.style.boxShadow).toBe('0 1px 2px rgba(0,0,0,0.1)');
+      expect(hyperParamButton.style.boxShadow).toBe(
+        '0 1px 2px rgba(0,0,0,0.1)',
+      );
     });
 
     it('applies hover effects on Clear button', () => {
@@ -659,13 +655,17 @@ describe('Toolbar Component', () => {
       fireEvent.mouseOver(inputConfigButton);
       expect(inputConfigButton.style.backgroundColor).toBe('rgb(69, 160, 73)'); // #45a049
       expect(inputConfigButton.style.transform).toBe('translateY(-1px)');
-      expect(inputConfigButton.style.boxShadow).toBe('0 2px 4px rgba(0,0,0,0.2)');
+      expect(inputConfigButton.style.boxShadow).toBe(
+        '0 2px 4px rgba(0,0,0,0.2)',
+      );
 
       // Test mouse out
       fireEvent.mouseOut(inputConfigButton);
       expect(inputConfigButton.style.backgroundColor).toBe('rgb(76, 175, 80)'); // #4CAF50
       expect(inputConfigButton.style.transform).toBe('translateY(0)');
-      expect(inputConfigButton.style.boxShadow).toBe('0 1px 2px rgba(0,0,0,0.1)');
+      expect(inputConfigButton.style.boxShadow).toBe(
+        '0 1px 2px rgba(0,0,0,0.1)',
+      );
     });
 
     it('applies hover effects on Settings button', () => {
@@ -873,9 +873,7 @@ describe('Toolbar Component', () => {
     });
 
     it('user can stop training after starting', () => {
-      const { rerender } = render(
-        <Toolbar {...mockProps} isRunning={false} />,
-      );
+      const { rerender } = render(<Toolbar {...mockProps} isRunning={false} />);
 
       // Start training
       fireEvent.click(screen.getByTitle('Train'));
@@ -927,9 +925,7 @@ describe('Toolbar Component', () => {
       const propsWithoutIsRunning = { ...mockProps };
       delete propsWithoutIsRunning.isRunning;
 
-      const { container } = render(
-        <Toolbar {...propsWithoutIsRunning} />,
-      );
+      const { container } = render(<Toolbar {...propsWithoutIsRunning} />);
       expect(container).toBeInTheDocument();
     });
 
@@ -981,14 +977,14 @@ describe('Toolbar Component', () => {
     it('disabled train button reflects HTML disabled state', () => {
       render(<Toolbar {...mockProps} isRunning={true} />);
 
-      const trainButton = screen.getByTitle('Train') as HTMLButtonElement;
+      const trainButton = screen.getByTitle('Train');
       expect(trainButton.disabled).toBe(true);
     });
 
     it('enabled train button has disabled as false', () => {
       render(<Toolbar {...mockProps} isRunning={false} />);
 
-      const trainButton = screen.getByTitle('Train') as HTMLButtonElement;
+      const trainButton = screen.getByTitle('Train');
       expect(trainButton.disabled).toBe(false);
     });
   });
