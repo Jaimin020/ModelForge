@@ -24,6 +24,10 @@ import * as editorStrings from '../../utils/strings/editorStrings.js';
 import { separators } from '../../utils/strings/constants.js';
 import { loaderMessages } from '../../utils/strings/loaderStrings.js';
 
+import { CopyPasteCommand } from '../../utils/clipboard/CopyPasteCommand.ts';
+import { HistoryManager } from '../../utils/history/HistoryManager.ts';
+import { GraphMemento } from '../../utils/history/GraphMemento.ts';
+
 import { appendDiagnostic } from '../../utils/DiagnosticViewer/diagnosticUtil.ts';
 // For saving models
 import * as ModelPersistanceHandler from '../../utils/Editor/ModelPersistanceHandler.js';
@@ -45,6 +49,11 @@ const DesignApp = () => {
 
   // Add state for selected node
   const [selectedNode, setSelectedNode] = useState(null);
+  const selectedNodeRef = useRef(null);
+
+  const copyPasteCommand = useRef(new CopyPasteCommand());
+  const mousePosRef = useRef({ x: 0, y: 0 });
+  const historyManagerRef = useRef(new HistoryManager());
 
   const nodeManager = ModelNodeManager.getInstance();
   const graphManager = GraphDataManager.getInstance();
@@ -63,6 +72,35 @@ const DesignApp = () => {
   // FrameWork Info
   const [activeFramework, setActiveFramework] = useState('PyTorch');
 
+  // History / Undo / Redo capabilities
+  const getSnapshot = () => {
+    return new GraphMemento(
+      nodes.current.get(),
+      edges.current.get(),
+      nodeManager.getAllNodes()
+    );
+  };
+
+  const captureState = () => {
+    historyManagerRef.current.saveState(getSnapshot());
+  };
+
+  const restoreState = (snapshot) => {
+    if (!snapshot) return;
+
+    nodes.current.clear();
+    edges.current.clear();
+    nodeManager.clearAllNodes();
+
+    snapshot.modelNodes.forEach(n => {
+      const { id, ...data } = n;
+      nodeManager.createNode(id, data);
+    });
+
+    nodes.current.add(snapshot.visNodes);
+    edges.current.add(snapshot.visEdges);
+  };
+
   // 🛠️ Initialize the vis-network once (like componentDidMount)
   useEffect(() => {
     const container = networkRef.current;
@@ -80,6 +118,7 @@ const DesignApp = () => {
       },
       manipulation: {
         addEdge: (data, callback) => {
+          captureState();
           callback(data);
         },
         enabled: true,
@@ -88,12 +127,16 @@ const DesignApp = () => {
         // addEdge: true,
         editEdge: true,
         deleteNode: (data, callback) => {
+          captureState();
           setSelectedNode(null);
           setIsInputModalOpen(null);
           nodeManager.deleteNode(data.nodes[0]);
           callback(data);
         },
-        deleteEdge: true,
+        deleteEdge: (data, callback) => {
+          captureState();
+          callback(data);
+        },
       },
       nodes: { shape: 'box' },
     };
@@ -113,16 +156,54 @@ const DesignApp = () => {
         const nodeId = params.nodes[0];
         const node = nodes.current.get(nodeId);
         setSelectedNode(node);
+        selectedNodeRef.current = node;
         // Check if selected node is input type
         const modelNode = nodeManager.getNode(nodeId);
         setIsInputNode(modelNode?.feature?.toLowerCase().includes('input'));
       } else {
         setSelectedNode(null);
+        selectedNodeRef.current = null;
         setIsInputNode(false);
       }
     });
 
-    document.addEventListener('keydown', (e) => {
+    const handleMouseMove = (e) => {
+      mousePosRef.current = { x: e.clientX, y: e.clientY };
+    };
+
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'c') {
+        if (selectedNodeRef.current) {
+          copyPasteCommand.current.copy(selectedNodeRef.current.id);
+        }
+      }
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'v' || e.key === 'p')) {
+        if (copyPasteCommand.current.hasMemento() && networkRef.current && networkInstance.current) {
+          e.preventDefault();
+          captureState();
+          const rect = networkRef.current.getBoundingClientRect();
+          const x = mousePosRef.current.x - rect.left;
+          const y = mousePosRef.current.y - rect.top;
+          const canvasPosition = networkInstance.current.DOMtoCanvas({ x, y });
+          
+          copyPasteCommand.current.paste(nodes.current, canvasPosition.x, canvasPosition.y);
+        }
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+        e.preventDefault();
+        if (e.shiftKey) {
+          const nextState = historyManagerRef.current.redo(getSnapshot());
+          restoreState(nextState);
+        } else {
+          const prevState = historyManagerRef.current.undo(getSnapshot());
+          restoreState(prevState);
+        }
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'y') {
+        e.preventDefault();
+        const nextState = historyManagerRef.current.redo(getSnapshot());
+        restoreState(nextState);
+      }
       if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
         e.preventDefault();
         if (networkInstance.current) {
@@ -135,6 +216,14 @@ const DesignApp = () => {
           onSave();
         }
       }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('mousemove', handleMouseMove);
+
+    // Capture drag state to undo drags
+    networkInstance.current.on('dragStart', () => {
+      captureState();
     });
 
     resizeObserver.current.observe(container);
@@ -142,20 +231,15 @@ const DesignApp = () => {
     return () => {
       if (resizeObserver.current) resizeObserver.current.disconnect();
       if (networkInstance.current) networkInstance.current.destroy();
-      document.removeEventListener('keydown', (e) => {
-        if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
-          e.preventDefault();
-          if (networkInstance.current) {
-            networkInstance.current.fit();
-          }
-        }
-      });
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousemove', handleMouseMove);
     };
   }, []);
 
   // 🛠️ Handle drop event on the vis-network container
   const handleDrop = async (e) => {
     e.preventDefault();
+    captureState();
     const rect = networkRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
